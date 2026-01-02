@@ -1,5 +1,6 @@
 {
   "name": "@permify-toolkit/core",
+  "type": "module",
   "version": "1.0.0",
   "description": "core package for permify-toolkit",
   "author": "Nikhil aka thisisnkc",
@@ -8,9 +9,17 @@
     "core",
     "permify-toolkit"
   ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "main": "index.js",
+  "types": "./src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "quick:test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
+    "test": "c8 pnpm quick:test"
+  },
+  "dependencies": {
+    "@permify/permify-node": "^1.1.4"
   },
   "devDependencies": {
     "ts-node": "^10.x",

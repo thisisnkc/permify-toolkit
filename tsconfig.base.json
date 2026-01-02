@@ -5,7 +5,8 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "paths": {
-      "@permify-toolkit/core": ["packages/core/src/*"],
+      "@permify-toolkit/core": ["packages/core/src/index.ts"],
+      "@permify-toolkit/core/*": ["packages/core/src/*"],
       "@permify-toolkit/nestjs": ["packages/nestjs/src/*"],
       "@permify-toolkit/cli": ["packages/cli/src/*"]
     },
@@ -16,6 +17,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["packages/**/*", "src/**/*"],
+  "include": ["packages/**/*", "src/**/*", "tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }
