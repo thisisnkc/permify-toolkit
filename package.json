@@ -1,0 +1,42 @@
+{
+  "name": "permify-toolkit",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "toolkit for permify, manage authorization in one place",
+  "author": "Nikhil aka thisisnkc",
+  "license": "MIT",
+  "homepage": "https://github.com/thisisnkc/permify-toolkit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thisisnkc/permify-toolkit.git"
+  },
+  "keywords": [
+    "toolkit",
+    "permify"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm build",
+    "dev": "pnpm dev",
+    "lint": "pnpm lint",
+    "test": "pnpm test",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@japa/assert": "^4.2.0",
+    "@japa/expect-type": "^2.0.4",
+    "@japa/file-system": "^3.0.0",
+    "@japa/runner": "^5.0.0",
+    "@julr/tooling-configs": "^5.0.0",
+    "@types/node": "^25.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.51.0",
+    "@typescript-eslint/parser": "^8.51.0",
+    "eslint": "^9.39.2",
+    "prettier": "^3.7.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@permify-toolkit/core",
+  "version": "1.0.0",
+  "description": "core package for permify-toolkit",
+  "author": "Nikhil aka thisisnkc",
+  "license": "MIT",
+  "keywords": [
+    "core",
+    "permify-toolkit"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "ts-node": "^10.x",
+    "typescript": "^4.x"
+  }
+}

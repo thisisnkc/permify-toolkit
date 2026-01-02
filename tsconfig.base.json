@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "paths": {
+      "@permify-toolkit/core": ["packages/core/src/*"],
+      "@permify-toolkit/nestjs": ["packages/nestjs/src/*"],
+      "@permify-toolkit/cli": ["packages/cli/src/*"]
+    },
+    "resolveJsonModule": true,
+    "strict": true,
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["packages/**/*", "src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
