@@ -12,6 +12,7 @@ dist/
 
 # Logs
 *.log
+coverage-*.json
 
 # IDE files
 .vscode/
