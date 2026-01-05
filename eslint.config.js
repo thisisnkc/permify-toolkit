@@ -29,6 +29,8 @@ export default await julr({
     "packages/**/node_modules/**",
     "packages/**/dist/**",
     "node_modules/**",
-    "dist/**"
+    "dist/**",
+    "packages/**/types/**",
+    "types/**"
   ]
 });

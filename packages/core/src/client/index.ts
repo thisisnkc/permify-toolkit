@@ -1,9 +1,9 @@
 import * as permify from "@permify/permify-node";
 
 //** TODO: Add client options */
-export function createPermifyClient() {
+export function createPermifyClient(endpoint: string) {
   return permify.grpc.newClient({
-    endpoint: "localhost:3478",
+    endpoint,
     cert: null,
     pk: null,
     certChain: null,

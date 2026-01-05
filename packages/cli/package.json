@@ -1,5 +1,6 @@
 {
   "name": "@permify-toolkit/cli",
+  "type": "module",
   "version": "1.0.0",
   "description": "cli pacakge for permify-toolkit",
   "author": "Nikhil aka thisisnkc",
@@ -8,10 +9,37 @@
     "cli",
     "permify-toolkit"
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "permify-toolkit": "bin/permify-toolkit"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "oclif.manifest.json"
+  ],
+  "oclif": {
+    "bin": "permify-toolkit",
+    "dirname": "permify-toolkit",
+    "commands": "./dist/commands",
+    "topicSeparator": " ",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
   "scripts": {
     "lint": "eslint 'packages/**/*.{ts,tsx}' --fix",
-    "test": "echo \"No tests in cli yet\" && exit 0"
+    "test": "echo \"No tests in cli yet\" && exit 0",
+    "build": "tsc",
+    "prepack": "oclif manifest && oclif readme",
+    "postpack": "rm -f oclif.manifest.json",
+    "version": "oclif readme && git add README.md"
+  },
+  "dependencies": {
+    "@oclif/core": "^4.8.0",
+    "@oclif/plugin-help": "^6.2.26",
+    "@permify-toolkit/core": "workspace:^",
+    "oclif": "^4.22.63"
   },
   "devDependencies": {
     "ts-node": "^10.x",

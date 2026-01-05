@@ -274,8 +274,8 @@ test.group("Schema validation and compilation", () => {
     assert
   }) => {
     assert.throws(() => {
-      // @ts-ignore - Runtime check test
       defineSchema({
+        // @ts-ignore - Runtime check test
         user: "invalid-definition"
       });
     }, 'Entity definition for "user" must be an object');

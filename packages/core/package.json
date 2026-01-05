@@ -10,13 +10,18 @@
     "permify-toolkit"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./dist/src/index.js"
   },
-  "main": "index.js",
-  "types": "./src/index.ts",
+  "main": "dist/src/index.js",
+  "types": "./types/index.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
   "scripts": {
     "quick:test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
-    "test": "c8 pnpm quick:test"
+    "test": "c8 pnpm quick:test",
+    "build": "tsc"
   },
   "dependencies": {
     "@permify/permify-node": "^1.1.4"
