@@ -13,4 +13,6 @@ export {
   type PermissionDef
 } from "./schema/define-schema.js";
 
+export { relationsOf } from "./schema/helpers.js";
+
 export { writeSchemaToPermify } from "./schema/write-schema.js";

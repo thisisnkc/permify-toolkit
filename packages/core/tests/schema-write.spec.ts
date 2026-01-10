@@ -4,7 +4,8 @@ import {
   entity,
   relation,
   attribute,
-  permission
+  permission,
+  relationsOf
 } from "@permify-toolkit/core";
 
 test.group("Schema validation and compilation", () => {
@@ -244,10 +245,7 @@ test.group("Schema validation and compilation", () => {
         }
       }),
       attachment: entity({
-        relations: {
-          viewers: relation("role"),
-          downloaders: relation("role")
-        },
+        relations: relationsOf("role", ["viewers", "creators", "downloaders"]),
         permissions: {
           read: permission("viewers or downloaders"),
           download: permission("downloaders")
