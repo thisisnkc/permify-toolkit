@@ -1,25 +1,14 @@
-import path from "node:path";
-import fs from "node:fs/promises";
-import { Args, Command, Flags } from "@oclif/core";
-import type { SchemaInput } from "@permify-toolkit/core";
-import { schema, writeSchemaToPermify } from "@permify-toolkit/core";
+import { Command, Flags } from "@oclif/core";
+import { writeSchemaToPermify } from "@permify-toolkit/core";
+
+import { loadConfig } from "../../helpers.js";
 
 export default class SchemaPush extends Command {
   static description = "Push Permify schema to the server";
 
-  static args = {
-    filePath: Args.string({
-      required: true,
-      description: "Path to schema JSON file"
-    })
-  };
+  static args = {};
 
   static flags = {
-    endpoint: Flags.string({
-      description: "Permify server endpoint",
-      env: "PERMIFY_ENDPOINT",
-      required: true
-    }),
     tenant: Flags.string({
       description: "Permify tenant ID",
       env: "PERMIFY_TENANT",
@@ -28,47 +17,28 @@ export default class SchemaPush extends Command {
   };
 
   async run() {
-    const { args, flags } = await this.parse(SchemaPush);
+    const { flags } = await this.parse(SchemaPush);
 
-    const filePath = path.resolve(args.filePath);
+    // 1️⃣ Load config
+    const config = await loadConfig();
 
-    // 1️⃣ Load schema file
-    const schemaInput = await this.loadJsonFile(filePath);
+    if (!config.schema) {
+      this.error("Schema not defined in config");
+    }
 
-    // 2️⃣ Build schema via core
-    const schema = this.buildSchema(schemaInput);
+    if (!config.client?.endpoint) {
+      this.error("Client endpoint not defined in config");
+    }
 
-    // 3️⃣ Push schema via core
-    await this.pushSchema(schema.ast, flags.endpoint, flags.tenant);
+    // 2️⃣ Push schema via core
+    await this.pushSchema(
+      config.schema.ast,
+      config.client.endpoint,
+      flags.tenant
+    );
 
     this.log(`✔ Schema pushed successfully`);
     this.log(`Tenant: ${flags.tenant}`);
-  }
-
-  // ---------- helpers ----------
-
-  private async loadJsonFile(filePath: string): Promise<unknown> {
-    if (!filePath.endsWith(".json")) {
-      this.error("Only .json schema files are supported");
-    }
-
-    try {
-      const content = await fs.readFile(filePath, "utf-8");
-      return JSON.parse(content);
-    } catch (err: any) {
-      this.error(`Failed to read or parse JSON file: ${err.message}`);
-    }
-  }
-
-  /**
-   * TODO -> add JOI validation before schema
-   */
-  private buildSchema(input: unknown) {
-    try {
-      return schema(input as SchemaInput);
-    } catch (err: any) {
-      this.error(`Invalid schema definition:\n${err.message}`);
-    }
   }
 
   private async pushSchema(ast: any, endpoint: string, tenantId: string) {

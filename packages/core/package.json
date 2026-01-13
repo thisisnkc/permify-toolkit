@@ -13,7 +13,7 @@
     ".": "./dist/src/index.js"
   },
   "main": "dist/src/index.js",
-  "types": "./types/index.d.ts",
+  "types": "./types/src/index.d.ts",
   "files": [
     "dist",
     "types"
