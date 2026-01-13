@@ -1,10 +1,10 @@
 export {
-  defineSchema,
+  schema,
   entity,
   relation,
   attribute,
   permission,
-  type DefineSchemaInput,
+  type SchemaInput,
   type SchemaHandle,
   type PermissionProxy,
   type EntityDef,
@@ -16,3 +16,9 @@ export {
 export { relationsOf } from "./schema/helpers.js";
 
 export { writeSchemaToPermify } from "./schema/write-schema.js";
+
+export {
+  defineConfig,
+  validateConfig,
+  type PermifyConfig as Config
+} from "./config.js";

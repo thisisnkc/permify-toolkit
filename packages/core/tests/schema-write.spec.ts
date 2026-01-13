@@ -1,6 +1,6 @@
 import { test } from "@japa/runner";
 import {
-  defineSchema,
+  schema,
   entity,
   relation,
   attribute,
@@ -12,7 +12,7 @@ test.group("Schema validation and compilation", () => {
   test("should validate and compile a simple schema to Permify DSL", ({
     assert
   }) => {
-    const schema = defineSchema({
+    const definitions = schema({
       organization: entity({
         relations: {
           member: relation("user")
@@ -24,7 +24,7 @@ test.group("Schema validation and compilation", () => {
       user: entity({})
     });
 
-    const dsl = schema.compile();
+    const dsl = definitions.compile();
 
     assert.isString(dsl);
     assert.include(dsl, "entity organization");
@@ -37,7 +37,7 @@ test.group("Schema validation and compilation", () => {
     assert
   }) => {
     assert.throws(() => {
-      defineSchema({
+      schema({
         organization: entity({
           relations: {
             owner: relation("nonexistent")
@@ -51,7 +51,7 @@ test.group("Schema validation and compilation", () => {
     assert
   }) => {
     assert.throws(() => {
-      defineSchema({
+      schema({
         organization: entity({
           relations: {
             member: relation("user")
@@ -66,7 +66,7 @@ test.group("Schema validation and compilation", () => {
   });
 
   test("should compile schema with union permission", ({ assert }) => {
-    const schema = defineSchema({
+    const definitions = schema({
       document: entity({
         relations: {
           owner: relation("user"),
@@ -79,13 +79,13 @@ test.group("Schema validation and compilation", () => {
       user: entity({})
     });
 
-    const dsl = schema.compile();
+    const dsl = definitions.compile();
 
     assert.include(dsl, "permission edit = owner or editor");
   });
 
   test("should compile schema with intersection permission", ({ assert }) => {
-    const schema = defineSchema({
+    const definitions = schema({
       document: entity({
         relations: {
           member: relation("user"),
@@ -98,7 +98,7 @@ test.group("Schema validation and compilation", () => {
       user: entity({})
     });
 
-    const dsl = schema.compile();
+    const dsl = definitions.compile();
 
     assert.include(dsl, "permission view = member and approved");
   });
@@ -106,7 +106,7 @@ test.group("Schema validation and compilation", () => {
   test("should compile schema with nested relation references", ({
     assert
   }) => {
-    const schema = defineSchema({
+    const definitions = schema({
       document: entity({
         relations: {
           parent: relation("folder")
@@ -126,14 +126,14 @@ test.group("Schema validation and compilation", () => {
       user: entity({})
     });
 
-    const dsl = schema.compile();
+    const dsl = definitions.compile();
 
     assert.include(dsl, "permission view = parent.view");
   });
 
   test("should validate nested relation targets exist", ({ assert }) => {
     assert.throws(() => {
-      defineSchema({
+      schema({
         document: entity({
           relations: {
             parent: relation("folder")
@@ -153,7 +153,7 @@ test.group("Schema validation and compilation", () => {
   });
 
   test("should compile complex real-world schema", ({ assert }) => {
-    const schema = defineSchema({
+    const definitions = schema({
       organization: entity({
         relations: {
           admin: relation("user"),
@@ -177,7 +177,7 @@ test.group("Schema validation and compilation", () => {
       user: entity({})
     });
 
-    const dsl = schema.compile();
+    const dsl = definitions.compile();
 
     assert.include(dsl, "entity organization");
     assert.include(dsl, "entity repository");
@@ -187,7 +187,7 @@ test.group("Schema validation and compilation", () => {
   });
 
   test("should provide typed permission strings", ({ assert }) => {
-    const schema = defineSchema({
+    const definitions = schema({
       document: entity({
         relations: {
           owner: relation("user")
@@ -202,9 +202,9 @@ test.group("Schema validation and compilation", () => {
     });
 
     // These should be type-safe at compile time
-    const viewPerm = schema.permissions.document.view;
-    const editPerm = schema.permissions.document.edit;
-    const deletePerm = schema.permissions.document.delete;
+    const viewPerm = definitions.permissions.document.view;
+    const editPerm = definitions.permissions.document.edit;
+    const deletePerm = definitions.permissions.document.delete;
 
     assert.equal(viewPerm, "document:view");
     assert.equal(editPerm, "document:edit");
@@ -214,7 +214,7 @@ test.group("Schema validation and compilation", () => {
   test("should compile complex real-world schema with attributes", ({
     assert
   }) => {
-    const schema = defineSchema({
+    const definitions = schema({
       role: entity({
         attributes: {
           name: attribute("string")
@@ -263,7 +263,7 @@ test.group("Schema validation and compilation", () => {
       })
     });
 
-    const dsl = schema.compile();
+    const dsl = definitions.compile();
 
     assert.include(dsl, "entity role");
     assert.include(dsl, "attribute name string");
@@ -279,7 +279,7 @@ test.group("Schema validation and compilation", () => {
     assert
   }) => {
     assert.throws(() => {
-      defineSchema({
+      schema({
         // @ts-ignore - Runtime check test
         user: "invalid-definition"
       });

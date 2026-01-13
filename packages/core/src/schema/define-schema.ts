@@ -63,7 +63,7 @@ export function permission(expression: string): PermissionDef {
  *
  * @example
  * ```ts
- * const schema = defineSchema({
+ * const schema = schema({
  *   user: entity({}),
  *   organization: entity({
  *     relations: {
@@ -76,17 +76,15 @@ export function permission(expression: string): PermissionDef {
  * })
  * ```
  */
-export interface DefineSchemaInput {
+export interface SchemaInput {
   [entityName: string]: EntityDef;
 }
 
 /**
- * Schema handle returned by defineSchema.
+ * Schema handle returned by schema.
  * Provides methods to validate, compile, and access typed permissions.
  */
-export interface SchemaHandle<
-  TInput extends DefineSchemaInput = DefineSchemaInput
-> {
+export interface SchemaHandle<TInput extends SchemaInput = SchemaInput> {
   /** Raw AST representation */
   readonly ast: SchemaAST;
   /** Validate schema integrity */
@@ -101,7 +99,7 @@ export interface SchemaHandle<
  * Type-safe permission proxy.
  * Provides autocomplete for entity.permission -> "entity:permission"
  */
-export type PermissionProxy<TInput extends DefineSchemaInput> = {
+export type PermissionProxy<TInput extends SchemaInput> = {
   [Entity in keyof TInput]: TInput[Entity] extends { permissions: infer P }
     ? { [Permission in keyof P & string]: `${Entity & string}:${Permission}` }
     : Record<string, never>;
@@ -117,7 +115,7 @@ export type PermissionProxy<TInput extends DefineSchemaInput> = {
  *
  * @example
  * ```ts
- * const schema = defineSchema({
+ * const schema = schema({
  *   user: entity({}),
  *   document: entity({
  *     relations: {
@@ -133,7 +131,7 @@ export type PermissionProxy<TInput extends DefineSchemaInput> = {
  * const perm = schema.permissions.document.view // "document:view"
  * ```
  */
-export function defineSchema<TInput extends DefineSchemaInput>(
+export function schema<TInput extends SchemaInput>(
   input: TInput
 ): SchemaHandle<TInput> {
   const ast = buildAST(input);
@@ -144,7 +142,7 @@ export function defineSchema<TInput extends DefineSchemaInput>(
 /**
  * Converts user input to internal AST representation.
  */
-function buildAST(input: DefineSchemaInput): SchemaAST {
+function buildAST(input: SchemaInput): SchemaAST {
   const entities: SchemaAST["entities"] = {};
 
   for (const [entityName, entityDef] of Object.entries(input)) {
@@ -222,7 +220,7 @@ function buildAttributeNodes(
 /**
  * Creates the public schema handle with validation and compilation methods.
  */
-function createSchemaHandle<TInput extends DefineSchemaInput>(
+function createSchemaHandle<TInput extends SchemaInput>(
   ast: SchemaAST
 ): SchemaHandle<TInput> {
   return {
@@ -240,7 +238,7 @@ function createSchemaHandle<TInput extends DefineSchemaInput>(
  * @example
  * schema.permissions.document.view → "document:view" (typed)
  */
-function buildPermissionProxy<TInput extends DefineSchemaInput>(
+function buildPermissionProxy<TInput extends SchemaInput>(
   ast: SchemaAST
 ): PermissionProxy<TInput> {
   const proxy: Record<string, Record<string, string>> = {};
