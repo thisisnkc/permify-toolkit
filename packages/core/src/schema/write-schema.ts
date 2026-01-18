@@ -21,7 +21,7 @@ export async function writeSchemaToPermify(params: {
     throw new Error("AST is required");
   }
 
-  const client = createPermifyClient(endpoint);
+  const client = createPermifyClient({ endpoint });
   const compiled = compileToPermify(ast);
 
   await client.schema.write({
