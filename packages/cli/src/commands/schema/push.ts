@@ -13,6 +13,11 @@ export default class SchemaPush extends Command {
       description: "Permify tenant ID",
       env: "PERMIFY_TENANT",
       required: true
+    }),
+    "create-tenant": Flags.boolean({
+      char: "c",
+      description: "Create tenant if it does not exist",
+      default: false
     })
   };
 
@@ -34,19 +39,26 @@ export default class SchemaPush extends Command {
     await this.pushSchema(
       config.schema.ast,
       config.client.endpoint,
-      flags.tenant
+      flags.tenant,
+      flags["create-tenant"]
     );
 
     this.log(`✔ Schema pushed successfully`);
     this.log(`Tenant: ${flags.tenant}`);
   }
 
-  private async pushSchema(ast: any, endpoint: string, tenantId: string) {
+  private async pushSchema(
+    ast: any,
+    endpoint: string,
+    tenantId: string,
+    createTenantIfNotExists?: boolean
+  ) {
     try {
       await writeSchemaToPermify({
         endpoint,
         tenantId,
-        ast
+        ast,
+        createTenantIfNotExists
       });
     } catch (err: any) {
       this.error(`Schema push failed:\n${err.message}`);
