@@ -10,7 +10,10 @@
     "permify-toolkit"
   ],
   "exports": {
-    ".": "./dist/src/index.js"
+    ".": {
+      "types": "./types/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
   },
   "main": "dist/src/index.js",
   "types": "./types/src/index.d.ts",

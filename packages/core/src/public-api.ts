@@ -22,3 +22,5 @@ export {
   validateConfig,
   type PermifyConfig as Config
 } from "./config.js";
+
+export { createPermifyClient } from "./client/index.js";

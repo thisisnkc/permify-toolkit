@@ -1,5 +1,6 @@
 {
   "name": "@permify-toolkit/nestjs",
+  "type": "module",
   "version": "1.0.0",
   "description": "nestjs package for permify-toolkit",
   "author": "Nikhil aka thisisnkc",
@@ -8,9 +9,24 @@
     "nestjs",
     "permify-toolkit"
   ],
-  "main": "index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/nestjs/src/index.d.ts",
+      "import": "./dist/nestjs/src/index.js"
+    }
+  },
+  "main": "dist/nestjs/src/index.js",
+  "types": "dist/nestjs/src/index.d.ts",
   "scripts": {
-    "test": "echo \"No tests in nestjs yet\" && exit 0"
+    "test": "echo \"No tests in nestjs yet\" && exit 0",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.12",
+    "@nestjs/core": "^11.1.12",
+    "@permify-toolkit/core": "workspace:^",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "ts-node": "^10.x",
