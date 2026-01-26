@@ -20,5 +20,8 @@ export { writeSchemaToPermify } from "./schema/write-schema.js";
 export {
   defineConfig,
   validateConfig,
-  type PermifyConfig as Config
+  type PermifyConfig as Config,
+  type PermifyClientOptions
 } from "./config.js";
+
+export { createPermifyClient } from "./client/index.js";

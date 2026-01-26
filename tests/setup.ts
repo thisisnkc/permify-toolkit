@@ -37,7 +37,7 @@ configure({
     },
     {
       name: "nestjs",
-      files: getPackageFiles("nestjs", "test/**/*.spec.ts")
+      files: getPackageFiles("nestjs", "tests/**/*.spec.ts")
     }
   ],
   plugins: [

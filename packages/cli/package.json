@@ -28,7 +28,7 @@
     ]
   },
   "scripts": {
-    "lint": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "lint": "eslint 'src/**/*.ts' --fix",
     "test": "echo \"No tests in cli yet\" && exit 0",
     "build": "tsc",
     "prepack": "oclif manifest && oclif readme",

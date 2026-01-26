@@ -1,5 +1,6 @@
 {
   "name": "@permify-toolkit/nestjs",
+  "type": "module",
   "version": "1.0.0",
   "description": "nestjs package for permify-toolkit",
   "author": "Nikhil aka thisisnkc",
@@ -10,9 +11,24 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "echo \"No tests in nestjs yet\" && exit 0"
+    "quick:test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
+    "test": "c8 pnpm quick:test",
+    "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts' --fix",
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0",
+    "rxjs": "^7.0.0"
+  },
+  "dependencies": {
+    "@permify-toolkit/core": "workspace:*"
   },
   "devDependencies": {
+    "@nestjs/common": "^11.1.12",
+    "@nestjs/core": "^11.1.12",
+    "@nestjs/testing": "^11.1.12",
+    "rxjs": "^7.8.1",
     "ts-node": "^10.x",
     "typescript": "^4.x"
   }
