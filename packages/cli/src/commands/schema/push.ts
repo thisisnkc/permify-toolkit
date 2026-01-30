@@ -1,5 +1,8 @@
 import { Command, Flags } from "@oclif/core";
-import { writeSchemaToPermify } from "@permify-toolkit/core";
+import {
+  writeSchemaToPermify,
+  createPermifyClient
+} from "@permify-toolkit/core";
 
 import { loadConfig, loadSchemaFromConfig } from "../../helpers.js";
 
@@ -43,13 +46,11 @@ export default class SchemaPush extends Command {
       this.error(`Failed to load schema: ${err.message}`);
     }
 
-    // 3️⃣ Push schema via core
-    await this.pushSchema(
-      dsl,
-      config.client.endpoint,
-      flags.tenant,
-      flags["create-tenant"]
-    );
+    // 3️⃣ Create client with full config
+    const client = createPermifyClient(config.client);
+
+    // 4️⃣ Push schema via core
+    await this.pushSchema(dsl, client, flags.tenant, flags["create-tenant"]);
 
     this.log(`✔ Schema pushed successfully`);
     this.log(`Tenant: ${flags.tenant}`);
@@ -57,16 +58,17 @@ export default class SchemaPush extends Command {
 
   private async pushSchema(
     schema: string,
-    endpoint: string,
+    client: any,
     tenantId: string,
     createTenantIfNotExists?: boolean
   ) {
     try {
       await writeSchemaToPermify({
-        endpoint,
+        endpoint: "",
         tenantId,
         schema,
-        createTenantIfNotExists
+        createTenantIfNotExists,
+        client
       });
     } catch (err: any) {
       this.error(`Schema push failed:\n${err.message}`);

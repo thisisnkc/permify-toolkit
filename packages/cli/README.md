@@ -12,30 +12,104 @@ pnpm add -D @permify-toolkit/cli
 
 ## Configuration
 
-The CLI relies on a `permify.config.ts` file in your project root. This file defines your Permify client endpoints and your schema structure.
+The CLI relies on a `permify.config.ts` file in your project root. This file defines your Permify client connection settings and your schema structure.
 
-**Example `permify.config.ts`:**
+### Schema Definition Options
+
+You can define your schema in two ways:
+
+#### 1. Inline Schema (AST-based)
+
+Define your schema directly in the config file using the `schema()` function:
 
 ```typescript
-import { defineConfig, schema, entity } from "@permify-toolkit/core";
+import {
+  defineConfig,
+  schema,
+  entity,
+  relation,
+  permission
+} from "@permify-toolkit/core";
 
 export default defineConfig({
   client: {
-    endpoint: "localhost:3478" // Your Permify instance endpoint
+    endpoint: "localhost:3478",
+    insecure: true // Use for local development without SSL
   },
   schema: schema({
     user: entity({
-      // Define your entity structure here
+      relations: {
+        manager: relation("user")
+      },
+      permissions: {
+        manage: permission("manager")
+      }
+    }),
+    document: entity({
+      relations: {
+        owner: relation("user"),
+        viewer: relation("user")
+      },
+      permissions: {
+        view: permission("viewer or owner"),
+        edit: permission("owner")
+      }
     })
   })
 });
 ```
 
+#### 2. File-based Schema
+
+Reference an external `.perm` schema file using the `schemaFile()` function:
+
+```typescript
+import { defineConfig, schemaFile } from "@permify-toolkit/core";
+
+export default defineConfig({
+  client: {
+    endpoint: "localhost:3478",
+    insecure: true
+  },
+  schema: schemaFile("./schema.perm")
+});
+```
+
+**Example `schema.perm` file:**
+
+```
+entity user {}
+
+entity organization {
+  relation member @user
+
+  permission view = member
+}
+
+entity document {
+  relation owner @user
+  relation parent @organization
+
+  permission view = owner or parent.view
+  permission edit = owner
+}
+```
+
+### Client Configuration Options
+
+| Option      | Type      | Description                              | Required | Default |
+| :---------- | :-------- | :--------------------------------------- | :------- | :------ |
+| `endpoint`  | `string`  | Permify server endpoint (host:port)      | Yes      | -       |
+| `insecure`  | `boolean` | Use insecure connection (no SSL/TLS)     | No       | `false` |
+| `cert`      | `string`  | TLS certificate for secure connections   | No       | -       |
+| `pk`        | `string`  | Private key for secure connections       | No       | -       |
+| `certChain` | `string`  | Certificate chain for secure connections | No       | -       |
+
 ## Commands
 
 ### `schema push`
 
-Pushes definitions defined in your `permify.config.ts` to the configured Permify server.
+Pushes the schema defined in your `permify.config.ts` to the configured Permify server.
 
 **Usage:**
 
@@ -64,6 +138,14 @@ Push to a tenant, creating it if it doesn't exist:
 permify-toolkit schema push --tenant new-tenant-id --create-tenant
 ```
 
+**Schema Validation:**
+
+The Permify server validates your schema when you push it. If there are any errors (e.g., referencing non-existent entities), you'll receive a detailed error message:
+
+```
+Error: Entity "usr" referenced in relation "document.owner" does not exist
+```
+
 ## Development
 
 To develop and test changes locally:
@@ -83,3 +165,12 @@ Example:
 ```bash
 ./bin/permify-toolkit schema push --tenant dev-tenant -c
 ```
+
+## Features
+
+- **Flexible Schema Definition**: Choose between inline TypeScript schemas or external `.perm` files
+- **Type Safety**: Full TypeScript support with autocomplete for inline schemas
+- **Schema Validation**: Permify validates your schema on push, catching errors early
+- **Tenant Management**: Automatically create tenants if they don't exist
+- **Secure & Insecure Connections**: Support for both SSL/TLS and insecure local development
+- **File Validation**: Automatic validation of `.perm` file paths and extensions

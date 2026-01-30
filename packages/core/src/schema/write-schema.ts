@@ -16,8 +16,12 @@ interface TenantOperationResult {
  * Validates the required parameters for writing a schema.
  */
 function validateParams(params: WriteSchemaParams): void {
-  const { endpoint, tenantId, schema } = params;
-  if (!endpoint) throw new Error("Endpoint is required");
+  const { endpoint, tenantId, schema, client } = params;
+
+  if (!client && !endpoint) {
+    throw new Error("Either endpoint or client must be provided");
+  }
+
   if (!tenantId) throw new Error("Tenant ID is required");
   if (!schema) throw new Error("Schema is required");
   if (typeof schema !== "string") throw new Error("Schema must be a string");
