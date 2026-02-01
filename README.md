@@ -111,6 +111,27 @@ const client = createPermifyClient({
 pnpm test
 ```
 
+#### Running Specific Tests
+
+To run specific tests, you can use the helper scripts in `packages/core` _(currently tests are only in core, PRs are welcome adding more tests for rest packages)_:
+
+```bash
+# Run a specific file
+pnpm test:file client.spec.ts
+
+# Run a specific test group
+pnpm test:group "Client Creation"
+
+# Run tests matching a title
+pnpm test:grep "should create a client"
+```
+
+Alternatively, you can pass arguments directly to `pnpm test`:
+
+```bash
+pnpm test -- --files client.spec.ts
+```
+
 ---
 
 ## 🗺️ Roadmap
@@ -118,9 +139,9 @@ pnpm test
 We're actively working on expanding the toolkit. Here's what's coming:
 
 - [x] Client interceptor support for middleware and logging
+- [x] Direct access to underlying Permify client instance
 - [ ] Relationship seeding from `relationship.json` files (CLI)
 - [ ] Authorization guards for NestJS package
-- [ ] Direct access to underlying Permify client instance
 - [ ] Full-stack example app (frontend + NestJS backend)
 
 Have ideas? [Open an issue](https://github.com/thisisnkc/permify-toolkit/issues) or start a [discussion](https://github.com/thisisnkc/permify-toolkit/discussions)!
@@ -156,6 +177,7 @@ If you find this toolkit helpful, please consider:
 - 🐛 Reporting bugs
 - 💡 Suggesting features
 - 📖 Improving documentation
+- 📝 Adding more tests
 
 ---
 
