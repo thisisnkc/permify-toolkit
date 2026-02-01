@@ -7,8 +7,6 @@ import type {
   AttributeNode
 } from "./ast.js";
 
-// --- Helpers ---
-
 export interface RelationDef {
   targets: string[];
 }

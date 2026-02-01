@@ -1,11 +1,9 @@
-import type { SchemaAST } from "../schema/ast.js";
-import { compileToPermify } from "../schema/compiler.js";
 import { createPermifyClient } from "../client/index.js";
 
 interface WriteSchemaParams {
   endpoint: string;
   tenantId: string;
-  ast: SchemaAST;
+  schema: string;
   createTenantIfNotExists?: boolean;
   client?: any;
 }
@@ -18,10 +16,15 @@ interface TenantOperationResult {
  * Validates the required parameters for writing a schema.
  */
 function validateParams(params: WriteSchemaParams): void {
-  const { endpoint, tenantId, ast } = params;
-  if (!endpoint) throw new Error("Endpoint is required");
+  const { endpoint, tenantId, schema, client } = params;
+
+  if (!client && !endpoint) {
+    throw new Error("Either endpoint or client must be provided");
+  }
+
   if (!tenantId) throw new Error("Tenant ID is required");
-  if (!ast) throw new Error("AST is required");
+  if (!schema) throw new Error("Schema is required");
+  if (typeof schema !== "string") throw new Error("Schema must be a string");
 }
 
 /**
@@ -82,15 +85,15 @@ async function ensureTenant(
 }
 
 /**
- * Compiles and writes the schema to the Permify server.
+ * Writes the schema DSL to the Permify server.
+ * Permify validates the schema and returns an error if invalid.
  */
-async function deploySchema(client: any, tenantId: string, ast: SchemaAST) {
-  const compiled = compileToPermify(ast);
+async function deploySchema(client: any, tenantId: string, schema: string) {
   await client.schema.write({
     tenantId,
-    schema: compiled
+    schema
   });
-  return { compiledSchema: compiled };
+  return { schema };
 }
 
 /**
@@ -126,7 +129,7 @@ async function rollbackTenant(
  * 1. Validation
  * 2. Client Initialization
  * 3. Tenant Verification/Creation
- * 4. Schema Deployment
+ * 4. Schema Deployment (Permify validates the schema)
  * 5. Automatic Rollback on Failure
  */
 export async function writeSchemaToPermify(params: WriteSchemaParams) {
@@ -142,7 +145,7 @@ export async function writeSchemaToPermify(params: WriteSchemaParams) {
   );
 
   try {
-    return await deploySchema(client, params.tenantId, params.ast);
+    return await deploySchema(client, params.tenantId, params.schema);
   } catch (error: any) {
     if (created) {
       await rollbackTenant(client, params.tenantId, error);

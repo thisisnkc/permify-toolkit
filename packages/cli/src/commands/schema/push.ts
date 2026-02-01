@@ -1,7 +1,10 @@
 import { Command, Flags } from "@oclif/core";
-import { writeSchemaToPermify } from "@permify-toolkit/core";
+import {
+  writeSchemaToPermify,
+  createPermifyClient
+} from "@permify-toolkit/core";
 
-import { loadConfig } from "../../helpers.js";
+import { loadConfig, loadSchemaFromConfig } from "../../helpers.js";
 
 export default class SchemaPush extends Command {
   static description = "Push Permify schema to the server";
@@ -35,30 +38,37 @@ export default class SchemaPush extends Command {
       this.error("Client endpoint not defined in config");
     }
 
-    // 2️⃣ Push schema via core
-    await this.pushSchema(
-      config.schema.ast,
-      config.client.endpoint,
-      flags.tenant,
-      flags["create-tenant"]
-    );
+    // 2️⃣ Load schema (compile AST or read file)
+    let dsl: string;
+    try {
+      dsl = loadSchemaFromConfig(config.schema);
+    } catch (err: any) {
+      this.error(`Failed to load schema: ${err.message}`);
+    }
+
+    // 3️⃣ Create client with full config
+    const client = createPermifyClient(config.client);
+
+    // 4️⃣ Push schema via core
+    await this.pushSchema(dsl, client, flags.tenant, flags["create-tenant"]);
 
     this.log(`✔ Schema pushed successfully`);
     this.log(`Tenant: ${flags.tenant}`);
   }
 
   private async pushSchema(
-    ast: any,
-    endpoint: string,
+    schema: string,
+    client: any,
     tenantId: string,
     createTenantIfNotExists?: boolean
   ) {
     try {
       await writeSchemaToPermify({
-        endpoint,
+        endpoint: "",
         tenantId,
-        ast,
-        createTenantIfNotExists
+        schema,
+        createTenantIfNotExists,
+        client
       });
     } catch (err: any) {
       this.error(`Schema push failed:\n${err.message}`);
