@@ -41,6 +41,14 @@ This is a monorepo containing multiple packages. Please refer to the specific pa
     pnpm test
     ```
 
+## Roadmap
+
+- [ ] Add interceptor support to the permify client
+- [ ] Implement seeding functionality for `relationship.json` in cli
+- [ ] Add authorization guard to `nestjs` package
+- [ ] Expose the full permify client instance for direct usage within the toolkit for the users
+- [ ] Add a frontend and expand the nestjs backend to fully test the toolkit in simulator
+
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to get started, our code of conduct, and development workflows.
