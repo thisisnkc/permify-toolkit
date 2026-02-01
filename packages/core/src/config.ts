@@ -1,13 +1,7 @@
-import type { SchemaHandle } from "./schema/define-schema.js";
+import * as fs from "node:fs";
 
-export interface PermifyClientOptions {
-  endpoint: string;
-  cert?: string;
-  insecure?: boolean;
-  pk?: string;
-  certChain?: string;
-  metadata?: Record<string, string>;
-}
+import type { PermifyClientOptions } from "./client/index.js";
+import type { SchemaHandle } from "./schema/define-schema.js";
 
 export interface PermifyConfigOptions {
   client: PermifyClientOptions;
@@ -58,11 +52,29 @@ export function validateConfig(config: PermifyConfigOptions): void {
     throw new TypeError("Schema must be provided");
   }
 
-  if (typeof config.schema === "object") {
-    if (typeof config.schema.ast !== "object") {
+  validateSchema(config.schema);
+}
+
+/**
+ * Validates the Permify schema.
+ */
+function validateSchema(schema: SchemaHandle | string): void {
+  if (typeof schema === "string") {
+    if (!fs.existsSync(schema)) {
+      throw new Error(`Schema file not found: ${schema}`);
+    }
+    if (!schema.endsWith(".perm")) {
+      throw new Error(`Schema file must have a .perm extension: ${schema}`);
+    }
+    const stats = fs.statSync(schema);
+    if (stats.size === 0) {
+      throw new Error(`Schema file cannot be empty: ${schema}`);
+    }
+  } else if (typeof schema === "object") {
+    if (typeof schema.ast !== "object") {
       throw new TypeError("Invalid schema: missing AST");
     }
-    if (typeof config.schema.compile !== "function") {
+    if (typeof schema.compile !== "function") {
       throw new TypeError("Invalid schema: missing compile method");
     }
   }

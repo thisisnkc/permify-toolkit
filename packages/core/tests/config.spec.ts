@@ -1,9 +1,11 @@
+import * as fs from "node:fs";
 import { test } from "@japa/runner";
 import {
   defineConfig,
   validateConfig,
   schema,
-  entity
+  entity,
+  schemaFile
 } from "@permify-toolkit/core";
 
 test.group("Config Validation", () => {
@@ -28,7 +30,7 @@ test.group("Config Validation", () => {
 
   test("should throw if config is not an object", ({ assert }) => {
     assert.throws(() => {
-      // @ts-ignore
+      // @ts-expect-error
       validateConfig("invalid");
     }, "Configuration must be an object");
   });
@@ -39,7 +41,7 @@ test.group("Config Validation", () => {
     assert.throws(() => {
       validateConfig({
         client: {
-          // @ts-ignore
+          // @ts-expect-error
           endpoint: 123
         }
       });
@@ -53,7 +55,6 @@ test.group("Config Validation", () => {
           endpoint: "localhost:3478"
         },
         schema: {
-          // @ts-ignore
           compile: () => ""
         } as any
       });
@@ -71,5 +72,88 @@ test.group("Config Validation", () => {
         } as any
       });
     }, "Invalid schema: missing compile method");
+  });
+
+  test("should valid config with schema file path", ({ assert }) => {
+    const tempFile = "temp-schema.perm";
+    fs.writeFileSync(tempFile, "entity user {}");
+
+    const config = defineConfig({
+      client: {
+        endpoint: "localhost:3478"
+      },
+      schema: schemaFile(tempFile)
+    });
+
+    try {
+      assert.doesNotThrow(() => validateConfig(config));
+      assert.deepEqual(config, {
+        client: {
+          endpoint: "localhost:3478"
+        },
+        schema: tempFile
+      });
+    } finally {
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+    }
+  });
+
+  test("should throw if schema file does not exist", ({ assert }) => {
+    const config = defineConfig({
+      client: {
+        endpoint: "localhost:3478"
+      },
+      schema: schemaFile("./non-existent.perm")
+    });
+
+    assert.throws(() => {
+      validateConfig(config);
+    }, "Schema file not found: ./non-existent.perm");
+  });
+
+  test("should throw if schema file is empty", ({ assert }) => {
+    const tempFile = "empty-schema.perm";
+    fs.writeFileSync(tempFile, "");
+
+    const config = defineConfig({
+      client: {
+        endpoint: "localhost:3478"
+      },
+      schema: schemaFile(tempFile)
+    });
+
+    try {
+      assert.throws(() => {
+        validateConfig(config);
+      }, `Schema file cannot be empty: ${tempFile}`);
+    } finally {
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+    }
+  });
+
+  test("should throw if schema file extension is invalid", ({ assert }) => {
+    const tempFile = "schema.txt";
+    fs.writeFileSync(tempFile, "entity user {}");
+
+    const config = defineConfig({
+      client: {
+        endpoint: "localhost:3478"
+      },
+      schema: schemaFile(tempFile)
+    });
+
+    try {
+      assert.throws(() => {
+        validateConfig(config);
+      }, `Schema file must have a .perm extension: ${tempFile}`);
+    } finally {
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+    }
   });
 });

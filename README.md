@@ -1,58 +1,184 @@
 # Permify Toolkit
 
-![License](https://img.shields.io/github/license/thisisnkc/permify-toolkit) ![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![License](https://img.shields.io/github/license/thisisnkc/permify-toolkit)
+![Status](https://img.shields.io/badge/status-in%20development-yellow)
 
-**Permify Toolkit** is a comprehensive set of tools designed to streamline authorization management with [Permify](https://github.com/Permify/permify). Manage your authorization logic in one place with ease and flexibility.
+> A comprehensive TypeScript toolkit for building authorization systems with [Permify](https://github.com/Permify/permify)
 
-## Features
+Permify Toolkit simplifies authorization management by providing type-safe clients, CLI tools, and framework integrations, all in one place.
 
-This monorepo contains a suite of packages to enhance your Permify experience:
+---
 
-- **@permify-toolkit/core**: The core logic and helpers for building schemas and managing authorization.
-- **@permify-toolkit/cli**: Command-line interface for common Permify tasks and code generation.
-- **@permify-toolkit/nestjs**: Seamless integration for NestJS applications.
+## ✨ Features
 
-## Installation
+This monorepo provides:
 
-This project is managed using [pnpm](https://pnpm.io/).
+- **[@permify-toolkit/core](packages/core)** - Core client, schema builders, and authorization helpers
+- **[@permify-toolkit/cli](packages/cli)** - Command-line interface for schema management and code generation
+- **[@permify-toolkit/nestjs](packages/nestjs)** - First-class NestJS integration with decorators and guards
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+This project uses [pnpm](https://pnpm.io/) for package management.
 
 ```bash
-# Install pnpm if you haven't already
+# Install pnpm globally
 npm install -g pnpm
+```
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/thisisnkc/permify-toolkit.git
+cd permify-toolkit
 
 # Install dependencies
 pnpm install
+
+# Build all packages
+pnpm build
 ```
 
-## Usage
+---
 
-This is a monorepo containing multiple packages. Please refer to the specific package directories in `packages/` for detailed usage instructions.
+## 📦 Usage
 
-### Basic Workflow
+### Creating a Permify Client
 
-1.  **Build all packages**:
+The toolkit offers flexible ways to connect to your Permify instance.
 
-    ```bash
-    pnpm build
-    ```
+#### Option 1: Environment Variables (Recommended)
 
-2.  **Run tests**:
-    ```bash
-    pnpm test
-    ```
+The simplest approach uses environment variables for configuration:
 
-## Roadmap
+```typescript
+import {
+  createPermifyClient,
+  clientOptionsFromEnv
+} from "@permify-toolkit/core";
 
-- [ ] Add interceptor support to the permify client
-- [ ] Implement seeding functionality for `relationship.json` in cli
-- [ ] Add authorization guard to `nestjs` package
-- [ ] Expose the full permify client instance for direct usage within the toolkit for the users
-- [ ] Add a frontend and expand the nestjs backend to fully test the toolkit in simulator
+// Reads from PERMIFY_ENDPOINT, PERMIFY_INSECURE, PERMIFY_TLS_CERT, etc.
+const client = createPermifyClient(clientOptionsFromEnv());
+```
 
-## Contributing
+**Supported environment variables:**
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to get started, our code of conduct, and development workflows.
+- `PERMIFY_ENDPOINT` - Permify server endpoint (e.g., `localhost:3478`)
+- `PERMIFY_INSECURE` - Use insecure connection (`true`/`false`)
+- `PERMIFY_TLS_CERT` - Path to TLS certificate file
+- `PERMIFY_TLS_KEY` - Path to TLS key file
+- `PERMIFY_TLS_CA` - Path to CA certificate file
+- `PERMIFY_AUTH_TOKEN` - Permify access token (when using interceptor)
 
-## License
+You can also use a custom prefix:
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```typescript
+// Reads from MY_APP_PERMIFY_ENDPOINT, MY_APP_PERMIFY_INSECURE, etc.
+const client = createPermifyClient(clientOptionsFromEnv("MY_APP_"));
+```
+
+#### Option 2: Manual Configuration
+
+For more control, configure the client directly:
+
+```typescript
+import * as fs from "fs";
+import { createPermifyClient } from "@permify-toolkit/core";
+
+const client = createPermifyClient({
+  endpoint: "permify.internal:3478",
+  insecure: false, // 'insecure' defaults to false (true only for localhost endpoints)
+  tls: {
+    cert: fs.readFileSync("cert.pem"),
+    key: fs.readFileSync("key.pem"), // originally as pk in permify node client
+    ca: fs.readFileSync("ca.pem")
+  },
+  interceptor: {
+    authToken: "YOUR_TOKEN"
+  },
+  timeoutMs: 60000
+});
+```
+
+### Running Tests
+
+```bash
+pnpm test
+```
+
+#### Running Specific Tests
+
+To run specific tests, you can use the helper scripts in `packages/core` _(currently tests are only in core, PRs are welcome adding more tests for rest packages)_:
+
+```bash
+# Run a specific file
+pnpm test:file client.spec.ts
+
+# Run a specific test group
+pnpm test:group "Client Creation"
+
+# Run tests matching a title
+pnpm test:grep "should create a client"
+```
+
+Alternatively, you can pass arguments directly to `pnpm test`:
+
+```bash
+pnpm test -- --files client.spec.ts
+```
+
+---
+
+## 🗺️ Roadmap
+
+We're actively working on expanding the toolkit. Here's what's coming:
+
+- [x] Client interceptor support for middleware and logging
+- [x] Direct access to underlying Permify client instance
+- [ ] Relationship seeding from `relationship.json` files (CLI)
+- [ ] Authorization guards for NestJS package
+- [ ] Full-stack example app (frontend + NestJS backend)
+
+Have ideas? [Open an issue](https://github.com/thisisnkc/permify-toolkit/issues) or start a [discussion](https://github.com/thisisnkc/permify-toolkit/discussions)!
+
+---
+
+## 🤝 Contributing
+
+We love contributions from the community! Whether you're fixing bugs, adding features, or improving documentation, your help is welcome.
+
+Please see our [Contributing Guidelines](CONTRIBUTING.md) for:
+
+- Code of conduct
+- Development workflow
+- How to submit PRs
+- Testing requirements
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+Built with ❤️ by Nikhil Kumar Choudhary aka [thisisnkc](https://github.com/thisisnkc) for the [Permify](https://github.com/Permify/permify) community.
+
+If you find this toolkit helpful, please consider:
+
+- ⭐ Starring the repo
+- 🐛 Reporting bugs
+- 💡 Suggesting features
+- 📖 Improving documentation
+- 📝 Adding more tests
+
+---
+
+**Questions?** Open an issue or reach out to the maintainers. We're here to help!

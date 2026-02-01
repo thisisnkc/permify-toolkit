@@ -21,8 +21,11 @@ export {
   defineConfig,
   validateConfig,
   schemaFile,
-  type PermifyConfigOptions as Config,
-  type PermifyClientOptions
+  type PermifyConfigOptions as Config
 } from "./config.js";
 
-export { createPermifyClient } from "./client/index.js";
+export {
+  createPermifyClient,
+  clientOptionsFromEnv,
+  type PermifyClientOptions
+} from "./client/index.js";
