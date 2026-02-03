@@ -7,9 +7,20 @@
 
 Permify Toolkit simplifies authorization management by providing type-safe clients, CLI tools, and framework integrations, all in one place.
 
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+- [Running Tests](#running-tests)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
 ---
 
-## ✨ Features
+## Features
 
 This monorepo provides:
 
@@ -19,7 +30,7 @@ This monorepo provides:
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -46,7 +57,7 @@ pnpm build
 
 ---
 
-## 📦 Usage
+## Usage
 
 ### Creating a Permify Client
 
@@ -134,7 +145,7 @@ pnpm test -- --files client.spec.ts
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 We're actively working on expanding the toolkit. Here's what's coming:
 
@@ -148,7 +159,7 @@ Have ideas? [Open an issue](https://github.com/thisisnkc/permify-toolkit/issues)
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We love contributions from the community! Whether you're fixing bugs, adding features, or improving documentation, your help is welcome.
 
@@ -161,23 +172,23 @@ Please see our [Contributing Guidelines](CONTRIBUTING.md) for:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-Built with ❤️ by Nikhil Kumar Choudhary aka [thisisnkc](https://github.com/thisisnkc) for the [Permify](https://github.com/Permify/permify) community.
+Built by Nikhil Kumar Choudhary aka [thisisnkc](https://github.com/thisisnkc) for the [Permify](https://github.com/Permify/permify) community.
 
 If you find this toolkit helpful, please consider:
 
-- ⭐ Starring the repo
-- 🐛 Reporting bugs
-- 💡 Suggesting features
-- 📖 Improving documentation
-- 📝 Adding more tests
+- Starring the repo
+- Reporting bugs
+- Suggesting features
+- Improving documentation
+- Adding more tests
 
 ---
 
