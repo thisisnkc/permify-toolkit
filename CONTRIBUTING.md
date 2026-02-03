@@ -14,11 +14,12 @@ All types of contributions are encouraged and valued. See the [Table of Contents
   - [Your First Code Contribution](#your-first-code-contribution)
   - [Improving The Documentation](#improving-the-documentation)
 - [Styleguides](#styleguides)
+  - [Branch Naming](#branch-naming)
   - [Commit Messages](#commit-messages)
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by the [Permify Toolkit Code of Conduct](https://github.com/thisisnkc/permify-toolkit/blob/master/CODE_OF_CONDUCT.md).
+This project and everyone participating in it is governed by the [Permify Toolkit Code of Conduct](CODE_OF_CONDUCT.md).
 By participating, you are expected to uphold this code.
 
 ## I Have a Question
@@ -58,6 +59,11 @@ This section guides you through submitting an enhancement suggestion for Permify
     ```
 
 #### Development Workflow
+
+1.  **Create a branch** for your changes. Use descriptive names with prefixes (see [Branch Naming](#branch-naming)):
+    ```bash
+    git checkout -b feat/my-new-feature
+    ```
 
 This is a **monorepo** managed with `pnpm` workspaces. Packages are located in the `packages/` directory.
 
@@ -100,6 +106,17 @@ If your pull request contains a change that should be released (e.g., a bug fix,
 This will create a new Markdown file in the `.changeset` directory. Commit this file along with your code changes.
 
 ## Styleguides
+
+### Branch Naming
+
+We use a prefix-based branch naming convention to keep our repository organized:
+
+- `feat/`: New features (e.g., `feat/add-cli-command`)
+- `fix/`: Bug fixes (e.g., `fix/client-timeout`)
+- `docs/`: Documentation updates (e.g., `docs/update-readme`)
+- `chore/`: Maintenance tasks, dependencies, etc. (e.g., `chore/bump-deps`)
+- `refactor/`: Code improvements that don't change functionality (e.g., `refactor/api-client`)
+- `test/`: Adding or improving tests (e.g., `test/core-client`)
 
 ### Commit Messages
 

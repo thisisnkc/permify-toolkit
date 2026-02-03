@@ -7,6 +7,16 @@
 
 Permify Toolkit simplifies authorization management by providing type-safe clients, CLI tools, and framework integrations, all in one place.
 
+## 📖 Table of Contents
+
+- [✨ Features](#-features)
+- [🚀 Quick Start](#-quick-start)
+- [📦 Usage](#-usage)
+- [🧪 Running Tests](#-running-tests)
+- [🗺️ Roadmap](#️-roadmap)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+
 ---
 
 ## ✨ Features
@@ -105,7 +115,7 @@ const client = createPermifyClient({
 });
 ```
 
-### Running Tests
+### 🧪 Running Tests
 
 ```bash
 pnpm test
