@@ -63,13 +63,19 @@ export default class SchemaPush extends Command {
     createTenantIfNotExists?: boolean
   ) {
     try {
-      await writeSchemaToPermify({
+      const { tenantStatus } = await writeSchemaToPermify({
         endpoint: "",
         tenantId,
         schema,
         createTenantIfNotExists,
         client
       });
+
+      if (tenantStatus.created) {
+        this.log(`✔ Tenant created successfully`);
+      } else if (tenantStatus.alreadyExisted && createTenantIfNotExists) {
+        this.log(`ℹ Tenant already exists`);
+      }
     } catch (err: any) {
       this.error(`Schema push failed:\n${err.message}`);
     }

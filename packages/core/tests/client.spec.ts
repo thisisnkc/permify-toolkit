@@ -89,51 +89,70 @@ test.group("Client Creation", () => {
   });
 });
 
-test.group("Environment Config", (group) => {
-  // Save original env
+test.group("Environment Config", () => {
   const originalEnv = { ...process.env };
 
-  group.each.teardown(() => {
-    process.env = { ...originalEnv };
-  });
+  function withEnv(env: Record<string, string>, callback: () => void) {
+    Object.assign(process.env, env);
+    try {
+      callback();
+    } finally {
+      process.env = { ...originalEnv };
+    }
+  }
 
   test("should load options from environment variables", ({ assert }) => {
-    process.env.PERMIFY_ENDPOINT = "env-endpoint:3000";
-    process.env.PERMIFY_INSECURE = "true";
-    process.env.PERMIFY_TLS_CERT = "env-cert";
-    process.env.PERMIFY_AUTH_TOKEN = "env-token";
-
-    const options = clientOptionsFromEnv();
-
-    assert.deepEqual(options, {
-      endpoint: "env-endpoint:3000",
-      insecure: true,
-      tls: {
-        cert: "env-cert",
-        key: undefined,
-        ca: undefined
+    withEnv(
+      {
+        PERMIFY_ENDPOINT: "env-endpoint:3000",
+        PERMIFY_INSECURE: "true",
+        PERMIFY_TLS_CERT: "env-cert",
+        PERMIFY_AUTH_TOKEN: "env-token"
       },
-      interceptor: {
-        authToken: "env-token"
+      () => {
+        const options = clientOptionsFromEnv();
+
+        assert.deepEqual(options, {
+          endpoint: "env-endpoint:3000",
+          insecure: true,
+          tls: {
+            cert: "env-cert",
+            key: undefined,
+            ca: undefined
+          },
+          interceptor: {
+            authToken: "env-token"
+          }
+        });
       }
-    });
+    );
   });
 
   test("should handle insecure=false from env", ({ assert }) => {
-    process.env.PERMIFY_ENDPOINT = "env-endpoint:3000";
-    process.env.PERMIFY_INSECURE = "false";
-
-    const options = clientOptionsFromEnv();
-    assert.isFalse(options.insecure);
+    withEnv(
+      {
+        PERMIFY_ENDPOINT: "env-endpoint:3000",
+        PERMIFY_INSECURE: "false"
+      },
+      () => {
+        const options = clientOptionsFromEnv();
+        assert.isFalse(options.insecure);
+      }
+    );
   });
 
   test("should respect custom prefix", ({ assert }) => {
-    process.env.MY_APP_ENDPOINT = "custom-endpoint:4000";
-    process.env.MY_APP_INSECURE = "true";
+    withEnv(
+      {
+        MY_APP_ENDPOINT: "custom-endpoint:4000",
+        MY_APP_INSECURE: "true"
+      },
+      () => {
+        const options = clientOptionsFromEnv("MY_APP_");
 
-    const options = clientOptionsFromEnv("MY_APP_");
-
-    assert.equal(options.endpoint, "custom-endpoint:4000");
-    assert.isTrue(options.insecure);
+        assert.equal(options.endpoint, "custom-endpoint:4000");
+        assert.isTrue(options.insecure);
+      }
+    );
   });
 });
