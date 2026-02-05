@@ -10,6 +10,15 @@ interface WriteSchemaParams {
 
 interface TenantOperationResult {
   created: boolean;
+  alreadyExisted: boolean;
+}
+
+interface WriteSchemaResult {
+  schema: string;
+  tenantStatus: {
+    created: boolean;
+    alreadyExisted: boolean;
+  };
 }
 
 /**
@@ -64,13 +73,22 @@ async function ensureTenant(
   if (shouldCreate) {
     try {
       await client.tenancy.create({ id: tenantId, name: tenantId });
-      return { created: true };
+      return { created: true, alreadyExisted: false };
     } catch (err: any) {
-      // Ignore "already exists" errors (code 6 is ALREADY_EXISTS in standard gRPC)
-      if (err.code !== 6 && !err.message.includes("already exists")) {
+      // Ignore "already exists" errors:
+      // - code 6 is ALREADY_EXISTS in standard gRPC
+      // - ERROR_CODE_UNIQUE_CONSTRAINT is Permify's specific error message
+      const isAlreadyExists =
+        err.code === 6 ||
+        err.message.includes("already exists") ||
+        err.message.includes("ERROR_CODE_UNIQUE_CONSTRAINT");
+
+      if (!isAlreadyExists) {
         throw err;
       }
-      return { created: false };
+      throw new Error(
+        `Tenant with name ${tenantId} already exists (ERROR_CODE_UNIQUE_CONSTRAINT)`
+      );
     }
   }
 
@@ -81,7 +99,7 @@ async function ensureTenant(
     );
   }
 
-  return { created: false };
+  return { created: false, alreadyExisted: true };
 }
 
 /**
@@ -132,20 +150,23 @@ async function rollbackTenant(
  * 4. Schema Deployment (Permify validates the schema)
  * 5. Automatic Rollback on Failure
  */
-export async function writeSchemaToPermify(params: WriteSchemaParams) {
+export async function writeSchemaToPermify(
+  params: WriteSchemaParams
+): Promise<WriteSchemaResult> {
   validateParams(params);
 
   const client =
     params.client || createPermifyClient({ endpoint: params.endpoint });
 
-  const { created } = await ensureTenant(
+  const { created, alreadyExisted } = await ensureTenant(
     client,
     params.tenantId,
     !!params.createTenantIfNotExists
   );
 
   try {
-    return await deploySchema(client, params.tenantId, params.schema);
+    const result = await deploySchema(client, params.tenantId, params.schema);
+    return { ...result, tenantStatus: { created, alreadyExisted } };
   } catch (error: any) {
     if (created) {
       await rollbackTenant(client, params.tenantId, error);
