@@ -37,6 +37,25 @@ export async function loadConfig(): Promise<Config> {
 }
 
 /**
+ * Validates the schema file path and returns the full path.
+ *
+ * @param schemaPath - The path to the schema file
+ * @returns The full path to the schema file
+ */
+export function validateSchemaFile(schemaPath: string): string {
+  const fullPath = path.resolve(schemaPath);
+
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Schema file not found: ${fullPath}`);
+  }
+
+  if (!fullPath.endsWith(".perm")) {
+    throw new Error(`Schema file must end with .perm extension: ${fullPath}`);
+  }
+  return fullPath;
+}
+
+/**
  * Loads schema from config, handling both AST-based and file-based schemas.
  *
  * @param schema - Either a SchemaHandle or a file path string
@@ -48,15 +67,7 @@ export function loadSchemaFromConfig(schema: SchemaHandle | string): string {
   }
 
   if (typeof schema === "string") {
-    const fullPath = path.resolve(schema);
-
-    if (!fs.existsSync(fullPath)) {
-      throw new Error(`Schema file not found: ${fullPath}`);
-    }
-
-    if (!fullPath.endsWith(".perm")) {
-      throw new Error(`Schema file must end with .perm extension: ${fullPath}`);
-    }
+    const fullPath = validateSchemaFile(schema);
 
     try {
       return fs.readFileSync(fullPath, "utf-8");

@@ -29,3 +29,8 @@ export {
   clientOptionsFromEnv,
   type PermifyClientOptions
 } from "./client/index.js";
+
+export {
+  writeRelationships,
+  type Relationship
+} from "./data/write-relationships.js";

@@ -1,0 +1,59 @@
+{
+  "tuples": [
+    {
+      "entity": {
+        "type": "dashboard",
+        "id": "dashboard_1"
+      },
+      "relation": "viewers",
+      "subject": {
+        "type": "role",
+        "id": "TL"
+      }
+    },
+    {
+      "entity": {
+        "type": "dashboard",
+        "id": "dashboard_1"
+      },
+      "relation": "viewers",
+      "subject": {
+        "type": "role",
+        "id": "QA"
+      }
+    },
+    {
+      "entity": {
+        "type": "dashboard",
+        "id": "dashboard_1"
+      },
+      "relation": "viewers",
+      "subject": {
+        "type": "role",
+        "id": "ADMIN"
+      }
+    },
+    {
+      "entity": {
+        "type": "dashboard",
+        "id": "dashboard_1"
+      },
+      "relation": "viewers",
+      "subject": {
+        "type": "role",
+        "id": "SUPER_ADMIN"
+      }
+    },
+    {
+      "entity": {
+        "type": "dashboard",
+        "id": "dashboard_1"
+      },
+      "relation": "viewers",
+      "subject": {
+        "type": "role",
+        "id": "AGENT"
+      }
+    }
+  ]
+}
