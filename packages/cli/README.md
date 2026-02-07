@@ -146,6 +146,82 @@ The Permify server validates your schema when you push it. If there are any erro
 Error: Entity "usr" referenced in relation "document.owner" does not exist
 ```
 
+### `relationships seed`
+
+Seeds relationship data from a JSON file to the configured Permify server.
+
+**Usage:**
+
+```bash
+permify-toolkit relationships seed --tenant <tenant-id> --file-path <path-to-file> [flags]
+```
+
+**Flags:**
+
+| Flag              | Alias | Description                                             | Required | Default |
+| :---------------- | :---- | :------------------------------------------------------ | :------- | :------ |
+| `--tenant`        |       | The Tenant ID to seed relationships to.                 | Yes      | -       |
+| `--file-path`     | `-f`  | Path to the JSON file containing relationship tuples.   | Yes      | -       |
+| `--create-tenant` | `-c`  | Creates the tenant if it does not exist before seeding. | No       | `false` |
+
+**Example `relationships.json` file:**
+
+The JSON file must contain a `tuples` array, where each tuple object has `entity`, `relation`, and `subject` fields.
+
+```json
+{
+  "tuples": [
+    {
+      "entity": {
+        "type": "organization",
+        "id": "org_1"
+      },
+      "relation": "member",
+      "subject": {
+        "type": "user",
+        "id": "alice"
+      }
+    },
+    {
+      "entity": {
+        "type": "document",
+        "id": "doc_1"
+      },
+      "relation": "owner",
+      "subject": {
+        "type": "user",
+        "id": "bob"
+      }
+    },
+    {
+      "entity": {
+        "type": "document",
+        "id": "doc_1"
+      },
+      "relation": "viewer",
+      "subject": {
+        "type": "user",
+        "id": "charlie"
+      }
+    }
+  ]
+}
+```
+
+**Examples:**
+
+Seed relationships to an existing tenant:
+
+```bash
+permify-toolkit relationships seed --tenant my-tenant-id --file-path ./data/relationships.json
+```
+
+Seed relationships to a new tenant:
+
+```bash
+permify-toolkit relationships seed --tenant new-tenant-id --file-path ./relationships.json --create-tenant
+```
+
 ## Development
 
 To develop and test changes locally:
