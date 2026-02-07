@@ -29,7 +29,7 @@
   },
   "scripts": {
     "lint": "eslint 'src/**/*.ts' --fix",
-    "test": "echo \"No tests in cli yet\" && exit 0",
+    "test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
     "build": "tsc",
     "prepack": "oclif manifest && oclif readme",
     "postpack": "rm -f oclif.manifest.json",
