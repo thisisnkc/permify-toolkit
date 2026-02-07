@@ -33,7 +33,7 @@ configure({
     },
     {
       name: "cli",
-      files: getPackageFiles("cli", "test/**/*.spec.ts")
+      files: getPackageFiles("cli", "tests/**/*.spec.ts")
     },
     {
       name: "nestjs",

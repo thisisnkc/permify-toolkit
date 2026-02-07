@@ -151,7 +151,7 @@ We're actively working on expanding the toolkit. Here's what's coming:
 
 - [x] Client interceptor support for middleware and logging
 - [x] Direct access to underlying Permify client instance
-- [ ] Relationship seeding from `relationship.json` files (CLI)
+- [x] Relationship seeding from `relationship.json` files (CLI)
 - [ ] Authorization guards for NestJS package
 - [ ] Full-stack example app (frontend + NestJS backend)
 
