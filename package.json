@@ -22,7 +22,8 @@
     "test": "pnpm -r test",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "prepare": "simple-git-hooks"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.0",
@@ -38,7 +39,11 @@
     "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
     "prettier": "^3.7.4",
+    "simple-git-hooks": "^2.13.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint && pnpm test"
   }
 }
