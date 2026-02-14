@@ -23,7 +23,7 @@ test.group("PermifyModule", () => {
 
     const service = moduleRef.get(PermifyService);
     assert.exists(service);
-    assert.exists(service.client);
+    assert.exists(service);
   });
 
   test("should resolve async module configuration", async ({ assert }) => {

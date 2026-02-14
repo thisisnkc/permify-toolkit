@@ -1,5 +1,4 @@
 import { Reflector } from "@nestjs/core";
-import { createPermifyClient } from "@permify-toolkit/core";
 import { Injectable, Inject, type ExecutionContext } from "@nestjs/common";
 
 import { PERMIFY_MODULE_OPTIONS, PERMIFY_RESOLVERS_KEY } from "./constant.js";
@@ -11,16 +10,12 @@ import type {
 
 @Injectable()
 export class PermifyService {
-  readonly client: ReturnType<typeof createPermifyClient>;
-
   constructor(
     @Inject(PERMIFY_MODULE_OPTIONS)
     private readonly options: PermifyModuleOptions,
     @Inject(Reflector)
     private readonly reflector: Reflector
-  ) {
-    this.client = createPermifyClient(options.client);
-  }
+  ) {}
 
   /**
    * Resolves the tenant ID for the current execution context.
