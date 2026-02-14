@@ -46,7 +46,7 @@ test.group("PermifyModule", () => {
 
     const service = moduleRef.get(PermifyService);
     assert.exists(service);
-    assert.exists(service.getTenantResolver());
+    assert.exists(service.resolveTenant);
   });
 
   test("should compile with subject resolver returning object", async ({

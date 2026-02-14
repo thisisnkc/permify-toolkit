@@ -1,3 +1,4 @@
+import { Reflector } from "@nestjs/core";
 import { Module, Global } from "@nestjs/common";
 import type { DynamicModule, Provider } from "@nestjs/common";
 
@@ -20,6 +21,7 @@ export class PermifyModule {
           provide: PERMIFY_MODULE_OPTIONS,
           useValue: options
         },
+        Reflector,
         PermifyService
       ],
       exports: [PermifyService]
@@ -30,7 +32,11 @@ export class PermifyModule {
     return {
       module: PermifyModule,
       imports: options.imports || [],
-      providers: [...this.createAsyncProviders(options), PermifyService],
+      providers: [
+        ...this.createAsyncProviders(options),
+        Reflector,
+        PermifyService
+      ],
       exports: [PermifyService]
     };
   }

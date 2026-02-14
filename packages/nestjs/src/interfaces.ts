@@ -1,5 +1,12 @@
 import type { PermifyClientOptions } from "@permify-toolkit/core";
-import type { ExecutionContext, ModuleMetadata, Type } from "@nestjs/common";
+import {
+  type ExecutionContext,
+  type ModuleMetadata,
+  type Type,
+  SetMetadata
+} from "@nestjs/common";
+
+import { PERMIFY_RESOLVERS_KEY } from "./constant.js";
 
 export interface PermifySubject {
   type: string;
@@ -18,6 +25,14 @@ export interface PermifyResolvers {
   tenant: TenantResolver;
   subject?: SubjectResolver;
 }
+
+/**
+ * Decorator to override Permify resolvers at the controller or method level.
+ *
+ * @param resolvers - The resolvers to override (tenant, subject).
+ */
+export const PermifyResolvers = (resolvers: Partial<PermifyResolvers>) =>
+  SetMetadata(PERMIFY_RESOLVERS_KEY, resolvers);
 
 export interface PermifyModuleOptions {
   client: PermifyClientOptions;
