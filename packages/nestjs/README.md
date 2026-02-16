@@ -143,34 +143,48 @@ If a resolver is defined at the Route level, it overrides both Controller and Gl
 
 ### Using `@PermifyResolvers`
 
-You can use the `@PermifyResolvers` decorator to override resolvers for specific Controllers or Routes.
+You can use the `@PermifyResolvers` decorator to override resolvers (`tenant`, `subject`, `resource`, and `metadata`) for specific Controllers or Routes.
+
+This allows you to customize not just the entities involved in the permission check, but also the metadata passed to the Permify client (e.g., `snapToken`, `schemaVersion`, `depth`).
 
 ```typescript
 import { Controller, Get } from "@nestjs/common";
 import { PermifyResolvers } from "@permify-toolkit/nestjs";
 
 @PermifyResolvers({
-  tenant: () => "controller-tenant-id", // Overrides global tenant for all methods in this controller
-  resource: (ctx) => "controller-resource"
+  tenant: () => "controller-tenant-id", // Overrides global tenant
+  resource: (ctx) => "controller-resource",
+  // Define metadata for all routes in this controller
+  metadata: (ctx) => ({
+    depth: 20,
+    schemaVersion: "v1"
+  })
 })
 @Controller("cats")
 export class CatsController {
   @Get()
   findAll() {
-    // Uses 'controller-tenant-id' and global subject resolver
+    // Uses 'controller-tenant-id', global subject, and controller metadata
   }
 
   @PermifyResolvers({
-    tenant: () => "route-tenant-id", // Overrides controller tenant for this method
-    subject: () => "route-subject-id", // Overrides global subject for this method
-    resource: (ctx) => "route-resource"
+    tenant: () => "route-tenant-id", // Overrides controller tenant
+    subject: () => "route-subject-id", // Overrides global subject
+    resource: (ctx) => "route-resource",
+    // Override metadata for this specific route
+    metadata: (ctx) => ({
+      snapToken: ctx.switchToHttp().getRequest().headers["x-snap-token"],
+      depth: 5 // Overrides controller depth
+    })
   })
   @Get("specific")
   findSpecific() {
-    // Uses 'route-tenant-id' and 'route-subject-id'
+    // Uses 'route-tenant-id', 'route-subject-id', and route-specific metadata
   }
 }
 ```
+
+Metadata resolution follows the same precedence: **Route > Controller > Global**. This allows granular control over consistency tokens and query depth per endpoint.
 
 ## Authorization Guard
 

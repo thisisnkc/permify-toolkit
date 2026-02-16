@@ -32,6 +32,7 @@ test.group("PermifyGuard", (group) => {
       resolveTenant: () => "tenant-id",
       resolveSubject: () => ({ type: "user", id: "user-id" }),
       resolveResource: () => ({ type: "document", id: "doc-id" }),
+      resolveMetadata: () => ({ depth: 10, snapToken: "token" }),
       checkPermission: async () => mockCheckResult.can === 1
     };
   });

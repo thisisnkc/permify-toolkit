@@ -90,6 +90,32 @@ export class PermifyService {
   }
 
   /**
+   * Resolves the metadata for the current execution context.
+   * Priority: Route > Controller > Global
+   *
+   * @param context - The execution context.
+   * @returns The resolved metadata object or undefined.
+   */
+  async resolveMetadata(context: ExecutionContext): Promise<
+    | {
+        snapToken?: string;
+        schemaVersion?: string;
+        depth?: number;
+        [key: string]: unknown;
+      }
+    | undefined
+  > {
+    const resolvers = this.getResolvers(context);
+    const resolver = resolvers?.metadata || this.options.resolvers.metadata;
+
+    if (!resolver) {
+      return undefined;
+    }
+
+    return resolver(context);
+  }
+
+  /**
    * Retrieves the resolvers metadata relative to the context.
    * Utilizes `getAllAndOverride` to enforce Route > Controller precedence.
    */

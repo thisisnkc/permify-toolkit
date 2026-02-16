@@ -68,14 +68,12 @@ export class PermifyGuard implements CanActivate {
       subjectParam = subject;
     }
 
+    const metadata = await this.permifyService.resolveMetadata(context);
+
     try {
       const allowed = await this.permifyService.checkPermission({
         tenantId,
-        metadata: {
-          snapToken: "",
-          schemaVersion: "",
-          depth: 20
-        },
+        metadata,
         subject: {
           type: subjectParam.type,
           id: subjectParam.id
