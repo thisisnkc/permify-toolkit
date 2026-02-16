@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Permify Simulator</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2rem;
+      }
+      .card {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 4px;
+      }
+      input,
+      button {
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 1rem;
+      }
+      .error {
+        color: red;
+      }
+      .success {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Permify Simulator</h1>
+
+    <div class="card">
+      <h3>View Document</h3>
+      <div>
+        <label>User ID:</label><br />
+        <input
+          type="text"
+          id="userId"
+          value="user-1"
+          placeholder="e.g. user-1"
+        />
+      </div>
+      <div>
+        <label>Document ID:</label><br />
+        <input type="text" id="docId" value="doc-1" placeholder="e.g. doc-1" />
+      </div>
+      <button onclick="checkAccess()">View Document</button>
+    </div>
+
+    <div id="result" class="card" style="display: none">
+      <h3>Result</h3>
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      async function checkAccess() {
+        const userId = document.getElementById("userId").value;
+        const docId = document.getElementById("docId").value;
+        const output = document.getElementById("output");
+        const resultDiv = document.getElementById("result");
+
+        output.textContent = "Checking access...";
+        resultDiv.style.display = "block";
+        output.className = "";
+
+        try {
+          const response = await fetch(`/documents/${docId}`, {
+            headers: {
+              "x-user-id": userId
+            }
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            output.textContent = JSON.stringify(data, null, 2);
+            output.className = "success";
+          } else {
+            output.textContent = `Error ${response.status}: ${data.message || response.statusText}`;
+            output.className = "error";
+          }
+        } catch (err) {
+          output.textContent = `Network Error: ${err.message}`;
+          output.className = "error";
+        }
+      }
+    </script>
+  </body>
+</html>

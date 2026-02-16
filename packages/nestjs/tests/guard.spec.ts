@@ -26,7 +26,7 @@ test.group("PermifyGuard", (group) => {
   let mockCheckResult = { can: 1 }; // Allowed by default
   let mockPermifyService: any;
 
-  group.each.setup(() => {
+  (group as any).each.setup(() => {
     mockCheckResult = { can: 1 };
     mockPermifyService = {
       resolveTenant: () => "tenant-id",

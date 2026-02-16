@@ -1,5 +1,5 @@
 {
-  "name": "simulator",
+  "name": "@simulator/backend",
   "version": "0.0.1",
   "type": "module",
   "description": "",
@@ -9,21 +9,22 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start": "PERMIFY_ENDPOINT=localhost:3478 PERMIFY_INSECURE=true nest start",
+    "start:dev": "PERMIFY_ENDPOINT=localhost:3478 PERMIFY_INSECURE=true nest start --watch",
+    "start:debug": "PERMIFY_ENDPOINT=localhost:3478 PERMIFY_INSECURE=true nest start --debug --watch",
+    "start:prod": "PERMIFY_ENDPOINT=localhost:3478 PERMIFY_INSECURE=true node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "schema:push": "permify-toolkit schema push"
   },
   "dependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/platform-express": "^11.0.1",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
+    "@nestjs/common": "^11.1.12",
+    "@nestjs/core": "^11.1.12",
+    "@nestjs/platform-express": "^11.1.12",
+    "@nestjs/serve-static": "^5.0.4",
+    "@permify-toolkit/core": "workspace:^",
     "@permify-toolkit/nestjs": "workspace:^",
-    "@permify-toolkit/core": "workspace:^"
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
