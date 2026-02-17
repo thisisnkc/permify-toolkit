@@ -1,10 +1,4 @@
-import { resolve } from "node:path";
-import { promisify } from "node:util";
-import { fileURLToPath } from "node:url";
-import { exec } from "node:child_process";
-
-const execAsync = promisify(exec);
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
+import type { Command } from "@oclif/core";
 
 export const stripAnsi = (str: string) =>
   str.replace(
@@ -13,10 +7,32 @@ export const stripAnsi = (str: string) =>
     ""
   );
 
-export function runCli(args: string, options: any = {}) {
-  const cliPath = resolve(__dirname, "../bin/permify-toolkit");
-  return execAsync(`npx tsx ${cliPath} ${args}`, {
-    ...options,
-    env: { ...process.env, FORCE_COLOR: "0", ...options.env }
-  });
+/**
+ * Run an oclif command class in-process (no child process spawning).
+ * Temporarily changes cwd if `options.cwd` is specified.
+ *
+ * @throws The oclif error (CLIError / parse error) if the command fails.
+ */
+export async function runCommand(
+  CommandClass: typeof Command,
+  args: string[] = [],
+  options?: { cwd?: string }
+): Promise<unknown> {
+  const originalCwd = process.cwd();
+
+  if (options?.cwd) {
+    process.chdir(options.cwd);
+  }
+
+  try {
+    return await (CommandClass as any).run(args);
+  } finally {
+    // oclif's catch() sets process.exitCode = 1 on errors, which persists
+    // after the error is caught by tests - reset it to avoid poisoning the runner
+    process.exitCode = undefined;
+
+    if (options?.cwd) {
+      process.chdir(originalCwd);
+    }
+  }
 }

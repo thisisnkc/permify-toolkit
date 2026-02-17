@@ -1,17 +1,15 @@
 import { test } from "@japa/runner";
 
-import { runCli, stripAnsi } from "./helpers.js";
+import SchemaPush from "../src/commands/schema/push.js";
+import { runCommand, stripAnsi } from "./helpers.js";
 
-test.group("Schema Push Command", (group: any) => {
-  // timeout for each test (required for file system operations), tweak if needed
-  group.each.timeout(6000);
-
+test.group("Schema Push Command", () => {
   test("should fail if no tenant is provided", async ({ assert }) => {
     try {
-      await runCli("schema push");
+      await runCommand(SchemaPush as any, []);
       assert.fail("Command should have failed");
     } catch (error: any) {
-      assert.include(stripAnsi(error.stderr), "Missing required flag tenant");
+      assert.include(stripAnsi(error.message), "Missing required flag tenant");
     }
   });
 
@@ -19,12 +17,11 @@ test.group("Schema Push Command", (group: any) => {
     assert,
     fs
   }) => {
-    // Ensure dirt exists
+    // Ensure dir exists
     await fs.create("dummy", "");
-    // fs creates files in a temp dir, we need to execute in that dir
     const cwd = fs.basePath;
     try {
-      await runCli("schema push --tenant=t1", { cwd });
+      await runCommand(SchemaPush as any, ["--tenant=t1"], { cwd });
       assert.fail("Command should have failed");
     } catch (error: any) {
       assert.exists(error);
@@ -47,7 +44,7 @@ test.group("Schema Push Command", (group: any) => {
 
     const cwd = fs.basePath;
     try {
-      await runCli("schema push --tenant=t1", { cwd });
+      await runCommand(SchemaPush as any, ["--tenant=t1"], { cwd });
       assert.fail("Command should have failed due to connection");
     } catch (error: any) {
       assert.exists(error);
