@@ -33,15 +33,32 @@ export class PermifyGuard implements CanActivate {
     }
 
     let resourceParam: { type: string; id: string };
+    let finalPermission: string;
+
+    // Split permission to check for override: e.g. "organization.manage"
+    const permissionParts = permission.split(".");
+    const hasOverride = permissionParts.length > 1;
 
     if (typeof resource === "string") {
-      const [resourceType] = permission.split(".");
-      if (!resourceType) {
-        throw new ForbiddenException("Invalid permission format");
+      // If resource is just an ID, we expect permission to be "type.action"
+      if (!hasOverride) {
+        throw new ForbiddenException(
+          "Invalid permission format: When resource is a string, permission must be in 'type.action' format"
+        );
       }
-      resourceParam = { type: resourceType, id: resource };
+      resourceParam = { type: permissionParts[0], id: resource };
+      finalPermission = permissionParts[1];
     } else {
-      resourceParam = resource;
+      // Resource is { type, id }
+      if (hasOverride) {
+        // Override the type from the resource
+        resourceParam = { type: permissionParts[0], id: resource.id };
+        finalPermission = permissionParts[1];
+      } else {
+        // Use the type from the resource
+        resourceParam = resource;
+        finalPermission = permission;
+      }
     }
 
     let subjectParam: { type: string; id: string };
@@ -51,9 +68,12 @@ export class PermifyGuard implements CanActivate {
       subjectParam = subject;
     }
 
+    const metadata = await this.permifyService.resolveMetadata(context);
+
     try {
       const allowed = await this.permifyService.checkPermission({
         tenantId,
+        metadata,
         subject: {
           type: subjectParam.type,
           id: subjectParam.id
@@ -62,7 +82,7 @@ export class PermifyGuard implements CanActivate {
           type: resourceParam.type,
           id: resourceParam.id
         },
-        permission
+        permission: finalPermission
       });
 
       return allowed;

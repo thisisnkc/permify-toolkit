@@ -32,6 +32,7 @@ test.group("PermifyGuard", (group) => {
       resolveTenant: () => "tenant-id",
       resolveSubject: () => ({ type: "user", id: "user-id" }),
       resolveResource: () => ({ type: "document", id: "doc-id" }),
+      resolveMetadata: () => ({ depth: 10, snapToken: "token" }),
       checkPermission: async () => mockCheckResult.can === 1
     };
   });
@@ -167,5 +168,162 @@ test.group("PermifyGuard", (group) => {
       () => guard.canActivate(context),
       "Resource could not be resolved"
     );
+  });
+
+  test("should correctly parse standard permission with string resource", async ({
+    assert
+  }) => {
+    mockPermifyService.resolveResource = () => "doc-id";
+    mockPermifyService.checkPermission = async (params: any) => {
+      assert.equal(params.entity.type, "document");
+      assert.equal(params.entity.id, "doc-id");
+      assert.equal(params.permission, "view");
+      return true;
+    };
+
+    @Controller()
+    class TestController {
+      @CheckPermission("document.view")
+      @UseGuards(PermifyGuard)
+      @Get()
+      test() {}
+    }
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [TestController],
+      providers: [
+        PermifyGuard,
+        Reflector,
+        { provide: PermifyService, useValue: mockPermifyService }
+      ]
+    }).compile();
+
+    const guard = moduleRef.get(PermifyGuard);
+    const context = createMockContext(
+      TestController.prototype.test,
+      TestController
+    );
+
+    await guard.canActivate(context);
+  });
+
+  test("should correctly infer permission type from resource object", async ({
+    assert
+  }) => {
+    mockPermifyService.resolveResource = () => ({
+      type: "document",
+      id: "doc-id"
+    });
+    mockPermifyService.checkPermission = async (params: any) => {
+      assert.equal(params.entity.type, "document");
+      assert.equal(params.entity.id, "doc-id");
+      assert.equal(params.permission, "view");
+      return true;
+    };
+
+    @Controller()
+    class TestController {
+      @CheckPermission("view") // Inferred
+      @UseGuards(PermifyGuard)
+      @Get()
+      test() {}
+    }
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [TestController],
+      providers: [
+        PermifyGuard,
+        Reflector,
+        { provide: PermifyService, useValue: mockPermifyService }
+      ]
+    }).compile();
+
+    const guard = moduleRef.get(PermifyGuard);
+    const context = createMockContext(
+      TestController.prototype.test,
+      TestController
+    );
+
+    await guard.canActivate(context);
+  });
+
+  test("should correctly handle redundant permission type with resource object", async ({
+    assert
+  }) => {
+    mockPermifyService.resolveResource = () => ({
+      type: "document",
+      id: "doc-id"
+    });
+    mockPermifyService.checkPermission = async (params: any) => {
+      assert.equal(params.entity.type, "document"); // Used from resource, but matched
+      assert.equal(params.entity.id, "doc-id");
+      assert.equal(params.permission, "view");
+      return true;
+    };
+
+    @Controller()
+    class TestController {
+      @CheckPermission("document.view") // Redundant
+      @UseGuards(PermifyGuard)
+      @Get()
+      test() {}
+    }
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [TestController],
+      providers: [
+        PermifyGuard,
+        Reflector,
+        { provide: PermifyService, useValue: mockPermifyService }
+      ]
+    }).compile();
+
+    const guard = moduleRef.get(PermifyGuard);
+    const context = createMockContext(
+      TestController.prototype.test,
+      TestController
+    );
+
+    await guard.canActivate(context);
+  });
+
+  test("should correctly override permission type with resource object", async ({
+    assert
+  }) => {
+    mockPermifyService.resolveResource = () => ({
+      type: "document",
+      id: "doc-id"
+    });
+    mockPermifyService.checkPermission = async (params: any) => {
+      assert.equal(params.entity.type, "organization"); // Overridden
+      assert.equal(params.entity.id, "doc-id");
+      assert.equal(params.permission, "manage");
+      return true;
+    };
+
+    @Controller()
+    class TestController {
+      @CheckPermission("organization.manage") // Override
+      @UseGuards(PermifyGuard)
+      @Get()
+      test() {}
+    }
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [TestController],
+      providers: [
+        PermifyGuard,
+        Reflector,
+        { provide: PermifyService, useValue: mockPermifyService }
+      ]
+    }).compile();
+
+    const guard = moduleRef.get(PermifyGuard);
+    const context = createMockContext(
+      TestController.prototype.test,
+      TestController
+    );
+
+    await guard.canActivate(context);
   });
 });

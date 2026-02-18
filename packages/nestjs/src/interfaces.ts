@@ -25,10 +25,27 @@ export type ResourceResolver = (
   context: ExecutionContext
 ) => string | PermifySubject | Promise<string | PermifySubject>;
 
+export type MetadataResolver = (context: ExecutionContext) =>
+  | {
+      snapToken?: string;
+      schemaVersion?: string;
+      depth?: number;
+      // Allow other metadata keys to be passed to the Permify client
+      [key: string]: unknown;
+    }
+  | Promise<{
+      snapToken?: string;
+      schemaVersion?: string;
+      depth?: number;
+      // Allow other metadata keys to be passed to the Permify client
+      [key: string]: unknown;
+    }>;
+
 export interface PermifyResolvers {
   tenant: TenantResolver;
   subject?: SubjectResolver;
   resource?: ResourceResolver;
+  metadata?: MetadataResolver;
 }
 
 /**

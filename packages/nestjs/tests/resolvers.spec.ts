@@ -251,4 +251,71 @@ test.group("PermifyResolvers Precedence", () => {
 
     assert.equal(await service.resolveResource(context), "global-resource");
   });
+
+  test("should resolve Metadata from Route > Controller > Global", async ({
+    assert
+  }) => {
+    @PermifyResolvers({
+      metadata: () => ({
+        depth: 10,
+        snapToken: "controller-token",
+        schemaVersion: "v1"
+      })
+    })
+    @Controller()
+    class TestController {
+      @PermifyResolvers({
+        metadata: () => ({ depth: 5, snapToken: "route-token" })
+      })
+      @Get()
+      testRoute() {}
+
+      @Get("controller-level")
+      testControllerLevel() {}
+    }
+
+    const moduleRef = await Test.createTestingModule({
+      providers: [Reflector],
+      controllers: [TestController, EmptyController],
+      imports: [
+        PermifyModule.forRoot({
+          client: { endpoint: "localhost:3478", insecure: true },
+          resolvers: {
+            tenant: () => "global-tenant",
+            metadata: () => ({
+              depth: 20,
+              snapToken: "global-token"
+            })
+          }
+        })
+      ]
+    }).compile();
+
+    const service = moduleRef.get(PermifyService);
+
+    // 1. Route Level
+    const contextRoute = createMockContext(
+      TestController.prototype.testRoute,
+      TestController
+    );
+    const routeMetadata = await service.resolveMetadata(contextRoute);
+    assert.deepEqual(routeMetadata, { depth: 5, snapToken: "route-token" });
+
+    // 2. Controller Level
+    const contextController = createMockContext(
+      TestController.prototype.testControllerLevel,
+      TestController
+    );
+    const controllerMetadata = await service.resolveMetadata(contextController);
+    assert.deepEqual(controllerMetadata, {
+      depth: 10,
+      snapToken: "controller-token",
+      schemaVersion: "v1"
+    });
+
+    // 3. Global Level (Generic Context)
+    const contextGlobal = createMockContext(undefined, EmptyController);
+    const globalMetadata = await service.resolveMetadata(contextGlobal);
+    assert.deepEqual(globalMetadata, { depth: 20, snapToken: "global-token" });
+  });
 });
