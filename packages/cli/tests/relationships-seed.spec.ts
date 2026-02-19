@@ -1,29 +1,27 @@
 import { test } from "@japa/runner";
 
-import { runCli, stripAnsi } from "./helpers.js";
+import { runCommand, stripAnsi } from "./helpers.js";
+import RelationshipSeed from "../src/commands/relationships/seed.js";
 
-test.group("Relationships Seed Command", (group: any) => {
-  // timeout for each test (required for file system operations), tweak if needed
-  group.each.timeout(6000);
-
+test.group("Relationships Seed Command", () => {
   const seedFile = "relationships.json";
 
   test("should fail if no tenant is provided", async ({ assert }) => {
     try {
-      await runCli(`relationships seed -f ${seedFile}`);
+      await runCommand(RelationshipSeed as any, ["-f", seedFile]);
       assert.fail("Command should have failed due to missing tenant");
     } catch (error: any) {
-      assert.include(stripAnsi(error.stderr), "Missing required flag tenant");
+      assert.include(stripAnsi(error.message), "Missing required flag tenant");
     }
   });
 
   test("should fail if no file is provided", async ({ assert }) => {
     try {
-      await runCli("relationships seed --tenant=t1");
+      await runCommand(RelationshipSeed as any, ["--tenant=t1"]);
       assert.fail("Command should have failed due to missing file-path");
     } catch (error: any) {
       assert.include(
-        stripAnsi(error.stderr),
+        stripAnsi(error.message),
         "Missing required flag file-path"
       );
     }
@@ -34,12 +32,14 @@ test.group("Relationships Seed Command", (group: any) => {
     await fs.create("dummy", "");
     const cwd = fs.basePath;
     try {
-      await runCli(`relationships seed --tenant=t1 -f non-existent.json`, {
-        cwd
-      });
+      await runCommand(
+        RelationshipSeed as any,
+        ["--tenant=t1", "-f", "non-existent.json"],
+        { cwd }
+      );
       assert.fail("Should fail if file does not exist");
     } catch (error: any) {
-      assert.include(error.stderr, "File not found");
+      assert.include(error.message, "File not found");
     }
   });
 
@@ -47,10 +47,14 @@ test.group("Relationships Seed Command", (group: any) => {
     await fs.create(seedFile, "{ invalid json }");
     const cwd = fs.basePath;
     try {
-      await runCli(`relationships seed --tenant=t1 -f ${seedFile}`, { cwd });
+      await runCommand(
+        RelationshipSeed as any,
+        ["--tenant=t1", "-f", seedFile],
+        { cwd }
+      );
       assert.fail("Should fail on invalid JSON");
     } catch (error: any) {
-      assert.include(error.stderr, "Invalid JSON");
+      assert.include(error.message, "Invalid JSON");
     }
   });
 
@@ -69,7 +73,11 @@ test.group("Relationships Seed Command", (group: any) => {
     );
     const cwd = fs.basePath;
     try {
-      await runCli(`relationships seed --tenant=t1 -f ${seedFile}`, { cwd });
+      await runCommand(
+        RelationshipSeed as any,
+        ["--tenant=t1", "-f", seedFile],
+        { cwd }
+      );
       assert.fail("Should fail validation");
     } catch (error: any) {
       assert.exists(error);
