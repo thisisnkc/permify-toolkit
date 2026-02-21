@@ -4,6 +4,7 @@ import type { PermifyClientOptions } from "./client/index.js";
 import type { SchemaHandle } from "./schema/define-schema.js";
 
 export interface PermifyConfigOptions {
+  tenant?: string;
   client: PermifyClientOptions;
   schema: SchemaHandle | string;
 }
@@ -46,6 +47,12 @@ export function validateConfig(config: PermifyConfigOptions): void {
 
   if (!config.client || typeof config.client.endpoint !== "string") {
     throw new TypeError("Client endpoint must be a string");
+  }
+
+  if (config.tenant !== undefined) {
+    if (typeof config.tenant !== "string" || config.tenant.trim() === "") {
+      throw new TypeError("Tenant must be a non-empty string");
+    }
   }
 
   if (!config.schema) {

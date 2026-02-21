@@ -1,4 +1,4 @@
-import type { PermifyClientOptions } from "@permify-toolkit/core";
+import type { PermifyClientOptions, Config } from "@permify-toolkit/core";
 import {
   type ExecutionContext,
   type ModuleMetadata,
@@ -42,7 +42,7 @@ export type MetadataResolver = (context: ExecutionContext) =>
     }>;
 
 export interface PermifyResolvers {
-  tenant: TenantResolver;
+  tenant?: TenantResolver;
   subject?: SubjectResolver;
   resource?: ResourceResolver;
   metadata?: MetadataResolver;
@@ -56,9 +56,35 @@ export interface PermifyResolvers {
 export const PermifyResolvers = (resolvers: Partial<PermifyResolvers>) =>
   SetMetadata(PERMIFY_RESOLVERS_KEY, resolvers);
 
-export interface PermifyModuleOptions {
+interface PermifyBaseOptions {
+  resolvers?: PermifyResolvers;
+}
+
+/** Mode 1: Auto-load permify.config.ts */
+interface PermifyConfigFileOptions extends PermifyBaseOptions {
+  configFile: true;
+  configFilePath?: string;
+}
+
+/** Mode 2: Pass an imported config object */
+interface PermifyConfigObjectOptions extends PermifyBaseOptions {
+  config: Config;
+}
+
+/** Mode 3: Direct client options (backwards compatible) */
+interface PermifyClientDirectOptions extends PermifyBaseOptions {
   client: PermifyClientOptions;
-  resolvers: PermifyResolvers;
+}
+
+export type PermifyModuleOptions =
+  | PermifyConfigFileOptions
+  | PermifyConfigObjectOptions
+  | PermifyClientDirectOptions;
+
+export interface ResolvedPermifyOptions {
+  client: PermifyClientOptions;
+  tenant?: string;
+  resolvers?: PermifyResolvers;
 }
 
 export interface PermifyModuleOptionsFactory {

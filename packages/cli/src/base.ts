@@ -8,7 +8,7 @@ export abstract class BaseCommand extends Command {
     tenant: Flags.string({
       description: "Permify tenant ID",
       env: "PERMIFY_TENANT",
-      required: true
+      required: false
     }),
     "create-tenant": Flags.boolean({
       char: "c",
@@ -33,5 +33,19 @@ export abstract class BaseCommand extends Command {
 
     const client = createPermifyClient(config.client);
     return { client, config };
+  }
+
+  /**
+   * Resolves the tenant ID from CLI flags or config.
+   * Priority: CLI flag > config file > error
+   */
+  protected resolveTenant(flags: { tenant?: string }, config: Config): string {
+    const tenant = flags.tenant || config.tenant;
+    if (!tenant) {
+      this.error(
+        "Tenant ID is required. Provide --tenant flag or set tenant in permify.config.ts"
+      );
+    }
+    return tenant;
   }
 }

@@ -30,7 +30,8 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@permify/permify-node": "^1.1.4"
+    "@permify/permify-node": "^1.1.4",
+    "jiti": "^2.6.1"
   },
   "devDependencies": {
     "ts-node": "^10.x",

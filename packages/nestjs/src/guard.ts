@@ -68,7 +68,9 @@ export class PermifyGuard implements CanActivate {
       subjectParam = subject;
     }
 
-    const metadata = await this.permifyService.resolveMetadata(context);
+    // The Permify Node client requires a metadata object even when no
+    // custom metadata is provided. Pass an empty object as the default.
+    const metadata = (await this.permifyService.resolveMetadata(context)) ?? {};
 
     try {
       const allowed = await this.permifyService.checkPermission({

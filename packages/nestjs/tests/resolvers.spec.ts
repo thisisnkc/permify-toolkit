@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { test } from "@japa/runner";
 import { Test } from "@nestjs/testing";
 import { Reflector } from "@nestjs/core";
@@ -317,5 +320,299 @@ test.group("PermifyResolvers Precedence", () => {
     const contextGlobal = createMockContext(undefined, EmptyController);
     const globalMetadata = await service.resolveMetadata(contextGlobal);
     assert.deepEqual(globalMetadata, { depth: 20, snapToken: "global-token" });
+  });
+});
+
+test.group("Tenant Config Resolution", () => {
+  test("should resolve tenant from config when no resolver is defined", async ({
+    assert
+  }) => {
+    const moduleRef = await Test.createTestingModule({
+      controllers: [EmptyController],
+      imports: [
+        PermifyModule.forRoot({
+          config: {
+            tenant: "config-tenant",
+            client: { endpoint: "localhost:3478", insecure: true },
+            schema: { ast: {}, compile: () => "" } as any
+          }
+        })
+      ]
+    }).compile();
+
+    const service = moduleRef.get(PermifyService);
+    const context = createMockContext(
+      EmptyController.prototype.none,
+      EmptyController
+    );
+
+    assert.equal(await service.resolveTenant(context), "config-tenant");
+  });
+
+  test("should use tenant resolver over config tenant", async ({ assert }) => {
+    const moduleRef = await Test.createTestingModule({
+      controllers: [EmptyController],
+      imports: [
+        PermifyModule.forRoot({
+          config: {
+            tenant: "config-tenant",
+            client: { endpoint: "localhost:3478", insecure: true },
+            schema: { ast: {}, compile: () => "" } as any
+          },
+          resolvers: {
+            tenant: () => "resolver-tenant"
+          }
+        })
+      ]
+    }).compile();
+
+    const service = moduleRef.get(PermifyService);
+    const context = createMockContext(
+      EmptyController.prototype.none,
+      EmptyController
+    );
+
+    assert.equal(await service.resolveTenant(context), "resolver-tenant");
+  });
+
+  test("should throw when no tenant resolver and no config tenant", async ({
+    assert
+  }) => {
+    const moduleRef = await Test.createTestingModule({
+      controllers: [EmptyController],
+      imports: [
+        PermifyModule.forRoot({
+          client: { endpoint: "localhost:3478", insecure: true }
+        })
+      ]
+    }).compile();
+
+    const service = moduleRef.get(PermifyService);
+    const context = createMockContext(
+      EmptyController.prototype.none,
+      EmptyController
+    );
+
+    await assert.rejects(
+      () => service.resolveTenant(context),
+      "Tenant resolver is not defined and no tenant found in config"
+    );
+  });
+
+  test("should resolve tenant from config with other resolvers working normally", async ({
+    assert
+  }) => {
+    const moduleRef = await Test.createTestingModule({
+      controllers: [EmptyController],
+      imports: [
+        PermifyModule.forRoot({
+          config: {
+            tenant: "config-tenant",
+            client: { endpoint: "localhost:3478", insecure: true },
+            schema: { ast: {}, compile: () => "" } as any
+          },
+          resolvers: {
+            subject: () => "resolved-subject",
+            resource: () => ({ type: "doc", id: "1" })
+          }
+        })
+      ]
+    }).compile();
+
+    const service = moduleRef.get(PermifyService);
+    const context = createMockContext(
+      EmptyController.prototype.none,
+      EmptyController
+    );
+
+    // Tenant from config
+    assert.equal(await service.resolveTenant(context), "config-tenant");
+    // Subject from resolver
+    assert.equal(await service.resolveSubject(context), "resolved-subject");
+    // Resource from resolver
+    assert.deepEqual(await service.resolveResource(context), {
+      type: "doc",
+      id: "1"
+    });
+  });
+
+  test("should use route-level tenant resolver over config tenant", async ({
+    assert
+  }) => {
+    @PermifyResolvers({
+      tenant: () => "route-tenant"
+    })
+    @Controller()
+    class OverrideController {
+      @Get()
+      testRoute() {}
+    }
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [OverrideController],
+      providers: [Reflector],
+      imports: [
+        PermifyModule.forRoot({
+          config: {
+            tenant: "config-tenant",
+            client: { endpoint: "localhost:3478", insecure: true },
+            schema: { ast: {}, compile: () => "" } as any
+          }
+        })
+      ]
+    }).compile();
+
+    const service = moduleRef.get(PermifyService);
+    const context = createMockContext(
+      OverrideController.prototype.testRoute,
+      OverrideController
+    );
+
+    // Route resolver wins over config
+    assert.equal(await service.resolveTenant(context), "route-tenant");
+  });
+
+  test("should resolve tenant from client mode with resolver", async ({
+    assert
+  }) => {
+    const moduleRef = await Test.createTestingModule({
+      controllers: [EmptyController],
+      imports: [
+        PermifyModule.forRoot({
+          client: { endpoint: "localhost:3478", insecure: true },
+          resolvers: {
+            tenant: () => "client-mode-tenant"
+          }
+        })
+      ]
+    }).compile();
+
+    const service = moduleRef.get(PermifyService);
+    const context = createMockContext(
+      EmptyController.prototype.none,
+      EmptyController
+    );
+
+    assert.equal(await service.resolveTenant(context), "client-mode-tenant");
+  });
+});
+
+test.group("Tenant Resolution via configFile: true", () => {
+  const originalCwd = process.cwd();
+
+  function writeTempConfig(dir: string, content: string) {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, "permify.config.ts"), content);
+  }
+
+  function cleanupDir(dir: string) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+
+  test("should resolve tenant from permify.config.ts when configFile: true", async ({
+    assert
+  }) => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "permify-test-"));
+    writeTempConfig(
+      tmpDir,
+      `export default {
+        tenant: "file-tenant",
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: { ast: {}, compile: () => "entity user {}" }
+      };`
+    );
+    process.chdir(tmpDir);
+
+    try {
+      const moduleRef = await Test.createTestingModule({
+        controllers: [EmptyController],
+        imports: [PermifyModule.forRoot({ configFile: true })]
+      }).compile();
+
+      const service = moduleRef.get(PermifyService);
+      const context = createMockContext(
+        EmptyController.prototype.none,
+        EmptyController
+      );
+
+      assert.equal(await service.resolveTenant(context), "file-tenant");
+    } finally {
+      process.chdir(originalCwd);
+      cleanupDir(tmpDir);
+    }
+  });
+
+  test("should fall back to resolver when config file has no tenant", async ({
+    assert
+  }) => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "permify-test-"));
+    writeTempConfig(
+      tmpDir,
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: { ast: {}, compile: () => "entity user {}" }
+      };`
+    );
+    process.chdir(tmpDir);
+
+    try {
+      const moduleRef = await Test.createTestingModule({
+        controllers: [EmptyController],
+        imports: [
+          PermifyModule.forRoot({
+            configFile: true,
+            resolvers: {
+              tenant: () => "fallback-tenant"
+            }
+          })
+        ]
+      }).compile();
+
+      const service = moduleRef.get(PermifyService);
+      const context = createMockContext(
+        EmptyController.prototype.none,
+        EmptyController
+      );
+
+      assert.equal(await service.resolveTenant(context), "fallback-tenant");
+    } finally {
+      process.chdir(originalCwd);
+      cleanupDir(tmpDir);
+    }
+  });
+
+  test("should throw when config file has no tenant and no resolver defined", async ({
+    assert
+  }) => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "permify-test-"));
+    writeTempConfig(
+      tmpDir,
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: { ast: {}, compile: () => "entity user {}" }
+      };`
+    );
+    process.chdir(tmpDir);
+
+    try {
+      const moduleRef = await Test.createTestingModule({
+        controllers: [EmptyController],
+        imports: [PermifyModule.forRoot({ configFile: true })]
+      }).compile();
+
+      const service = moduleRef.get(PermifyService);
+      const context = createMockContext(
+        EmptyController.prototype.none,
+        EmptyController
+      );
+
+      await assert.rejects(
+        () => service.resolveTenant(context),
+        "Tenant resolver is not defined and no tenant found in config"
+      );
+    } finally {
+      process.chdir(originalCwd);
+      cleanupDir(tmpDir);
+    }
   });
 });

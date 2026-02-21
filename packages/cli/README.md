@@ -32,6 +32,7 @@ import {
 } from "@permify-toolkit/core";
 
 export default defineConfig({
+  tenant: "t1", // Optional: default tenant for CLI commands
   client: {
     endpoint: "localhost:3478",
     insecure: true // Use for local development without SSL
@@ -67,6 +68,7 @@ Reference an external `.perm` schema file using the `schemaFile()` function:
 import { defineConfig, schemaFile } from "@permify-toolkit/core";
 
 export default defineConfig({
+  tenant: "t1", // Optional: default tenant for CLI commands
   client: {
     endpoint: "localhost:3478",
     insecure: true
@@ -105,6 +107,24 @@ entity document {
 | `pk`        | `string`  | Private key for secure connections       | No       | -       |
 | `certChain` | `string`  | Certificate chain for secure connections | No       | -       |
 
+## Tenant Configuration
+
+The `--tenant` flag is **optional** if you define `tenant` in your `permify.config.ts`.
+
+**Resolution order:**
+
+1. `--tenant` CLI flag (or `PERMIFY_TENANT` env var)
+2. `tenant` field in `permify.config.ts`
+3. Error if neither is provided
+
+This means you can set your tenant once in the config and skip the flag entirely:
+
+```bash
+# No --tenant needed if tenant is in permify.config.ts
+permify-toolkit schema push
+permify-toolkit relationships seed --file-path ./data/relationships.json
+```
+
 ## Commands
 
 ### `schema push`
@@ -114,19 +134,25 @@ Pushes the schema defined in your `permify.config.ts` to the configured Permify 
 **Usage:**
 
 ```bash
-permify-toolkit schema push --tenant <tenant-id> [flags]
+permify-toolkit schema push [--tenant <tenant-id>] [flags]
 ```
 
 **Flags:**
 
-| Flag              | Alias | Description                                             | Required | Default |
-| :---------------- | :---- | :------------------------------------------------------ | :------- | :------ |
-| `--tenant`        |       | The Tenant ID to push the schema to.                    | Yes      | -       |
-| `--create-tenant` | `-c`  | Creates the tenant if it does not exist before pushing. | No       | `false` |
+| Flag              | Alias | Description                                             | Required | Default                  |
+| :---------------- | :---- | :------------------------------------------------------ | :------- | :----------------------- |
+| `--tenant`        |       | The Tenant ID to push the schema to.                    | No       | From `permify.config.ts` |
+| `--create-tenant` | `-c`  | Creates the tenant if it does not exist before pushing. | No       | `false`                  |
 
 **Examples:**
 
-Push to an existing tenant:
+Push using tenant from config:
+
+```bash
+permify-toolkit schema push
+```
+
+Push to a specific tenant (overrides config):
 
 ```bash
 permify-toolkit schema push --tenant my-tenant-id
@@ -158,11 +184,11 @@ permify-toolkit relationships seed --tenant <tenant-id> --file-path <path-to-fil
 
 **Flags:**
 
-| Flag              | Alias | Description                                             | Required | Default |
-| :---------------- | :---- | :------------------------------------------------------ | :------- | :------ |
-| `--tenant`        |       | The Tenant ID to seed relationships to.                 | Yes      | -       |
-| `--file-path`     | `-f`  | Path to the JSON file containing relationship tuples.   | Yes      | -       |
-| `--create-tenant` | `-c`  | Creates the tenant if it does not exist before seeding. | No       | `false` |
+| Flag              | Alias | Description                                             | Required | Default                  |
+| :---------------- | :---- | :------------------------------------------------------ | :------- | :----------------------- |
+| `--tenant`        |       | The Tenant ID to seed relationships to.                 | No       | From `permify.config.ts` |
+| `--file-path`     | `-f`  | Path to the JSON file containing relationship tuples.   | Yes      | -                        |
+| `--create-tenant` | `-c`  | Creates the tenant if it does not exist before seeding. | No       | `false`                  |
 
 **Example `relationships.json` file:**
 

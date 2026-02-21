@@ -26,11 +26,14 @@ export default class SchemaPush extends BaseCommand {
       this.error(`Failed to load schema: ${err.message}`);
     }
 
-    // 3️⃣ Push schema via core
-    await this.pushSchema(dsl, client, flags.tenant, flags["create-tenant"]);
+    // 3️⃣ Resolve tenant
+    const tenantId = this.resolveTenant(flags, config);
+
+    // 4️⃣ Push schema via core
+    await this.pushSchema(dsl, client, tenantId, flags["create-tenant"]);
 
     this.log(`✔ Schema pushed successfully`);
-    this.log(`Tenant: ${flags.tenant}`);
+    this.log(`Tenant: ${tenantId}`);
   }
 
   private async pushSchema(
