@@ -156,4 +156,76 @@ test.group("Config Validation", () => {
       }
     }
   });
+
+  test("should validate config with tenant", ({ assert }) => {
+    const config = defineConfig({
+      tenant: "t1",
+      client: {
+        endpoint: "localhost:3478"
+      },
+      schema: schema({
+        user: entity({})
+      })
+    });
+
+    assert.doesNotThrow(() => validateConfig(config));
+    assert.equal(config.tenant, "t1");
+  });
+
+  test("should validate config without tenant", ({ assert }) => {
+    const config = defineConfig({
+      client: {
+        endpoint: "localhost:3478"
+      },
+      schema: schema({
+        user: entity({})
+      })
+    });
+
+    assert.doesNotThrow(() => validateConfig(config));
+    assert.isUndefined(config.tenant);
+  });
+
+  test("should throw if tenant is not a string", ({ assert }) => {
+    assert.throws(() => {
+      validateConfig({
+        // @ts-expect-error
+        tenant: 123,
+        client: {
+          endpoint: "localhost:3478"
+        },
+        schema: schema({
+          user: entity({})
+        })
+      });
+    }, "Tenant must be a non-empty string");
+  });
+
+  test("should throw if tenant is an empty string", ({ assert }) => {
+    assert.throws(() => {
+      validateConfig({
+        tenant: "",
+        client: {
+          endpoint: "localhost:3478"
+        },
+        schema: schema({
+          user: entity({})
+        })
+      });
+    }, "Tenant must be a non-empty string");
+  });
+
+  test("should throw if tenant is whitespace only", ({ assert }) => {
+    assert.throws(() => {
+      validateConfig({
+        tenant: "   ",
+        client: {
+          endpoint: "localhost:3478"
+        },
+        schema: schema({
+          user: entity({})
+        })
+      });
+    }, "Tenant must be a non-empty string");
+  });
 });

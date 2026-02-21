@@ -20,7 +20,7 @@ export async function loadConfig(): Promise<Config> {
     throw new Error(`Config file not found. Please create ${CONFIG_FILE}`);
   }
 
-  const jiti = createJiti(cwd);
+  const jiti = createJiti(cwd, { fsCache: false, moduleCache: false });
 
   const mod = (await jiti.import(configPath, { default: true })) as any;
   const config = mod.default || mod;
