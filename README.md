@@ -24,9 +24,9 @@ Permify Toolkit simplifies authorization management by providing type-safe clien
 
 This monorepo provides:
 
-- **[@permify-toolkit/core](packages/core)** - Core client, schema builders, and authorization helpers
-- **[@permify-toolkit/cli](packages/cli)** - Command-line interface for schema management and code generation
-- **[@permify-toolkit/nestjs](packages/nestjs)** - First-class NestJS integration with decorators and guards
+- **[@permify-toolkit/core](packages/core)** - Core client, schema builders, config loading, and authorization helpers
+- **[@permify-toolkit/cli](packages/cli)** - Command-line interface for schema management and relationship seeding
+- **[@permify-toolkit/nestjs](packages/nestjs)** - First-class NestJS integration with decorators, guards, and config-driven setup
 
 ---
 
@@ -115,6 +115,54 @@ const client = createPermifyClient({
   timeoutMs: 60000
 });
 ```
+
+### Shared Configuration with `permify.config.ts`
+
+Define your connection, schema, and tenant once in `permify.config.ts` and share it across CLI and NestJS:
+
+```typescript
+// permify.config.ts
+import {
+  defineConfig,
+  schema,
+  entity,
+  relation,
+  permission
+} from "@permify-toolkit/core";
+
+export default defineConfig({
+  tenant: "t1",
+  client: { endpoint: "localhost:3478", insecure: true },
+  schema: schema({
+    user: entity({}),
+    document: entity({
+      relations: { owner: relation("user") },
+      permissions: { edit: permission("owner") }
+    })
+  })
+});
+```
+
+Then use it in your NestJS app:
+
+```typescript
+// No client duplication, no env redefinition
+PermifyModule.forRoot({
+  configFile: true,
+  resolvers: {
+    subject: (ctx) => ctx.switchToHttp().getRequest().user?.id
+  }
+});
+```
+
+And with the CLI (tenant from config, no flag needed):
+
+```bash
+permify-toolkit schema push
+permify-toolkit relationships seed --file-path ./data/relationships.json
+```
+
+See the individual package READMEs for full documentation.
 
 ### Running Tests
 

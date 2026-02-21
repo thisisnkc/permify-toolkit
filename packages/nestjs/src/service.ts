@@ -8,7 +8,7 @@ import {
 
 import { PERMIFY_MODULE_OPTIONS, PERMIFY_RESOLVERS_KEY } from "./constant.js";
 import type {
-  PermifyModuleOptions,
+  ResolvedPermifyOptions,
   PermifyResolvers,
   PermifySubject
 } from "./interfaces.js";
@@ -19,7 +19,7 @@ export class PermifyService {
 
   constructor(
     @Inject(PERMIFY_MODULE_OPTIONS)
-    private readonly options: PermifyModuleOptions,
+    private readonly options: ResolvedPermifyOptions,
     @Inject(Reflector)
     private readonly reflector: Reflector
   ) {
@@ -38,15 +38,26 @@ export class PermifyService {
 
   /**
    * Resolves the tenant ID for the current execution context.
-   * Priority: Route > Controller > Global
+   * Priority: Route > Controller > Global resolver > Config tenant
    *
    * @param context - The execution context.
    * @returns The resolved tenant ID.
    */
   async resolveTenant(context: ExecutionContext): Promise<string> {
     const resolvers = this.getResolvers(context);
-    const resolver = resolvers?.tenant || this.options.resolvers.tenant;
-    return resolver(context);
+    const resolver = resolvers?.tenant || this.options.resolvers?.tenant;
+
+    if (resolver) {
+      return resolver(context);
+    }
+
+    if (this.options.tenant) {
+      return this.options.tenant;
+    }
+
+    throw new Error(
+      "Tenant resolver is not defined and no tenant found in config"
+    );
   }
 
   /**
@@ -60,7 +71,7 @@ export class PermifyService {
     context: ExecutionContext
   ): Promise<string | PermifySubject> {
     const resolvers = this.getResolvers(context);
-    const resolver = resolvers?.subject || this.options.resolvers.subject;
+    const resolver = resolvers?.subject || this.options.resolvers?.subject;
 
     if (!resolver) {
       throw new Error("Permify Subject resolver is not defined.");
@@ -80,7 +91,7 @@ export class PermifyService {
     context: ExecutionContext
   ): Promise<string | PermifySubject | undefined> {
     const resolvers = this.getResolvers(context);
-    const resolver = resolvers?.resource || this.options.resolvers.resource;
+    const resolver = resolvers?.resource || this.options.resolvers?.resource;
 
     if (!resolver) {
       return undefined;
@@ -106,7 +117,7 @@ export class PermifyService {
     | undefined
   > {
     const resolvers = this.getResolvers(context);
-    const resolver = resolvers?.metadata || this.options.resolvers.metadata;
+    const resolver = resolvers?.metadata || this.options.resolvers?.metadata;
 
     if (!resolver) {
       return undefined;
