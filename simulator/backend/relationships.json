@@ -1,0 +1,26 @@
+{
+  "tuples": [
+    {
+      "entity": {
+        "type": "document",
+        "id": "document_1"
+      },
+      "relation": "owner",
+      "subject": {
+        "type": "user",
+        "id": "SUPER_ADMIN"
+      }
+    },
+    {
+      "entity": {
+        "type": "organization",
+        "id": "organization_1"
+      },
+      "relation": "member",
+      "subject": {
+        "type": "user",
+        "id": "TESTER"
+      }
+    }
+  ]
+}

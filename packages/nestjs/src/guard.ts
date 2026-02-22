@@ -68,9 +68,13 @@ export class PermifyGuard implements CanActivate {
       subjectParam = subject;
     }
 
-    // The Permify Node client requires a metadata object even when no
-    // custom metadata is provided. Pass an empty object as the default.
-    const metadata = (await this.permifyService.resolveMetadata(context)) ?? {};
+    // The Permify gRPC server requires PermissionCheckRequestMetadata to be
+    // present with a `depth` value >= 3. When no metadata resolver is
+    // provided, we default to { depth: 20 } so the check works
+    // out-of-the-box.
+    const metadata = (await this.permifyService.resolveMetadata(context)) ?? {
+      depth: 20
+    };
 
     try {
       const allowed = await this.permifyService.checkPermission({

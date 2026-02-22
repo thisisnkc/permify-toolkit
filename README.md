@@ -89,7 +89,7 @@ const client = createPermifyClient(clientOptionsFromEnv());
 You can also use a custom prefix:
 
 ```typescript
-// Reads from MY_APP_PERMIFY_ENDPOINT, MY_APP_PERMIFY_INSECURE, etc.
+// Reads from MY_APP_ENDPOINT, MY_APP_INSECURE, etc.
 const client = createPermifyClient(clientOptionsFromEnv("MY_APP_"));
 ```
 
@@ -199,7 +199,7 @@ We're actively working on expanding the toolkit. Here's what's coming:
 
 - [x] Relationship seeding from `relationship.json` files (CLI)
 - [x] Authorization guards for NestJS package
-- [ ] Full-stack example app (frontend + NestJS backend)
+- [x] Full-stack example app (frontend + NestJS backend)
 - [ ] Release v1.0.0 and publish to npm
 - [ ] Docs
 
