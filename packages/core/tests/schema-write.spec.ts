@@ -1,3 +1,5 @@
+import "@japa/assert";
+
 import { test } from "@japa/runner";
 import {
   schema,

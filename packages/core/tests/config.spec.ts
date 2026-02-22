@@ -1,3 +1,6 @@
+import "@japa/assert";
+import "@japa/file-system";
+
 import * as fs from "node:fs";
 import { test } from "@japa/runner";
 import {

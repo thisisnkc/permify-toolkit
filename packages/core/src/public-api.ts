@@ -21,6 +21,7 @@ export {
   defineConfig,
   validateConfig,
   schemaFile,
+  SeedingMode,
   type PermifyConfigOptions as Config
 } from "./config.js";
 
@@ -34,7 +35,9 @@ export {
 
 export {
   writeRelationships,
-  type Relationship
+  deleteRelationships,
+  type Relationship,
+  type DeleteRelationshipsParams
 } from "./data/write-relationships.js";
 
 export {

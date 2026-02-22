@@ -1,3 +1,6 @@
+import "@japa/assert";
+import "@japa/file-system";
+
 import { test } from "@japa/runner";
 
 import { runCommand, stripAnsi } from "./helpers.js";

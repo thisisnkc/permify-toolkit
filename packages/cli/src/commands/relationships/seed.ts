@@ -1,7 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Flags } from "@oclif/core";
-import { writeRelationships, type Relationship } from "@permify-toolkit/core";
+import {
+  writeRelationships,
+  deleteRelationships,
+  SeedingMode,
+  type Relationship
+} from "@permify-toolkit/core";
 
 import { BaseCommand } from "../../base.js";
 
@@ -13,30 +18,66 @@ export default class RelationshipSeed extends BaseCommand {
     "file-path": Flags.string({
       char: "f",
       description: "Path to the relationship JSON file",
-      required: true
+      required: false
     })
   };
 
   async run() {
     const { flags } = await this.parse(RelationshipSeed);
 
-    // 1. Validate File
-    const relationships = this.validateRelationshipFile(flags["file-path"]);
+    // 1. Initialize Client and Load Config
+    const { client, config } = await this.clientFromConfig();
+
+    // 2. Resolve File Path
+    const filePath = flags["file-path"] || config.relationships?.seedFile;
+
+    if (!filePath) {
+      this.error(
+        "Relationship file path is required. Provide --file-path flag or set relationships.seedFile in permify.config.ts"
+      );
+    }
+
+    // 3. Resolve Mode
+    const mode = config.relationships?.mode || SeedingMode.APPEND;
+    if (!Object.values(SeedingMode).includes(mode as SeedingMode)) {
+      this.error(
+        `Invalid mode in config: ${mode}. Must be one of: ${Object.values(SeedingMode).join(", ")}`
+      );
+    }
+
+    // 4. Resolve tenant
+    const tenantId = this.resolveTenant(flags, config);
+
+    // 5. Validate File
+    const relationships = this.validateRelationshipFile(filePath);
 
     if (relationships.length === 0) {
-      this.log("No relationships found in file.");
+      this.log("⚠ No relationships found in file. Doing nothing.");
       return;
     }
 
-    // 2. Initialize Client
-    const { client, config } = await this.clientFromConfig();
+    // 6. Handle Replace Mode
+    if (mode === SeedingMode.REPLACE) {
+      this.log(
+        `Replacing all relationships for tenant "${tenantId}" (mode: replace)`
+      );
+      try {
+        await deleteRelationships({
+          client,
+          tenantId,
+          endpoint: "",
+          filter: {}
+        });
+      } catch (err: any) {
+        this.error(`Failed to clear existing relationships: ${err.message}`);
+      }
+    }
 
-    // 3. Resolve tenant
-    const tenantId = this.resolveTenant(flags, config);
-
-    // 4. Write Relationships
+    // 7. Write Relationships
     try {
-      this.log(`Seeding ${relationships.length} relationships...`);
+      this.log(
+        `Seeding ${relationships.length} relationships (mode: ${mode})...`
+      );
       const result = await writeRelationships({
         client,
         tenantId,
@@ -51,7 +92,8 @@ export default class RelationshipSeed extends BaseCommand {
         this.log(`ℹ Tenant already exists`);
       }
 
-      this.log(`✔ Successfully seeded ${result.count} relationships.`);
+      const statusMsg = mode === SeedingMode.REPLACE ? "replaced" : "seeded";
+      this.log(`✔ Successfully ${statusMsg} ${result.count} relationships.`);
     } catch (err: any) {
       this.error(`Failed during seed: ${err.message}`);
     }
@@ -82,7 +124,7 @@ export default class RelationshipSeed extends BaseCommand {
     }
 
     if (!Array.isArray(relationships.tuples)) {
-      this.error("File content must be an array of relationships");
+      this.error("File content must contain a 'tuples' array of relationships");
     }
 
     return relationships.tuples;

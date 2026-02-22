@@ -56,7 +56,12 @@ export default defineConfig({
         edit: permission("owner")
       }
     })
-  })
+  }),
+
+  relationships: {
+    seedFile: "./relationships.json",
+    mode: "append" // "append" (default) or "replace"
+  }
 });
 ```
 
@@ -187,7 +192,7 @@ permify-toolkit relationships seed --tenant <tenant-id> --file-path <path-to-fil
 | Flag              | Alias | Description                                             | Required | Default                  |
 | :---------------- | :---- | :------------------------------------------------------ | :------- | :----------------------- |
 | `--tenant`        |       | The Tenant ID to seed relationships to.                 | No       | From `permify.config.ts` |
-| `--file-path`     | `-f`  | Path to the JSON file containing relationship tuples.   | Yes      | -                        |
+| `--file-path`     | `-f`  | Path to the JSON file containing relationship tuples.   | No       | From `permify.config.ts` |
 | `--create-tenant` | `-c`  | Creates the tenant if it does not exist before seeding. | No       | `false`                  |
 
 **Example `relationships.json` file:**
