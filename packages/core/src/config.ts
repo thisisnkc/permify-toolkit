@@ -3,10 +3,19 @@ import * as fs from "node:fs";
 import type { PermifyClientOptions } from "./client/index.js";
 import type { SchemaHandle } from "./schema/define-schema.js";
 
+export enum SeedingMode {
+  APPEND = "append",
+  REPLACE = "replace"
+}
+
 export interface PermifyConfigOptions {
   tenant?: string;
   client: PermifyClientOptions;
   schema: SchemaHandle | string;
+  relationships?: {
+    seedFile?: string;
+    mode?: SeedingMode | "append" | "replace";
+  };
 }
 
 /**
@@ -60,6 +69,25 @@ export function validateConfig(config: PermifyConfigOptions): void {
   }
 
   validateSchema(config.schema);
+
+  if (config.relationships) {
+    if (
+      config.relationships.seedFile !== undefined &&
+      typeof config.relationships.seedFile !== "string"
+    ) {
+      throw new TypeError("Relationships seedFile must be a string");
+    }
+    if (
+      config.relationships.mode !== undefined &&
+      !Object.values(SeedingMode).includes(
+        config.relationships.mode as SeedingMode
+      )
+    ) {
+      throw new TypeError(
+        `Relationships mode must be one of: ${Object.values(SeedingMode).join(", ")}`
+      );
+    }
+  }
 }
 
 /**
