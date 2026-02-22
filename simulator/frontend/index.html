@@ -4,75 +4,314 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Permify Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
-        font-family: sans-serif;
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        background: linear-gradient(
+          135deg,
+          #0f0c29 0%,
+          #1a1a3e 50%,
+          #24243e 100%
+        );
+        color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: 2rem;
       }
+
+      .container {
+        width: 100%;
+        max-width: 480px;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 0.25rem;
+        background: linear-gradient(90deg, #a78bfa, #818cf8, #6366f1);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .subtitle {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin-bottom: 2rem;
+      }
+
       .card {
-        border: 1px solid #ccc;
-        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 1.75rem;
+        margin-bottom: 1.25rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .card:hover {
+        border-color: rgba(99, 102, 241, 0.3);
+      }
+
+      .card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+        color: #c4b5fd;
+      }
+
+      .field {
         margin-bottom: 1rem;
-        border-radius: 4px;
       }
-      input,
+
+      .field:last-of-type {
+        margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #94a3b8;
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.65rem 0.85rem;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #f1f5f9;
+        font-family: "Inter", sans-serif;
+        font-size: 0.9rem;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      }
+
+      input::placeholder {
+        color: #4b5563;
+      }
+
       button {
-        padding: 0.5rem;
-        margin: 0.5rem 0;
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 1.25rem;
+        background: linear-gradient(135deg, #6366f1, #818cf8);
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-family: "Inter", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.2s ease;
       }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .result-card {
+        overflow: hidden;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .result-card h3 {
+        color: #94a3b8;
+      }
+
       pre {
-        background: #f4f4f4;
+        background: rgba(0, 0, 0, 0.3);
         padding: 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
       }
-      .error {
-        color: red;
+
+      pre.success {
+        color: #86efac;
+        border-left: 3px solid #22c55e;
       }
-      .success {
-        color: green;
+
+      pre.error {
+        color: #fca5a5;
+        border-left: 3px solid #ef4444;
+      }
+
+      .tenant-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 0.85rem;
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+        font-size: 0.82rem;
+        color: #a5b4fc;
+        margin-bottom: 1.25rem;
+      }
+
+      .tenant-info .icon {
+        flex-shrink: 0;
+        font-size: 1rem;
+      }
+
+      .tenant-info code {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+        font-weight: 600;
+        color: #c4b5fd;
+      }
+
+      .tenant-info.missing {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.25);
+        color: #fca5a5;
       }
     </style>
   </head>
   <body>
-    <h1>Permify Simulator</h1>
+    <div class="container">
+      <h1>Permify Simulator</h1>
+      <p class="subtitle">Authorization permission checker</p>
 
-    <div class="card">
-      <h3>View Document</h3>
-      <div>
-        <label>User ID:</label><br />
-        <input
-          type="text"
-          id="userId"
-          value="user-1"
-          placeholder="e.g. user-1"
-        />
-      </div>
-      <div>
-        <label>Document ID:</label><br />
-        <input type="text" id="docId" value="doc-1" placeholder="e.g. doc-1" />
-      </div>
-      <button onclick="checkAccess()">View Document</button>
-    </div>
+      <div class="card">
+        <h3>Check Access</h3>
 
-    <div id="result" class="card" style="display: none">
-      <h3>Result</h3>
-      <pre id="output"></pre>
+        <div id="tenantInfo" class="tenant-info">
+          <span class="icon">🏢</span>
+          <span
+            >Tenant: <code id="tenantDisplay">—</code>
+            <small>(from URL path)</small></span
+          >
+        </div>
+
+        <div class="field">
+          <label>User ID</label>
+          <input
+            type="text"
+            id="userId"
+            value="user-1"
+            placeholder="e.g. user-1"
+          />
+        </div>
+
+        <div class="field">
+          <label>Document ID</label>
+          <input
+            type="text"
+            id="docId"
+            value="doc-1"
+            placeholder="e.g. doc-1"
+          />
+        </div>
+
+        <button onclick="checkAccess()">View Document</button>
+      </div>
+
+      <div id="result" class="card result-card" style="display: none">
+        <h3>Result</h3>
+        <pre id="output"></pre>
+      </div>
     </div>
 
     <script>
+      // Parse tenant from URL path: /my-tenant → "my-tenant"
+      function getTenantFromUrl() {
+        const segments = window.location.pathname.split("/").filter(Boolean);
+        return segments.length > 0 ? segments[0] : "";
+      }
+
+      (function initTenantDisplay() {
+        const tenant = getTenantFromUrl();
+        const display = document.getElementById("tenantDisplay");
+        const info = document.getElementById("tenantInfo");
+        if (tenant) {
+          display.textContent = tenant;
+        } else {
+          display.textContent = "not set";
+          info.classList.add("missing");
+          info.querySelector(".icon").textContent = "⚠️";
+          info.querySelector("small").textContent =
+            "(navigate to /your-tenant)";
+        }
+      })();
+
       async function checkAccess() {
-        const userId = document.getElementById("userId").value;
-        const docId = document.getElementById("docId").value;
+        const tenantId = getTenantFromUrl();
+        const userId = document.getElementById("userId").value.trim();
+        const docId = document.getElementById("docId").value.trim();
         const output = document.getElementById("output");
         const resultDiv = document.getElementById("result");
 
-        output.textContent = "Checking access...";
+        if (!tenantId) {
+          output.textContent =
+            "No tenant in URL. Navigate to /your-tenant to set it.";
+          output.className = "error";
+          resultDiv.style.display = "block";
+          return;
+        }
+
+        output.textContent = "Checking access…";
         resultDiv.style.display = "block";
         output.className = "";
 
         try {
           const response = await fetch(`/documents/${docId}`, {
             headers: {
-              "x-user-id": userId
+              "x-user-id": userId,
+              "x-tenant-id": tenantId
             }
           });
 

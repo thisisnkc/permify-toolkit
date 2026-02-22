@@ -20,14 +20,11 @@ export class DocumentsController {
     resource: (ctx: ExecutionContext) => {
       const req = ctx.switchToHttp().getRequest<Request>();
       const id = req.params.id as string;
-      console.log('🚀 ~ DocumentsController ~ view ~ id:', id);
       return { type: 'document', id };
     },
     subject: (ctx: ExecutionContext) => {
-      // Mock subject from header or query for testing
       const req = ctx.switchToHttp().getRequest<Request>();
       const userId = (req.headers['x-user-id'] as string) || 'user-1';
-      console.log('🚀 ~ DocumentsController ~ view ~ userId:', userId);
       return { type: 'user', id: userId };
     },
   })

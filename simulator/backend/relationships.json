@@ -8,29 +8,18 @@
       "relation": "owner",
       "subject": {
         "type": "user",
-        "id": "TL"
+        "id": "SUPER_ADMIN"
       }
     },
     {
       "entity": {
-        "type": "document",
-        "id": "document_1"
+        "type": "organization",
+        "id": "organization_1"
       },
-      "relation": "owner",
+      "relation": "member",
       "subject": {
         "type": "user",
-        "id": "QA"
-      }
-    },
-    {
-      "entity": {
-        "type": "document",
-        "id": "document_1"
-      },
-      "relation": "owner",
-      "subject": {
-        "type": "user",
-        "id": "ADMIN"
+        "id": "TESTER"
       }
     }
   ]

@@ -8,6 +8,42 @@ import type { PermifyConfigOptions } from "./config.js";
 const DEFAULT_CONFIG_FILE = "permify.config.ts";
 
 /**
+ * Loads a `.env` file from the given directory into `process.env`.
+ * Only sets variables that are not already defined so explicit env vars win.
+ * This is a lightweight helper to avoid an external `dotenv` dependency.
+ */
+function loadEnvFile(dir: string): void {
+  const envPath = path.join(dir, ".env");
+  if (!fs.existsSync(envPath)) return;
+
+  const content = fs.readFileSync(envPath, "utf-8");
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    // Skip empty lines and comments
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const eqIndex = trimmed.indexOf("=");
+    if (eqIndex === -1) continue;
+
+    const key = trimmed.slice(0, eqIndex).trim();
+    let value = trimmed.slice(eqIndex + 1).trim();
+
+    // Strip surrounding quotes if present
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+
+    // Don't overwrite existing env vars
+    if (process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+}
+
+/**
  * Loads the Permify configuration file.
  *
  * @param configFilePath - Optional path to the config file. Defaults to `permify.config.ts` in CWD.
@@ -26,6 +62,10 @@ export async function loadConfig(
       `Config file not found: ${configPath}. Please create ${DEFAULT_CONFIG_FILE}`
     );
   }
+
+  // Load .env from the config file's directory so that helpers like
+  // `clientOptionsFromEnv()` can read env vars inside the config file.
+  loadEnvFile(path.dirname(configPath));
 
   const jiti = createJiti(path.dirname(configPath), {
     fsCache: false,

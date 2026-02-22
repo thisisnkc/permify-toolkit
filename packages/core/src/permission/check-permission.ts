@@ -17,7 +17,17 @@ export async function checkPermission(
   client: any,
   params: CheckPermissionParams
 ): Promise<boolean> {
-  const allowed = await client.permission.check(params);
+  // The Permify server requires metadata.depth >= 3.
+  // Apply a sensible default so callers don't have to remember.
+  const metadata = {
+    depth: 20,
+    ...params.metadata
+  };
+
+  const allowed = await client.permission.check({
+    ...params,
+    metadata
+  });
   // CheckResult.ALLOWED is usually 1 in Permify gRPC
   return allowed.can === 1;
 }
