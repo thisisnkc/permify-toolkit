@@ -156,4 +156,120 @@ test.group("Relationships Seed Command", () => {
       assert.include(error.message, "Relationships mode must be");
     }
   });
+
+  test("should attempt to delete relationships when mode is replace", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "permify.config.ts",
+      `
+      export default {
+        client: { endpoint: "localhost:11111", insecure: true },
+        schema: { ast: {}, compile: () => "entity user {}" },
+        relationships: { seedFile: "${seedFile}", mode: "replace" }
+      };
+      `
+    );
+    await fs.create(
+      seedFile,
+      JSON.stringify({
+        tuples: [
+          {
+            entity: { type: "doc", id: "1" },
+            relation: "owner",
+            subject: { type: "user", id: "1" }
+          }
+        ]
+      })
+    );
+    const cwd = fs.basePath;
+    try {
+      await runCommand(RelationshipSeed as any, ["--tenant=t1"], { cwd });
+      assert.fail("Should have failed at delete step");
+    } catch (error: any) {
+      // It attempts to connect to localhost:11111 which fails
+      assert.include(error.message, "Failed to clear existing relationships");
+    }
+  });
+
+  test("should not attempt to delete relationships when mode is append", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "permify.config.ts",
+      `
+      export default {
+        client: { endpoint: "localhost:11111", insecure: true },
+        schema: { ast: {}, compile: () => "entity user {}" },
+        relationships: { seedFile: "${seedFile}", mode: "append" }
+      };
+      `
+    );
+    await fs.create(
+      seedFile,
+      JSON.stringify({
+        tuples: [
+          {
+            entity: { type: "doc", id: "1" },
+            relation: "owner",
+            subject: { type: "user", id: "1" }
+          }
+        ]
+      })
+    );
+    const cwd = fs.basePath;
+    try {
+      await runCommand(RelationshipSeed as any, ["--tenant=t1"], { cwd });
+      assert.fail("Should have failed at write step");
+    } catch (error: any) {
+      // It should skip deleteRelationships and fail at writeRelationships
+      assert.include(error.message, "Failed during seed");
+      assert.notInclude(
+        error.message,
+        "Failed to clear existing relationships"
+      );
+    }
+  });
+
+  test("should default to append if no mode is specified", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "permify.config.ts",
+      `
+      export default {
+        client: { endpoint: "localhost:11111", insecure: true },
+        schema: { ast: {}, compile: () => "entity user {}" },
+        relationships: { seedFile: "${seedFile}" }
+      };
+      `
+    );
+    await fs.create(
+      seedFile,
+      JSON.stringify({
+        tuples: [
+          {
+            entity: { type: "doc", id: "1" },
+            relation: "owner",
+            subject: { type: "user", id: "1" }
+          }
+        ]
+      })
+    );
+    const cwd = fs.basePath;
+    try {
+      await runCommand(RelationshipSeed as any, ["--tenant=t1"], { cwd });
+      assert.fail("Should have failed at write step");
+    } catch (error: any) {
+      // It should default to append, skip deleteRelationships and fail at writeRelationships
+      assert.include(error.message, "Failed during seed");
+      assert.notInclude(
+        error.message,
+        "Failed to clear existing relationships"
+      );
+    }
+  });
 });
