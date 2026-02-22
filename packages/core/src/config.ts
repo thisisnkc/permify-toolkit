@@ -3,17 +3,46 @@ import * as fs from "node:fs";
 import type { PermifyClientOptions } from "./client/index.js";
 import type { SchemaHandle } from "./schema/define-schema.js";
 
+/**
+ * Modes for seeding relationships into Permify.
+ */
 export enum SeedingMode {
+  /** Add new relationships without removing existing ones. */
   APPEND = "append",
+  /** Wipe existing relationships before seeding new ones. */
   REPLACE = "replace"
 }
 
+/**
+ * Configuration options for the Permify Toolkit.
+ *
+ * This object defines how the toolkit connects to Permify, which tenant
+ * to use, and how to handle the schema and relationship seeding.
+ */
 export interface PermifyConfigOptions {
+  /**
+   * The default Permify tenant ID for all operations.
+   *
+   * If omitted, some operations may require an explicit `tenantId` parameter.
+   */
   tenant?: string;
+
+  /** Connection settings for the Permify gRPC client. */
   client: PermifyClientOptions;
+
+  /**
+   * The authorization schema.
+   *
+   * Can be a {@link SchemaHandle} (returned by {@link schema}) or a
+   * string path to a `.perm` file.
+   */
   schema: SchemaHandle | string;
+
+  /** Configuration for relationship seeding. */
   relationships?: {
+    /** Path to a YAML or JSON file containing relationship tuples. */
     seedFile?: string;
+    /** Whether to append or replace relationships when seeding (defaults to `APPEND`). */
     mode?: SeedingMode | "append" | "replace";
   };
 }
@@ -38,7 +67,22 @@ export function schemaFile(path: string): string {
 }
 
 /**
- * Defines the configuration for the Permify Toolkit.
+ * Defines and validates the configuration for the Permify Toolkit.
+ *
+ * This is a type-safe helper that returns the config object as-is.
+ * Use it in your `permify.config.ts` file.
+ *
+ * @param config - The configuration options.
+ * @returns The configuration object.
+ *
+ * @example
+ * ```typescript
+ * export default defineConfig({
+ *   tenant: 'default',
+ *   client: { endpoint: 'localhost:3478' },
+ *   schema: schemaFile('./schema.perm'),
+ * });
+ * ```
  */
 export function defineConfig(
   config: PermifyConfigOptions
@@ -47,7 +91,13 @@ export function defineConfig(
 }
 
 /**
- * Validates the Permify configuration.
+ * Validates a Permify configuration object.
+ *
+ * Checks for required fields, correct types, and ensures that
+ * schema files exist on disk.
+ *
+ * @param config - The configuration to validate.
+ * @throws {TypeError | Error} If the configuration is invalid.
  */
 export function validateConfig(config: PermifyConfigOptions): void {
   if (typeof config !== "object" || config === null) {

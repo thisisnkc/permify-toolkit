@@ -7,33 +7,83 @@ import type {
   AttributeNode
 } from "./ast.js";
 
+/**
+ * Defines a relation to one or more target entities.
+ */
 export interface RelationDef {
+  /** Target entity types (e.g. `['user']`, `['user', 'organization#member']`). */
   targets: string[];
 }
 
+/**
+ * Defines an attribute with a specific type.
+ */
 export interface AttributeDef {
+  /** Attribute type (e.g. `string`, `boolean`, `integer`). */
   type: string;
 }
 
+/**
+ * Defines a permission using a relational expression.
+ */
 export interface PermissionDef {
+  /** Permission logic (e.g. `owner or editor`, `organization.admin`). */
   expression: string;
 }
 
+/**
+ * Encapsulates the relations, permissions, and attributes of an entity.
+ */
 export interface EntityDef {
+  /** Relationships to other entities. */
   relations?: Record<string, RelationDef>;
+  /** Fine-grained permissions and access control logic. */
   permissions?: Record<string, PermissionDef>;
+  /** Key-value data associated with the entity. */
   attributes?: Record<string, AttributeDef>;
 }
 
 /**
- * Defines an entity with relations, permissions, and attributes.
+ * Defines an entity with its associated relations, permissions, and attributes.
+ *
+ * Use this within a {@link schema} call to build your authorization model.
+ *
+ * @param def - The entity structure.
+ * @returns The entity definition object.
+ *
+ * @example
+ * ```typescript
+ * entity({
+ *   relations: {
+ *     owner: relation('user'),
+ *   },
+ *   permissions: {
+ *     edit: permission('owner'),
+ *   }
+ * })
+ * ```
  */
 export function entity(def: EntityDef): EntityDef {
   return def;
 }
 
 /**
- * Defines a relation to one or more target entities.
+ * Defines a relationship to one or more target entity types.
+ *
+ * Targets can be simple entity types (e.g. `'user'`) or scoped
+ * relations (e.g. `'organization#member'`).
+ *
+ * @param targets - One or more target entity types.
+ * @returns A relation definition object.
+ *
+ * @example
+ * ```typescript
+ * // Simple relation
+ * relation('user')
+ *
+ * // Multiple targets
+ * relation('user', 'workspace#member')
+ * ```
  */
 export function relation(...targets: string[]): RelationDef {
   return { targets };
@@ -41,13 +91,37 @@ export function relation(...targets: string[]): RelationDef {
 
 /**
  * Defines an attribute with a specific type.
+ *
+ * Attributes allow you to store data (e.g. `boolean`, `integer`)
+ * directly on entities for use in permission expressions.
+ *
+ * @param type - The primitive type of the attribute.
+ * @returns An attribute definition object.
+ *
+ * @example
+ * ```typescript
+ * attribute('boolean')
+ * attribute('integer')
+ * ```
  */
 export function attribute(type: string): AttributeDef {
   return { type };
 }
 
 /**
- * Defines a permission with an expression.
+ * Defines a permission using an expression of relations and attributes.
+ *
+ * Expressions support logic operators like `or`, `and`, and `not`,
+ * as well as traversal (e.g. `folder.parent.view`).
+ *
+ * @param expression - The relational permission logic.
+ * @returns A permission definition object.
+ *
+ * @example
+ * ```typescript
+ * permission('owner or editor')
+ * permission('organization.admin and not blocked')
+ * ```
  */
 export function permission(expression: string): PermissionDef {
   return { expression };

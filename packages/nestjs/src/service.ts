@@ -13,6 +13,13 @@ import type {
   PermifySubject
 } from "./interfaces.js";
 
+/**
+ * Service providing Permify authorization capabilities to NestJS.
+ *
+ * This service wraps the Permify gRPC client and provides helper methods
+ * for resolving authorization context (tenant, subject, resource) from
+ * NestJS execution contexts.
+ */
 @Injectable()
 export class PermifyService {
   private readonly client: ReturnType<typeof createPermifyClient>;
@@ -27,21 +34,41 @@ export class PermifyService {
   }
 
   /**
-   * Checks permission using the initialized Permify client.
+   * Checks if a subject has permission on a specific entity.
+   *
+   * This is a low-level method that wraps the core `checkPermission` utility.
+   * For most NestJS use cases, prefer using the `@CheckPermission()` decorator
+   * and the `PermifyGuard`.
    *
    * @param params - The permission check parameters.
-   * @returns true if access is allowed, false otherwise.
+   * @returns A promise that resolves to `true` if access is allowed, `false` otherwise.
+   *
+   * @example
+   * ```typescript
+   * const allowed = await permifyService.checkPermission({
+   *   tenantId: 'default',
+   *   subject: { type: 'user', id: '1' },
+   *   entity: { type: 'document', id: 'doc-abc' },
+   *   permission: 'view',
+   * });
+   * ```
    */
   async checkPermission(params: CheckPermissionParams): Promise<boolean> {
     return checkPermission(this.client, params);
   }
 
   /**
-   * Resolves the tenant ID for the current execution context.
-   * Priority: Route > Controller > Global resolver > Config tenant
+   * Resolves the Permify tenant ID for the current execution context.
    *
-   * @param context - The execution context.
-   * @returns The resolved tenant ID.
+   * Resolution precedence:
+   * 1. Method-level `@PermifyResolvers({ tenant: ... })`
+   * 2. Controller-level `@PermifyResolvers({ tenant: ... })`
+   * 3. Global modules options `resolvers.tenant`
+   * 4. Static tenant ID in module configuration
+   *
+   * @param context - The NestJS execution context.
+   * @returns The resolved tenant ID string.
+   * @throws {Error} If no tenant ID can be resolved.
    */
   async resolveTenant(context: ExecutionContext): Promise<string> {
     const resolvers = this.getResolvers(context);
@@ -61,11 +88,16 @@ export class PermifyService {
   }
 
   /**
-   * Resolves the subject for the current execution context.
-   * Priority: Route > Controller > Global
+   * Resolves the Permify subject for the current execution context.
    *
-   * @param context - The execution context.
-   * @returns The resolved subject.
+   * Resolution precedence:
+   * 1. Method-level `@PermifyResolvers({ subject: ... })`
+   * 2. Controller-level `@PermifyResolvers({ subject: ... })`
+   * 3. Global modules options `resolvers.subject`
+   *
+   * @param context - The NestJS execution context.
+   * @returns The resolved subject (string ID or {@link PermifySubject}).
+   * @throws {Error} If no subject resolver is defined.
    */
   async resolveSubject(
     context: ExecutionContext
@@ -81,11 +113,15 @@ export class PermifyService {
   }
 
   /**
-   * Resolves the resource for the current execution context.
-   * Priority: Route > Controller > Global
+   * Resolves the target resource for the current execution context.
    *
-   * @param context - The execution context.
-   * @returns The resolved resource.
+   * Resolution precedence:
+   * 1. Method-level `@PermifyResolvers({ resource: ... })`
+   * 2. Controller-level `@PermifyResolvers({ resource: ... })`
+   * 3. Global modules options `resolvers.resource`
+   *
+   * @param context - The NestJS execution context.
+   * @returns The resolved resource, or `undefined` if no resource resolver is set.
    */
   async resolveResource(
     context: ExecutionContext
@@ -101,11 +137,15 @@ export class PermifyService {
   }
 
   /**
-   * Resolves the metadata for the current execution context.
-   * Priority: Route > Controller > Global
+   * Resolves optional permission check metadata for the current context.
    *
-   * @param context - The execution context.
-   * @returns The resolved metadata object or undefined.
+   * Resolution precedence:
+   * 1. Method-level `@PermifyResolvers({ metadata: ... })`
+   * 2. Controller-level `@PermifyResolvers({ metadata: ... })`
+   * 3. Global modules options `resolvers.metadata`
+   *
+   * @param context - The NestJS execution context.
+   * @returns The resolved metadata object, or `undefined` if no metadata resolver is set.
    */
   async resolveMetadata(context: ExecutionContext): Promise<
     | {

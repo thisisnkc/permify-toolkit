@@ -4,14 +4,25 @@ import {
   type BaseWriterResult
 } from "../common/base-writer.js";
 
-interface WriteSchemaParams extends BaseWriteParams {
+/**
+ * Parameters for writing a schema to the Permify server.
+ */
+export interface WriteSchemaParams extends BaseWriteParams {
+  /** The schema in Permify DSL format. */
   schema: string;
 }
 
-interface WriteSchemaResult extends BaseWriterResult {
+/**
+ * The result of writing a schema.
+ */
+export interface WriteSchemaResult extends BaseWriterResult {
+  /** The schema that was written. */
   schema: string;
 }
 
+/**
+ * Internal schema writer class.
+ */
 class SchemaWriter extends BasePermifyWriter<
   WriteSchemaParams,
   { schema: string }
@@ -36,8 +47,21 @@ class SchemaWriter extends BasePermifyWriter<
 }
 
 /**
- * Writes the schema DSL to the Permify server.
- * Permify validates the schema and returns an error if invalid.
+ * Writes a compiled schema DSL to the Permify server.
+ *
+ * Permify will validate the schema string and return an error if it
+ * is syntactically or logically invalid.
+ *
+ * @param params - The schema content and target tenant.
+ * @returns A promise that resolves with the written schema.
+ *
+ * @example
+ * ```typescript
+ * const res = await writeSchemaToPermify({
+ *   tenantId: 'my-tenant',
+ *   schema: 'entity user {} entity document { relation owner @user }',
+ * });
+ * ```
  */
 export async function writeSchemaToPermify(
   params: WriteSchemaParams
