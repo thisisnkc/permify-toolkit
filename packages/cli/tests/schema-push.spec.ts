@@ -1,17 +1,32 @@
 import { test } from "@japa/runner";
 
-import { runCli, stripAnsi } from "./helpers.js";
+import { runCommand, stripAnsi } from "./helpers.js";
+import SchemaPush from "../src/commands/schema/push.js";
 
-test.group("Schema Push Command", (group: any) => {
-  // timeout for each test (required for file system operations), tweak if needed
-  group.each.timeout(6000);
+const validSchema = `{ ast: {}, compile: () => "entity user {}" }`;
 
-  test("should fail if no tenant is provided", async ({ assert }) => {
+test.group("Schema Push Command", () => {
+  test("should fail if no tenant is provided (flag or config)", async ({
+    assert,
+    fs
+  }) => {
+    // Config without tenant field
+    await fs.create(
+      "permify.config.ts",
+      `
+      export default {
+        client: { endpoint: "localhost:11111", insecure: true },
+        schema: ${validSchema}
+      };
+      `
+    );
+
+    const cwd = fs.basePath;
     try {
-      await runCli("schema push");
+      await runCommand(SchemaPush as any, [], { cwd });
       assert.fail("Command should have failed");
     } catch (error: any) {
-      assert.include(stripAnsi(error.stderr), "Missing required flag tenant");
+      assert.include(stripAnsi(error.message), "Tenant ID is required");
     }
   });
 
@@ -19,12 +34,11 @@ test.group("Schema Push Command", (group: any) => {
     assert,
     fs
   }) => {
-    // Ensure dirt exists
+    // Ensure dir exists
     await fs.create("dummy", "");
-    // fs creates files in a temp dir, we need to execute in that dir
     const cwd = fs.basePath;
     try {
-      await runCli("schema push --tenant=t1", { cwd });
+      await runCommand(SchemaPush as any, ["--tenant=t1"], { cwd });
       assert.fail("Command should have failed");
     } catch (error: any) {
       assert.exists(error);
@@ -40,17 +54,43 @@ test.group("Schema Push Command", (group: any) => {
       `
       export default {
         client: { endpoint: "localhost:11111", insecure: true },
-        schema: {}
+        schema: ${validSchema}
       };
       `
     );
 
     const cwd = fs.basePath;
     try {
-      await runCli("schema push --tenant=t1", { cwd });
+      await runCommand(SchemaPush as any, ["--tenant=t1"], { cwd });
       assert.fail("Command should have failed due to connection");
     } catch (error: any) {
       assert.exists(error);
+    }
+  });
+
+  test("should resolve tenant from config when flag not provided", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "permify.config.ts",
+      `
+      export default {
+        tenant: "config-tenant",
+        client: { endpoint: "localhost:11111", insecure: true },
+        schema: ${validSchema}
+      };
+      `
+    );
+
+    const cwd = fs.basePath;
+    try {
+      // No --tenant flag; tenant should be resolved from config
+      await runCommand(SchemaPush as any, [], { cwd });
+      assert.fail("Command should have failed due to connection");
+    } catch (error: any) {
+      // Should fail due to connection, not missing tenant
+      assert.notInclude(stripAnsi(error.message), "Tenant ID is required");
     }
   });
 });

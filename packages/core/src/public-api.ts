@@ -24,6 +24,8 @@ export {
   type PermifyConfigOptions as Config
 } from "./config.js";
 
+export { loadConfig } from "./load-config.js";
+
 export {
   createPermifyClient,
   clientOptionsFromEnv,

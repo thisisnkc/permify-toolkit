@@ -4,23 +4,74 @@ A NestJS wrapper for Permify, providing easy integration for authorization in yo
 
 ## Features
 
+- **Flexible Configuration**: Initialize with `permify.config.ts`, imported config objects, or direct client options.
 - **Global Configuration**: Configure Permify client and resolvers once at the module level.
 - **Hierarchical Resolvers**: Define tenant and subject resolvers globally, and override them at the Controller or Route level.
+- **Optional Tenant Resolver**: Set a static tenant in `permify.config.ts` — no resolver needed.
 - **Authorization Guard**: Use `PermifyGuard` to enforce permissions on your routes.
 
 ## Getting Started
 
 ### 1. Import the Module
 
-Import `PermifyModule` into your root `AppModule`. You can configure it synchronously or asynchronously.
+Import `PermifyModule` into your root `AppModule`. There are three ways to configure it:
 
-### 1. Import the Module
+#### Option 1: Using `permify.config.ts` (Recommended)
 
-Import `PermifyModule` into your root `AppModule`. You can configure it synchronously or asynchronously.
+The simplest approach — reuse your existing `permify.config.ts` with zero duplication:
 
-#### Option 1: Environment Variables (Recommended)
+```typescript
+import { Module } from "@nestjs/common";
+import { PermifyModule } from "@permify-toolkit/nestjs";
 
-The simplest approach uses `clientOptionsFromEnv` to load configuration from environment variables (`PERMIFY_ENDPOINT`, `PERMIFY_INSECURE`, etc.), aligning with the core client pattern.
+@Module({
+  imports: [
+    PermifyModule.forRoot({
+      configFile: true, // Auto-loads permify.config.ts from CWD
+      resolvers: {
+        // Tenant resolver is optional if tenant is set in permify.config.ts
+        subject: (context) => context.switchToHttp().getRequest().user?.id
+      }
+    })
+  ]
+})
+export class AppModule {}
+```
+
+You can also specify a custom config file path:
+
+```typescript
+PermifyModule.forRoot({
+  configFile: true,
+  configFilePath: "./config/permify.config.ts"
+});
+```
+
+#### Option 2: Importing Config Object
+
+For explicit control, import your config directly:
+
+```typescript
+import { Module } from "@nestjs/common";
+import { PermifyModule } from "@permify-toolkit/nestjs";
+import permifyConfig from "../permify.config";
+
+@Module({
+  imports: [
+    PermifyModule.forRoot({
+      config: permifyConfig,
+      resolvers: {
+        subject: (context) => context.switchToHttp().getRequest().user?.id
+      }
+    })
+  ]
+})
+export class AppModule {}
+```
+
+#### Option 3: Direct Client Options
+
+For manual control or when not using `permify.config.ts`:
 
 ```typescript
 import { Module } from "@nestjs/common";
@@ -30,7 +81,7 @@ import { clientOptionsFromEnv } from "@permify-toolkit/core";
 @Module({
   imports: [
     PermifyModule.forRoot({
-      client: clientOptionsFromEnv(),
+      client: clientOptionsFromEnv(), // or manual { endpoint, insecure, ... }
       resolvers: {
         tenant: (context) =>
           context.switchToHttp().getRequest().headers["x-tenant-id"],
@@ -42,54 +93,7 @@ import { clientOptionsFromEnv } from "@permify-toolkit/core";
 export class AppModule {}
 ```
 
-#### Option 2: Manual Configuration
-
-For more control, you can pass the client options directly.
-
-```typescript
-import { Module } from "@nestjs/common";
-import { PermifyModule } from "@permify-toolkit/nestjs";
-import * as fs from "fs";
-
-@Module({
-  imports: [
-    PermifyModule.forRoot({
-      client: {
-        endpoint: "permify.internal:3478",
-        insecure: false,
-        tls: {
-          cert: fs.readFileSync("cert.pem"),
-          key: fs.readFileSync("key.pem"),
-          ca: fs.readFileSync("ca.pem")
-        },
-        interceptor: {
-          authToken: "YOUR_TOKEN"
-        }
-      },
-      resolvers: {
-        // Global Tenant Resolver (Required)
-        tenant: (context) => {
-          const req = context.switchToHttp().getRequest();
-          return req.headers["x-tenant-id"];
-        },
-        // Global Subject Resolver (Optional)
-        subject: (context) => {
-          const req = context.switchToHttp().getRequest();
-          return req.user?.id;
-        },
-        // Global Resource Resolver (Optional)
-        resource: (context) => {
-          const req = context.switchToHttp().getRequest();
-          return req.params.id;
-        }
-      }
-    })
-  ]
-})
-export class AppModule {}
-```
-
-same is defined in the [Usage](https://github.com/thisisnkc/permify-toolkit/blob/main/README.md#Usage) section.
+**Precedence:** `config` > `configFile` > `client`
 
 #### Asynchronous Configuration
 
@@ -129,17 +133,49 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 export class AppModule {}
 ```
 
+## Tenant Resolution
+
+The `tenant` resolver is **optional** when tenant is provided via config:
+
+**Resolution order:**
+
+1. Route-level `@PermifyResolvers({ tenant: ... })` override
+2. Controller-level `@PermifyResolvers({ tenant: ... })` override
+3. Global `resolvers.tenant` function in `forRoot`
+4. `tenant` field from `permify.config.ts` (static fallback)
+5. Error if none of the above provides a tenant
+
+This means for single-tenant apps, you can set tenant once in your config:
+
+```typescript
+// permify.config.ts
+export default defineConfig({
+  tenant: "my-tenant",
+  client: { endpoint: "localhost:3478", insecure: true },
+  schema: schema({ ... })
+});
+
+// app.module.ts — no tenant resolver needed!
+PermifyModule.forRoot({
+  configFile: true,
+  resolvers: {
+    subject: (ctx) => ctx.switchToHttp().getRequest().user?.id
+  }
+})
+```
+
 ## Hierarchical Resolvers
 
 This package supports a hierarchical resolver model with strict precedence:
 
-1.  **Route Level** (Highest Permission)
+1.  **Route Level** (Highest Priority)
 2.  **Controller Level**
-3.  **Global Level** (Lowest Permission)
+3.  **Global Level**
+4.  **Config** (Lowest Priority, tenant only)
 
 If a resolver is defined at the Route level, it overrides both Controller and Global resolvers. If defined at the Controller level, it overrides Global.
 
-**Note:** There is no merging of partial configurations between levels. If you override at a level, you replace the resolution logic for that scope. However, if a specific resolver (e.g., `tenant`) is missing at the overriding level, it falls back to the Global definition.
+**Note:** There is no merging of partial configurations between levels. If you override at a level, you replace the resolution logic for that scope. However, if a specific resolver (e.g., `tenant`) is missing at the overriding level, it falls back to the Global definition, then to config.
 
 ### Using `@PermifyResolvers`
 
@@ -249,6 +285,7 @@ export class DocumentsController {
 
 The guard will:
 
-1.  Resolve the **Tenant**, **Subject**, and **Resource** using your configured resolvers.
+1.  Resolve the **Tenant**, **Subject**, and **Resource** using your configured resolvers (or config fallback for tenant).
 2.  Check if the **Subject** has `document.view` permission on the resolved **Resource**.
-3.  Throw a `ForbiddenException` if permission is denied or if the resource cannot be resolved.
+3.  Pass an empty `metadata` object (`{}`) if no metadata resolver is defined (required by the Permify Node client).
+4.  Throw a `ForbiddenException` if permission is denied or if the resource cannot be resolved.

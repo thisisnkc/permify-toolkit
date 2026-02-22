@@ -29,14 +29,17 @@ export default class RelationshipSeed extends BaseCommand {
     }
 
     // 2. Initialize Client
-    const { client } = await this.clientFromConfig();
+    const { client, config } = await this.clientFromConfig();
 
-    // 3. Write Relationships
+    // 3. Resolve tenant
+    const tenantId = this.resolveTenant(flags, config);
+
+    // 4. Write Relationships
     try {
       this.log(`Seeding ${relationships.length} relationships...`);
       const result = await writeRelationships({
         client,
-        tenantId: flags.tenant,
+        tenantId,
         relationships: { tuples: relationships },
         createTenantIfNotExists: flags["create-tenant"],
         endpoint: ""

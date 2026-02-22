@@ -39,7 +39,6 @@
     "@oclif/core": "^4.8.0",
     "@oclif/plugin-help": "^6.2.26",
     "@permify-toolkit/core": "workspace:^",
-    "jiti": "^2.6.1",
     "oclif": "^4.22.63"
   },
   "devDependencies": {

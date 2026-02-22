@@ -26,7 +26,8 @@ test.group("PermifyGuard", (group) => {
   let mockCheckResult = { can: 1 }; // Allowed by default
   let mockPermifyService: any;
 
-  (group as any).each.setup(() => {
+  // @ts-ignore - japa Group.each is available at runtime but missing from types
+  group.each.setup(() => {
     mockCheckResult = { can: 1 };
     mockPermifyService = {
       resolveTenant: () => "tenant-id",
