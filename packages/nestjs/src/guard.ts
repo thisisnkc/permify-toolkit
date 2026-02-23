@@ -5,6 +5,21 @@ import { Injectable, Inject, ForbiddenException, Logger } from "@nestjs/common";
 import { PermifyService } from "./service.js";
 import { PERMIFY_PERMISSION_KEY } from "./constant.js";
 
+/**
+ * Guard that enforces Permify permission checks.
+ *
+ * This guard uses the permission string defined via the `@CheckPermission()`
+ * decorator and resolves the necessary context (tenant, subject, resource)
+ * using the {@link PermifyService}.
+ *
+ * @example
+ * ```typescript
+ * @UseGuards(PermifyGuard)
+ * @CheckPermission('document.view')
+ * @Controller('documents')
+ * export class DocumentsController {}
+ * ```
+ */
 @Injectable()
 export class PermifyGuard implements CanActivate {
   private readonly logger = new Logger(PermifyGuard.name);
@@ -14,6 +29,15 @@ export class PermifyGuard implements CanActivate {
     @Inject(PermifyService) private readonly permifyService: PermifyService
   ) {}
 
+  /**
+   * Logical entry point for the guard.
+   *
+   * Resolves the permission, tenant, subject, and resource, then performs
+   * a permission check against the Permify server.
+   *
+   * @param context - The NestJS execution context.
+   * @returns `true` if access is allowed, throws `ForbiddenException` otherwise.
+   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const permission = this.reflector.getAllAndOverride<string>(
       PERMIFY_PERMISSION_KEY,

@@ -45,9 +45,41 @@ async function resolveModuleOptions(
   };
 }
 
+/**
+ * Global NestJS module for integrating Permify.
+ *
+ * Provides the {@link PermifyService} for manual permission checks and supports
+ * the {@link PermifyGuard} for declarative access control via decorators.
+ *
+ * The module can be initialized in three modes:
+ * - `config`: Using a pre-defined {@link Config} object.
+ * - `configFile`: Auto-loading `permify.config.ts`.
+ * - `client`: Directly providing {@link PermifyClientOptions} (legacy).
+ */
 @Global()
 @Module({})
 export class PermifyModule {
+  /**
+   * Initializes the module synchronously.
+   *
+   * @param options - Configuration options for the module.
+   * @returns A dynamic module for synchronous setup.
+   *
+   * @example
+   * ```typescript
+   * @Module({
+   *   imports: [
+   *     PermifyModule.forRoot({
+   *       configFile: true,
+   *       resolvers: {
+   *         subject: (ctx) => ctx.switchToHttp().getRequest().user.id,
+   *       },
+   *     }),
+   *   ],
+   * })
+   * export class AppModule {}
+   * ```
+   */
   static forRoot(options: PermifyModuleOptions): DynamicModule {
     return {
       module: PermifyModule,
@@ -63,6 +95,33 @@ export class PermifyModule {
     };
   }
 
+  /**
+   * Initializes the module asynchronously.
+   *
+   * Useful when configuration depends on other providers (e.g. `ConfigService`).
+   *
+   * @param options - Asynchronous configuration options.
+   * @returns A dynamic module for asynchronous setup.
+   *
+   * @example
+   * ```typescript
+   * @Module({
+   *   imports: [
+   *     PermifyModule.forRootAsync({
+   *       imports: [ConfigModule],
+   *       useFactory: (config: ConfigService) => ({
+   *         config: config.get('permify'),
+   *         resolvers: {
+   *           subject: (ctx) => ctx.switchToHttp().getRequest().user.id,
+   *         },
+   *       }),
+   *       inject: [ConfigService],
+   *     }),
+   *   ],
+   * })
+   * export class AppModule {}
+   * ```
+   */
   static forRootAsync(options: PermifyModuleAsyncOptions): DynamicModule {
     return {
       module: PermifyModule,

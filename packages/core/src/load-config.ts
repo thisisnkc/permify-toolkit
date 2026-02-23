@@ -44,10 +44,21 @@ function loadEnvFile(dir: string): void {
 }
 
 /**
- * Loads the Permify configuration file.
+ * Loads and validates the Permify configuration file.
  *
- * @param configFilePath - Optional path to the config file. Defaults to `permify.config.ts` in CWD.
- * @returns The validated Permify configuration.
+ * This function searches for `permify.config.ts` in the current directory
+ * (or uses the provided path), loads any local `.env` file, and returns
+ * a validated configuration object.
+ *
+ * @param configFilePath - Path to the config file (defaults to `permify.config.ts` in CWD).
+ * @returns A promise that resolves to the validated configuration.
+ * @throws {Error} If the config file is missing or contains validation errors.
+ *
+ * @example
+ * ```typescript
+ * const config = await loadConfig();
+ * const configCustom = await loadConfig('./configs/permify.ts');
+ * ```
  */
 export async function loadConfig(
   configFilePath?: string
