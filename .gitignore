@@ -23,6 +23,3 @@ coverage-*.json
 # OS files
 .DS_Store
 Thumbs.db
-
-# pnpm lock files
-pnpm-lock.yaml
