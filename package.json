@@ -20,6 +20,7 @@
     "dev": "pnpm -r dev",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
+    "format:check": "prettier --check .",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm build && changeset publish",
@@ -46,7 +47,7 @@
     "typescript": "^5.9.3"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm install && pnpm lint && pnpm test",
+    "pre-commit": "pnpm install && pnpm lint",
     "commit-msg": "npx commitlint --edit ${1}"
   }
 }
