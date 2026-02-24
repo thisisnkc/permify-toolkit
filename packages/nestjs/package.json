@@ -17,6 +17,9 @@
   },
   "main": "dist/nestjs/src/index.js",
   "types": "dist/nestjs/src/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
     "build": "tsc",
