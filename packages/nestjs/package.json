@@ -2,12 +2,31 @@
   "name": "@permify-toolkit/nestjs",
   "type": "module",
   "version": "1.0.0",
-  "description": "nestjs package for permify-toolkit",
+  "description": "NestJS integration for Permify: Decorators, guards, and zero-config module setup.",
   "author": "Nikhil aka thisisnkc",
   "license": "MIT",
+  "homepage": "https://github.com/thisisnkc/permify-toolkit/tree/main/packages/nestjs#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thisisnkc/permify-toolkit.git",
+    "directory": "packages/nestjs"
+  },
+  "bugs": {
+    "url": "https://github.com/thisisnkc/permify-toolkit/issues"
+  },
   "keywords": [
+    "permify",
     "nestjs",
-    "permify-toolkit"
+    "nestjs-module",
+    "nestjs-guard",
+    "authorization",
+    "access-control",
+    "rbac",
+    "rebac",
+    "permissions",
+    "authorization-guard",
+    "decorators",
+    "multi-tenant"
   ],
   "exports": {
     ".": {
@@ -20,6 +39,12 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
     "build": "tsc",

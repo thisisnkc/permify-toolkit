@@ -2,12 +2,28 @@
   "name": "@permify-toolkit/cli",
   "type": "module",
   "version": "1.0.0",
-  "description": "cli pacakge for permify-toolkit",
+  "description": "Powerful CLI for Permify: Push schemas, seed relationships, and manage tenants with ease.",
   "author": "Nikhil aka thisisnkc",
   "license": "MIT",
+  "homepage": "https://github.com/thisisnkc/permify-toolkit/tree/main/packages/cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thisisnkc/permify-toolkit.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/thisisnkc/permify-toolkit/issues"
+  },
   "keywords": [
+    "permify",
     "cli",
-    "permify-toolkit"
+    "command-line",
+    "automation",
+    "schema-management",
+    "relationship-seeding",
+    "tenant-management",
+    "multi-tenant",
+    "typescript"
   ],
   "main": "dist/index.js",
   "bin": {
@@ -18,6 +34,12 @@
     "dist",
     "oclif.manifest.json"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "oclif": {
     "bin": "permify-toolkit",
     "dirname": "permify-toolkit",
