@@ -2,12 +2,33 @@
   "name": "@permify-toolkit/core",
   "type": "module",
   "version": "1.0.0",
-  "description": "core package for permify-toolkit",
+  "description": "The ultimate TypeScript engine for Permify: Type-safe schema DSL, simplified client, and shared configuration.",
   "author": "Nikhil aka thisisnkc",
   "license": "MIT",
+  "homepage": "https://github.com/thisisnkc/permify-toolkit/tree/main/packages/core#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thisisnkc/permify-toolkit.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/thisisnkc/permify-toolkit/issues"
+  },
   "keywords": [
-    "core",
-    "permify-toolkit"
+    "permify",
+    "authorization",
+    "access-control",
+    "rbac",
+    "rebac",
+    "permissions",
+    "policy-engine",
+    "authorization-client",
+    "client-wrapper",
+    "authorization-toolkit",
+    "schema-builder",
+    "authorization-schema",
+    "type-safe",
+    "multi-tenant"
   ],
   "exports": {
     ".": {
@@ -21,6 +42,12 @@
     "dist",
     "types"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
     "test:file": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts --files",

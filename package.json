@@ -2,6 +2,8 @@
   "name": "permify-toolkit",
   "type": "module",
   "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.9.0",
   "description": "toolkit for permify, manage authorization in one place",
   "author": "Nikhil aka thisisnkc",
   "license": "MIT",
