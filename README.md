@@ -1,7 +1,9 @@
 # Permify Toolkit
 
 ![License](https://img.shields.io/github/license/thisisnkc/permify-toolkit)
-![Status](https://img.shields.io/badge/status-in%20development-yellow)
+![NPM Version](https://img.shields.io/npm/v/@permify-toolkit/core?label=%40permify-toolkit%2Fcore)
+![NPM Version](https://img.shields.io/npm/v/@permify-toolkit/cli?label=%40permify-toolkit%2Fcli)
+![NPM Version](https://img.shields.io/npm/v/@permify-toolkit/nestjs?label=%40permify-toolkit%2Fnestjs)
 
 > A comprehensive TypeScript toolkit for building authorization systems with [Permify](https://github.com/Permify/permify)
 
@@ -24,9 +26,9 @@ Permify Toolkit simplifies authorization management by providing type-safe clien
 
 This monorepo provides:
 
-- **[@permify-toolkit/core](packages/core)** - Core client, schema builders, config loading, and authorization helpers
-- **[@permify-toolkit/cli](packages/cli)** - Command-line interface for schema management and relationship seeding
-- **[@permify-toolkit/nestjs](packages/nestjs)** - First-class NestJS integration with decorators, guards, and config-driven setup
+- **[@permify-toolkit/core](packages/core)** [![npm version](https://img.shields.io/npm/v/@permify-toolkit/core)](https://www.npmjs.com/package/@permify-toolkit/core) - Core engine: Type-safe schema DSL, simplified client, and configuration engine.
+- **[@permify-toolkit/cli](packages/cli)** [![npm version](https://img.shields.io/npm/v/@permify-toolkit/cli)](https://www.npmjs.com/package/@permify-toolkit/cli) - Command-line interface for schema management and relationship seeding.
+- **[@permify-toolkit/nestjs](packages/nestjs)** [![npm version](https://img.shields.io/npm/v/@permify-toolkit/nestjs)](https://www.npmjs.com/package/@permify-toolkit/nestjs) - First-class NestJS integration with decorators, guards, and module setup.
 
 ---
 
@@ -199,7 +201,7 @@ We're actively working on expanding the toolkit. Here's what's coming:
 
 - [x] Authorization guards for NestJS package
 - [x] Full-stack example app (frontend + NestJS backend)
-- [ ] Release v1.0.0 and publish to npm
+- [x] Release v1.0.0 and publish to npm
 - [ ] Multi permission checks
 - [ ] Docs
 
