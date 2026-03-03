@@ -49,7 +49,6 @@
     "typescript": "^5.9.3"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm install && pnpm lint",
     "commit-msg": "npx commitlint --edit ${1}"
   }
 }

@@ -1,13 +1,23 @@
-# Permify Toolkit
+<p align="center">
+  <img src="https://i.ibb.co/6cKWNj9P/eagle-logo-hd.png" width="300" alt="Permify Toolkit Logo" />
+</p>
 
-![License](https://img.shields.io/github/license/thisisnkc/permify-toolkit)
-![NPM Version](https://img.shields.io/npm/v/@permify-toolkit/core?label=%40permify-toolkit%2Fcore)
-![NPM Version](https://img.shields.io/npm/v/@permify-toolkit/cli?label=%40permify-toolkit%2Fcli)
-![NPM Version](https://img.shields.io/npm/v/@permify-toolkit/nestjs?label=%40permify-toolkit%2Fnestjs)
+<p align="center">A comprehensive TypeScript toolkit for building authorization systems with <a href="https://github.com/Permify/permify" target="_blank">Permify</a>.</p>
 
-> A comprehensive TypeScript toolkit for building authorization systems with [Permify](https://github.com/Permify/permify)
+<p align="center">
+<a href="https://www.npmjs.com/package/@permify-toolkit/core" target="_blank"><img src="https://img.shields.io/npm/v/@permify-toolkit/core?label=%40permify-toolkit%2Fcore" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/package/@permify-toolkit/cli" target="_blank"><img src="https://img.shields.io/npm/v/@permify-toolkit/cli?label=%40permify-toolkit%2Fcli" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/package/@permify-toolkit/nestjs" target="_blank"><img src="https://img.shields.io/npm/v/@permify-toolkit/nestjs?label=%40permify-toolkit%2Fnestjs" alt="NPM Version" /></a>
+<a href="LICENSE" target="_blank"><img src="https://img.shields.io/github/license/thisisnkc/permify-toolkit" alt="Package License" /></a>
+</p>
 
-Permify Toolkit simplifies authorization management by providing type-safe clients, CLI tools, and framework integrations, all in one place.
+<p align="center">
+  <a href="https://github.com/thisisnkc/permify-toolkit/issues" target="_blank">Report Bug</a>
+  ·
+  <a href="https://github.com/thisisnkc/permify-toolkit/discussions" target="_blank">Discussions</a>
+  ·
+  <a href="https://github.com/Permify/permify" target="_blank">Permify Core</a>
+</p>
 
 ## Table of Contents
 
@@ -26,9 +36,9 @@ Permify Toolkit simplifies authorization management by providing type-safe clien
 
 This monorepo provides:
 
-- **[@permify-toolkit/core](packages/core)** [![npm version](https://img.shields.io/npm/v/@permify-toolkit/core)](https://www.npmjs.com/package/@permify-toolkit/core) - Core engine: Type-safe schema DSL, simplified client, and configuration engine.
-- **[@permify-toolkit/cli](packages/cli)** [![npm version](https://img.shields.io/npm/v/@permify-toolkit/cli)](https://www.npmjs.com/package/@permify-toolkit/cli) - Command-line interface for schema management and relationship seeding.
-- **[@permify-toolkit/nestjs](packages/nestjs)** [![npm version](https://img.shields.io/npm/v/@permify-toolkit/nestjs)](https://www.npmjs.com/package/@permify-toolkit/nestjs) - First-class NestJS integration with decorators, guards, and module setup.
+- **[@permify-toolkit/core](packages/core)** - Core engine: Type-safe schema DSL, simplified client, and configuration engine.
+- **[@permify-toolkit/cli](packages/cli)** - Command-line interface for schema management and relationship seeding.
+- **[@permify-toolkit/nestjs](packages/nestjs)** - First-class NestJS integration with decorators, guards, and module setup.
 
 ---
 
