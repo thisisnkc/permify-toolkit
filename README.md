@@ -212,7 +212,7 @@ We're actively working on expanding the toolkit. Here's what's coming:
 - [x] Authorization guards for NestJS package
 - [x] Full-stack example app (frontend + NestJS backend)
 - [x] Release v1.0.0 and publish to npm
-- [ ] Multi permission checks
+- [x] Multi permission checks
 - [ ] Docs
 
 Have ideas? [Open an issue](https://github.com/thisisnkc/permify-toolkit/issues) or start a [discussion](https://github.com/thisisnkc/permify-toolkit/discussions)!
