@@ -14,6 +14,24 @@ import type {
 } from "./interfaces.js";
 
 /**
+ * Parameters for evaluating multiple permissions concurrently.
+ */
+export interface EvaluatePermissionsParams {
+  tenantId: string;
+  metadata?: {
+    snapToken?: string;
+    schemaVersion?: string;
+    depth?: number;
+    attributes?: Record<string, any>;
+  };
+  subject: { type: string; id: string };
+  checks: {
+    entity: { type: string; id: string };
+    permission: string;
+  }[];
+}
+
+/**
  * Service providing Permify authorization capabilities to NestJS.
  *
  * This service wraps the Permify gRPC client and provides helper methods
@@ -55,6 +73,40 @@ export class PermifyService {
    */
   async checkPermission(params: CheckPermissionParams): Promise<boolean> {
     return checkPermission(this.client, params);
+  }
+
+  /**
+   * Evaluates multiple permissions concurrently for a given subject.
+   *
+   * This method acts as an abstraction layer for bulk permission checking.
+   * Currently, it maps over the checks using `Promise.all` for concurrent
+   * execution.
+   *
+   * Note: In the future, this will be seamlessly swapped with the native
+   * Permify `bulkCheck` API when it becomes available in the Node client.
+   *
+   * @param params - Parameters containing the shared context and individual entity/permission checks.
+   * @returns A promise that resolves to an array of objects detailing each check's permission string and boolean result.
+   */
+  async evaluatePermissions(
+    params: EvaluatePermissionsParams
+  ): Promise<{ permission: string; allowed: boolean }[]> {
+    return Promise.all(
+      params.checks.map(async (check) => {
+        const allowed = await this.checkPermission({
+          tenantId: params.tenantId,
+          metadata: params.metadata,
+          subject: params.subject,
+          entity: check.entity,
+          permission: check.permission
+        });
+
+        return {
+          permission: check.permission,
+          allowed
+        };
+      })
+    );
   }
 
   /**

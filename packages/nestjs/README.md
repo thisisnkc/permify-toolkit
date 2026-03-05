@@ -229,9 +229,17 @@ The package provides `PermifyGuard` to enforce permissions on your routes. It au
 ### Usage
 
 1.  **Register the Guard**: You can register it globally or per-route.
-2.  **Decorate Routes**: Use `@CheckPermission` to specify the required permission.
+2.  **Decorate Routes**: Use `@CheckPermission` to specify the required permission(s). You can pass a single string, or an array of permissions with an optional evaluation mode.
 
-suppose this is your schema:
+#### Checking Multiple Permissions
+
+The `@CheckPermission` decorator supports evaluating multiple permissions natively.
+
+- **Single Permission**: `@CheckPermission('document.view')`
+- **AND Mode (Default)**: `@CheckPermission(['document.view', 'document.edit'])` — Requires **all** permissions to be granted.
+- **OR Mode**: `@CheckPermission(['document.view', 'document.edit'], { mode: 'OR' })` — Requires **at least one** permission to be granted.
+
+Suppose this is your schema:
 
 ```typescript
 schema({
@@ -286,6 +294,10 @@ export class DocumentsController {
 The guard will:
 
 1.  Resolve the **Tenant**, **Subject**, and **Resource** using your configured resolvers (or config fallback for tenant).
-2.  Check if the **Subject** has `document.view` permission on the resolved **Resource**.
-3.  Pass an empty `metadata` object (`{}`) if no metadata resolver is defined (required by the Permify Node client).
-4.  Throw a `ForbiddenException` if permission is denied or if the resource cannot be resolved.
+2.  **Evaluate permissions concurrently**: Verify the specified `AND`/`OR` multiple permissions via the `evaluatePermissions` abstract method for the returned **Subject** and **Resource** bindings.
+3.  Pass a default `{ depth: 20 }` metadata object if no metadata resolver is explicitly provided.
+4.  Throw a precisely descriptive `ForbiddenException` immediately if validation fails (e.g. `Permission denied: document.edit failed (mode: AND)` or `None of the required permissions were granted: ...`).
+
+## Documentation
+
+For full documentation and examples, please visit the [main repository](https://github.com/thisisnkc/permify-toolkit).

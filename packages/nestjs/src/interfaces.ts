@@ -7,6 +7,17 @@ import {
 } from "@nestjs/common";
 
 import { PERMIFY_RESOLVERS_KEY } from "./constant.js";
+import type { PermissionMode } from "./decorators.js";
+
+/**
+ * Validated metadata established by CheckPermission applied to methods/controllers.
+ */
+export interface CheckPermissionMetadata {
+  /** Array of resolved permission identifiers required for access. */
+  permissions: string[];
+  /** Expected evaluation mode (AND/OR). */
+  mode: PermissionMode;
+}
 
 /**
  * Represents a subject in the NestJS context (e.g. `user:1`).
