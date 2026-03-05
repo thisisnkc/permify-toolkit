@@ -15,7 +15,8 @@ import {
 @Controller('documents')
 export class DocumentsController {
   @UseGuards(PermifyGuard)
-  @CheckPermission('document.view')
+  // checks if user has 'view' AND 'edit' permissions
+  @CheckPermission(['view', 'edit'])
   @PermifyResolvers({
     resource: (ctx: ExecutionContext) => {
       const req = ctx.switchToHttp().getRequest<Request>();

@@ -281,3 +281,7 @@ Example:
 - **Tenant Management**: Automatically create tenants if they don't exist
 - **Secure & Insecure Connections**: Support for both SSL/TLS and insecure local development
 - **File Validation**: Automatic validation of `.perm` file paths and extensions
+
+## Documentation
+
+For full documentation and examples, please visit the [main repository](https://github.com/thisisnkc/permify-toolkit).
