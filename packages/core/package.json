@@ -1,7 +1,7 @@
 {
   "name": "@permify-toolkit/core",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The ultimate TypeScript engine for Permify: Type-safe schema DSL, simplified client, and shared configuration.",
   "author": "Nikhil aka thisisnkc",
   "license": "MIT",
