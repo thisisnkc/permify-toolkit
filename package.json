@@ -13,8 +13,19 @@
     "url": "git+https://github.com/thisisnkc/permify-toolkit.git"
   },
   "keywords": [
-    "toolkit",
-    "permify"
+    "permify",
+    "authorization",
+    "auth",
+    "permissions",
+    "rbac",
+    "abac",
+    "zanzibar",
+    "fine-grained-authorization",
+    "nestjs",
+    "grpc",
+    "typescript",
+    "access-control",
+    "toolkit"
   ],
   "main": "index.js",
   "scripts": {

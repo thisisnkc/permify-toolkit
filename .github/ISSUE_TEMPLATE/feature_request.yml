@@ -1,0 +1,52 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea that would make permify-toolkit better? We'd love to hear it!
+
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package does this affect?
+      options:
+        - "@permify-toolkit/core"
+        - "@permify-toolkit/nestjs"
+        - "@permify-toolkit/cli"
+        - New package / unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+      description: What problem does this feature solve? What's the use case?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the API or behavior you'd like to see. Code examples welcome.
+      render: typescript
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any workarounds you've tried or alternative approaches.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Would you like to implement this?
+      options:
+        - label: "Yes, I'd like to open a PR for this feature"

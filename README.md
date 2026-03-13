@@ -9,6 +9,8 @@
 <a href="https://www.npmjs.com/package/@permify-toolkit/cli" target="_blank"><img src="https://img.shields.io/npm/v/@permify-toolkit/cli?label=%40permify-toolkit%2Fcli" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/package/@permify-toolkit/nestjs" target="_blank"><img src="https://img.shields.io/npm/v/@permify-toolkit/nestjs?label=%40permify-toolkit%2Fnestjs" alt="NPM Version" /></a>
 <a href="LICENSE" target="_blank"><img src="https://img.shields.io/github/license/thisisnkc/permify-toolkit" alt="Package License" /></a>
+<a href="https://github.com/thisisnkc/permify-toolkit/actions/workflows/ci.yml" target="_blank"><img src="https://github.com/thisisnkc/permify-toolkit/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+<a href="https://www.npmjs.com/package/@permify-toolkit/core" target="_blank"><img src="https://img.shields.io/npm/dm/@permify-toolkit/core?label=core%20downloads" alt="NPM Downloads" /></a>
 </p>
 
 <p align="center">
@@ -212,8 +214,18 @@ We're actively working on expanding the toolkit. Here's what's coming:
 - [x] Authorization guards for NestJS package
 - [x] Full-stack example app (frontend + NestJS backend)
 - [x] Release v1.0.0 and publish to npm
-- [x] Multi permission checks
+- [x] Multi permission checks (AND + OR logic)
 - [ ] Docs
+- [ ] Testing utilities — mock Permify client and test helpers for unit testing authorization logic
+- [ ] Permission result caching — in-memory (and optionally Redis-backed) cache to reduce gRPC round-trips
+- [ ] Schema validation CLI command — lint and validate schema syntax before pushing to Permify
+- [ ] Relationship query CLI commands — list, inspect, and export existing relationships from a tenant
+- [ ] Express.js / Fastify middleware — permission-check middleware for non-NestJS backends
+- [ ] GraphQL support — `@CheckPermission` directive and guards for NestJS GraphQL resolvers
+- [ ] ABAC helpers — high-level utilities for attribute-based access control rules
+- [ ] OpenTelemetry tracing — structured spans and metrics for permission checks and schema operations
+- [ ] Schema diff CLI command — preview what will change before pushing a schema update
+- [ ] Multi-tenant CLI management — create, list, and delete tenants directly from the CLI
 
 Have ideas? [Open an issue](https://github.com/thisisnkc/permify-toolkit/issues) or start a [discussion](https://github.com/thisisnkc/permify-toolkit/discussions)!
 
