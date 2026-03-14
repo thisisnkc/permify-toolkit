@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.9.0",
-  "description": "toolkit for permify, manage authorization in one place",
+  "description": "Type-safe TypeScript toolkit for Permify — NestJS module, CLI, and shared config for fine-grained authorization",
   "author": "Nikhil aka thisisnkc",
   "license": "MIT",
   "homepage": "https://github.com/thisisnkc/permify-toolkit#readme",
@@ -14,18 +14,23 @@
   },
   "keywords": [
     "permify",
+    "permify-toolkit",
     "authorization",
     "auth",
     "permissions",
     "rbac",
     "abac",
+    "rebac",
     "zanzibar",
     "fine-grained-authorization",
     "nestjs",
+    "nestjs-authorization",
     "grpc",
     "typescript",
     "access-control",
-    "toolkit"
+    "toolkit",
+    "policy-engine",
+    "multi-tenant"
   ],
   "main": "index.js",
   "scripts": {
