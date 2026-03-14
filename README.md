@@ -2,7 +2,9 @@
   <img src="https://i.ibb.co/6cKWNj9P/eagle-logo-hd.png" width="300" alt="Permify Toolkit Logo" />
 </p>
 
-<p align="center">A comprehensive TypeScript toolkit for building authorization systems with <a href="https://github.com/Permify/permify" target="_blank">Permify</a>.</p>
+# Permify Toolkit
+
+<p align="center">The TypeScript toolkit for <a href="https://github.com/Permify/permify" target="_blank">Permify</a> with type-safe schema DSL, NestJS integration, and CLI for fine-grained authorization.</p>
 
 <p align="center">
 <a href="https://www.npmjs.com/package/@permify-toolkit/core" target="_blank"><img src="https://img.shields.io/npm/v/@permify-toolkit/core?label=%40permify-toolkit%2Fcore" alt="NPM Version" /></a>
@@ -16,57 +18,100 @@
 <p align="center">
   <a href="https://github.com/thisisnkc/permify-toolkit/issues" target="_blank">Report Bug</a>
   ·
-  <a href="https://github.com/thisisnkc/permify-toolkit/discussions" target="_blank">Discussions</a>
-  ·
-  <a href="https://github.com/Permify/permify" target="_blank">Permify Core</a>
+  <a href="https://github.com/Permify/permify" target="_blank">Permify</a>
 </p>
 
-## Table of Contents
-
-- [Features](#features)
-- [Quick Start](#quick-start)
-- [Usage](#usage)
-- [Running Tests](#running-tests)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
+> If permify-toolkit saves you time, please ⭐ star this repo, it helps others discover it!
 
 ---
 
-## Features
+## Why Permify Toolkit?
 
-This monorepo provides:
+Working with Permify's gRPC API directly is verbose. Permify Toolkit wraps it in a clean, type-safe TypeScript API so you can focus on your authorization model, not the plumbing:
 
-- **[@permify-toolkit/core](packages/core)** - Core engine: Type-safe schema DSL, simplified client, and configuration engine.
-- **[@permify-toolkit/cli](packages/cli)** - Command-line interface for schema management and relationship seeding.
-- **[@permify-toolkit/nestjs](packages/nestjs)** - First-class NestJS integration with decorators, guards, and module setup.
+- **Zero gRPC boilerplate** — connect with a single function call or environment variables
+- **Type-safe schema DSL** — define entities, relations, and permissions in TypeScript with full autocompletion
+- **One config file** — `permify.config.ts` is shared between your NestJS app and CLI; no duplication
+- **NestJS-first** — drop-in module, `@CheckPermission()` decorator, and guard with multi-permission AND/OR logic
+- **CLI included** — push schemas and seed relationships without writing scripts
+
+---
+
+## Packages
+
+This monorepo publishes three focused packages:
+
+| Package                                      | Install                            | Purpose                                   |
+| -------------------------------------------- | ---------------------------------- | ----------------------------------------- |
+| [`@permify-toolkit/core`](packages/core)     | `pnpm add @permify-toolkit/core`   | Schema DSL, client factory, shared config |
+| [`@permify-toolkit/nestjs`](packages/nestjs) | `pnpm add @permify-toolkit/nestjs` | NestJS module, guard, decorators          |
+| [`@permify-toolkit/cli`](packages/cli)       | `pnpm add -D @permify-toolkit/cli` | Schema push, relationship seeding         |
 
 ---
 
 ## Quick Start
 
-### Prerequisites
-
-This project uses [pnpm](https://pnpm.io/) for package management.
+### 1. Install
 
 ```bash
-# Install pnpm globally
-npm install -g pnpm
+# Core client + schema DSL
+pnpm add @permify-toolkit/core
+
+# NestJS integration
+pnpm add @permify-toolkit/nestjs
+
+# CLI (dev dependency)
+pnpm add -D @permify-toolkit/cli
 ```
 
-### Installation
+### 2. Define your schema in `permify.config.ts`
+
+```typescript
+import {
+  defineConfig,
+  schema,
+  entity,
+  relation,
+  permission
+} from "@permify-toolkit/core";
+
+export default defineConfig({
+  tenant: "t1",
+  client: { endpoint: "localhost:3478", insecure: true },
+  schema: schema({
+    user: entity({}),
+    document: entity({
+      relations: { owner: relation("user") },
+      permissions: { edit: permission("owner"), view: permission("owner") }
+    })
+  })
+});
+```
+
+### 3. Push schema with the CLI
 
 ```bash
-# Clone the repository
-git clone https://github.com/thisisnkc/permify-toolkit.git
-cd permify-toolkit
+permify-toolkit schema push
+permify-toolkit relationships seed --file-path ./data/relationships.json
+```
 
-# Install dependencies
-pnpm install
+### 4. Use in NestJS
 
-# Build all packages
-pnpm build
+```typescript
+// app.module.ts
+PermifyModule.forRoot({
+  configFile: true,
+  resolvers: {
+    subject: (ctx) => ctx.switchToHttp().getRequest().user?.id
+  }
+});
+
+// documents.controller.ts
+@Get(':id')
+@CheckPermission({ resource: 'document', action: 'view', resourceId: (req) => req.params.id })
+findOne(@Param('id') id: string) {
+  return this.documentsService.findOne(id);
+}
 ```
 
 ---
@@ -78,8 +123,6 @@ pnpm build
 The toolkit offers flexible ways to connect to your Permify instance.
 
 #### Option 1: Environment Variables (Recommended)
-
-The simplest approach uses environment variables for configuration:
 
 ```typescript
 import {
@@ -109,23 +152,19 @@ const client = createPermifyClient(clientOptionsFromEnv("MY_APP_"));
 
 #### Option 2: Manual Configuration
 
-For more control, configure the client directly:
-
 ```typescript
 import * as fs from "fs";
 import { createPermifyClient } from "@permify-toolkit/core";
 
 const client = createPermifyClient({
   endpoint: "permify.internal:3478",
-  insecure: false, // 'insecure' defaults to false (true only for localhost endpoints)
+  insecure: false,
   tls: {
     cert: fs.readFileSync("cert.pem"),
-    key: fs.readFileSync("key.pem"), // originally as pk in permify node client
+    key: fs.readFileSync("key.pem"),
     ca: fs.readFileSync("ca.pem")
   },
-  interceptor: {
-    authToken: "YOUR_TOKEN"
-  },
+  interceptor: { authToken: "YOUR_TOKEN" },
   timeoutMs: 60000
 });
 ```
@@ -157,10 +196,9 @@ export default defineConfig({
 });
 ```
 
-Then use it in your NestJS app:
+Then use it in your NestJS app — no client duplication, no env redefinition:
 
 ```typescript
-// No client duplication, no env redefinition
 PermifyModule.forRoot({
   configFile: true,
   resolvers: {
@@ -256,7 +294,7 @@ Built with ❤️ by Nikhil Kumar Choudhary aka [thisisnkc](https://github.com/t
 
 If you find this toolkit helpful, please consider:
 
-- Starring the repo
+- ⭐ **[Starring the repo](https://github.com/thisisnkc/permify-toolkit)**, it helps others discover permify-toolkit
 - Reporting bugs
 - Suggesting features
 - Improving documentation
