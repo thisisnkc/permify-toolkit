@@ -1,287 +1,43 @@
 # @permify-toolkit/cli
 
-The Permify Toolkit CLI provides a set of commands to manage your Permify configuration and schema efficiently. It simplifies the process of interacting with your Permify instance directly from your terminal.
+[![NPM Version](https://img.shields.io/npm/v/@permify-toolkit/cli)](https://www.npmjs.com/package/@permify-toolkit/cli)
+[![License](https://img.shields.io/github/license/thisisnkc/permify-toolkit)](https://github.com/thisisnkc/permify-toolkit/blob/main/LICENSE)
+
+CLI for pushing schemas and seeding relationships to [Permify](https://github.com/Permify/permify).
 
 ## Installation
-
-This package is intended to be used with **pnpm**.
 
 ```bash
 pnpm add -D @permify-toolkit/cli
 ```
 
-## Configuration
-
-The CLI relies on a `permify.config.ts` file in your project root. This file defines your Permify client connection settings and your schema structure.
-
-### Schema Definition Options
-
-You can define your schema in two ways:
-
-#### 1. Inline Schema (AST-based)
-
-Define your schema directly in the config file using the `schema()` function:
-
-```typescript
-import {
-  defineConfig,
-  schema,
-  entity,
-  relation,
-  permission
-} from "@permify-toolkit/core";
-
-export default defineConfig({
-  tenant: "t1", // Optional: default tenant for CLI commands
-  client: {
-    endpoint: "localhost:3478",
-    insecure: true // Use for local development without SSL
-  },
-  schema: schema({
-    user: entity({
-      relations: {
-        manager: relation("user")
-      },
-      permissions: {
-        manage: permission("manager")
-      }
-    }),
-    document: entity({
-      relations: {
-        owner: relation("user"),
-        viewer: relation("user")
-      },
-      permissions: {
-        view: permission("viewer or owner"),
-        edit: permission("owner")
-      }
-    })
-  }),
-
-  relationships: {
-    seedFile: "./relationships.json",
-    mode: "append" // "append" (default) or "replace"
-  }
-});
-```
-
-#### 2. File-based Schema
-
-Reference an external `.perm` schema file using the `schemaFile()` function:
-
-```typescript
-import { defineConfig, schemaFile } from "@permify-toolkit/core";
-
-export default defineConfig({
-  tenant: "t1", // Optional: default tenant for CLI commands
-  client: {
-    endpoint: "localhost:3478",
-    insecure: true
-  },
-  schema: schemaFile("./schema.perm")
-});
-```
-
-**Example `schema.perm` file:**
-
-```
-entity user {}
-
-entity organization {
-  relation member @user
-
-  permission view = member
-}
-
-entity document {
-  relation owner @user
-  relation parent @organization
-
-  permission view = owner or parent.view
-  permission edit = owner
-}
-```
-
-### Client Configuration Options
-
-| Option      | Type      | Description                              | Required | Default |
-| :---------- | :-------- | :--------------------------------------- | :------- | :------ |
-| `endpoint`  | `string`  | Permify server endpoint (host:port)      | Yes      | -       |
-| `insecure`  | `boolean` | Use insecure connection (no SSL/TLS)     | No       | `false` |
-| `cert`      | `string`  | TLS certificate for secure connections   | No       | -       |
-| `pk`        | `string`  | Private key for secure connections       | No       | -       |
-| `certChain` | `string`  | Certificate chain for secure connections | No       | -       |
-
-## Tenant Configuration
-
-The `--tenant` flag is **optional** if you define `tenant` in your `permify.config.ts`.
-
-**Resolution order:**
-
-1. `--tenant` CLI flag (or `PERMIFY_TENANT` env var)
-2. `tenant` field in `permify.config.ts`
-3. Error if neither is provided
-
-This means you can set your tenant once in the config and skip the flag entirely:
+## Quick Example
 
 ```bash
-# No --tenant needed if tenant is in permify.config.ts
+# Push schema from permify.config.ts
 permify-toolkit schema push
+
+# Seed relationships from a JSON file
 permify-toolkit relationships seed --file-path ./data/relationships.json
+
+# Push to a new tenant (creates it if needed)
+permify-toolkit schema push --tenant new-tenant -c
 ```
 
 ## Commands
 
-### `schema push`
-
-Pushes the schema defined in your `permify.config.ts` to the configured Permify server.
-
-**Usage:**
-
-```bash
-permify-toolkit schema push [--tenant <tenant-id>] [flags]
-```
-
-**Flags:**
-
-| Flag              | Alias | Description                                             | Required | Default                  |
-| :---------------- | :---- | :------------------------------------------------------ | :------- | :----------------------- |
-| `--tenant`        |       | The Tenant ID to push the schema to.                    | No       | From `permify.config.ts` |
-| `--create-tenant` | `-c`  | Creates the tenant if it does not exist before pushing. | No       | `false`                  |
-
-**Examples:**
-
-Push using tenant from config:
-
-```bash
-permify-toolkit schema push
-```
-
-Push to a specific tenant (overrides config):
-
-```bash
-permify-toolkit schema push --tenant my-tenant-id
-```
-
-Push to a tenant, creating it if it doesn't exist:
-
-```bash
-permify-toolkit schema push --tenant new-tenant-id --create-tenant
-```
-
-**Schema Validation:**
-
-The Permify server validates your schema when you push it. If there are any errors (e.g., referencing non-existent entities), you'll receive a detailed error message:
-
-```
-Error: Entity "usr" referenced in relation "document.owner" does not exist
-```
-
-### `relationships seed`
-
-Seeds relationship data from a JSON file to the configured Permify server.
-
-**Usage:**
-
-```bash
-permify-toolkit relationships seed --tenant <tenant-id> --file-path <path-to-file> [flags]
-```
-
-**Flags:**
-
-| Flag              | Alias | Description                                             | Required | Default                  |
-| :---------------- | :---- | :------------------------------------------------------ | :------- | :----------------------- |
-| `--tenant`        |       | The Tenant ID to seed relationships to.                 | No       | From `permify.config.ts` |
-| `--file-path`     | `-f`  | Path to the JSON file containing relationship tuples.   | No       | From `permify.config.ts` |
-| `--create-tenant` | `-c`  | Creates the tenant if it does not exist before seeding. | No       | `false`                  |
-
-**Example `relationships.json` file:**
-
-The JSON file must contain a `tuples` array, where each tuple object has `entity`, `relation`, and `subject` fields.
-
-```json
-{
-  "tuples": [
-    {
-      "entity": {
-        "type": "organization",
-        "id": "org_1"
-      },
-      "relation": "member",
-      "subject": {
-        "type": "user",
-        "id": "alice"
-      }
-    },
-    {
-      "entity": {
-        "type": "document",
-        "id": "doc_1"
-      },
-      "relation": "owner",
-      "subject": {
-        "type": "user",
-        "id": "bob"
-      }
-    },
-    {
-      "entity": {
-        "type": "document",
-        "id": "doc_1"
-      },
-      "relation": "viewer",
-      "subject": {
-        "type": "user",
-        "id": "charlie"
-      }
-    }
-  ]
-}
-```
-
-**Examples:**
-
-Seed relationships to an existing tenant:
-
-```bash
-permify-toolkit relationships seed --tenant my-tenant-id --file-path ./data/relationships.json
-```
-
-Seed relationships to a new tenant:
-
-```bash
-permify-toolkit relationships seed --tenant new-tenant-id --file-path ./relationships.json --create-tenant
-```
-
-## Development
-
-To develop and test changes locally:
-
-1.  Make your changes.
-2.  Build the package:
-    ```bash
-    pnpm build
-    ```
-3.  Run the CLI using the local bin script:
-    ```bash
-    ./bin/permify-toolkit <command> [flags]
-    ```
-
-Example:
-
-```bash
-./bin/permify-toolkit schema push --tenant dev-tenant -c
-```
+| Command              | Description                        |
+| -------------------- | ---------------------------------- |
+| `schema push`        | Push schema to Permify server      |
+| `relationships seed` | Seed relationship tuples from JSON |
 
 ## Features
 
-- **Flexible Schema Definition**: Choose between inline TypeScript schemas or external `.perm` files
-- **Type Safety**: Full TypeScript support with autocomplete for inline schemas
-- **Schema Validation**: Permify validates your schema on push, catching errors early
-- **Tenant Management**: Automatically create tenants if they don't exist
-- **Secure & Insecure Connections**: Support for both SSL/TLS and insecure local development
-- **File Validation**: Automatic validation of `.perm` file paths and extensions
+- **Shared Config** — reads from `permify.config.ts`, no flag duplication
+- **Inline or File Schemas** — TypeScript DSL or `.perm` files
+- **Tenant Management** — auto-create tenants with `--create-tenant`
+- **Schema Validation** — Permify validates on push with detailed error messages
 
 ## Documentation
 
-For full documentation and examples, please visit the [main repository](https://github.com/thisisnkc/permify-toolkit).
+For full documentation, guides, and API reference, visit the **[Permify Toolkit Docs](https://thisisnkc.github.io/permify-toolkit/)**.

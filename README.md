@@ -253,7 +253,7 @@ We're actively working on expanding the toolkit. Here's what's coming:
 - [x] Full-stack example app (frontend + NestJS backend)
 - [x] Release v1.0.0 and publish to npm
 - [x] Multi permission checks (AND + OR logic)
-- [ ] Docs
+- [x] Docs
 - [ ] Testing utilities — mock Permify client and test helpers for unit testing authorization logic
 - [ ] Permission result caching — in-memory (and optionally Redis-backed) cache to reduce gRPC round-trips
 - [ ] Schema validation CLI command — lint and validate schema syntax before pushing to Permify
