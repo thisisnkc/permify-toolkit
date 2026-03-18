@@ -70,20 +70,17 @@ pnpm start:dev          # Start NestJS in dev mode
 
 The simulator uses these environment variables (with defaults):
 
-| Variable | Default |
-| --- | --- |
+| Variable           | Default          |
+| ------------------ | ---------------- |
 | `PERMIFY_ENDPOINT` | `localhost:3478` |
-| `PERMIFY_INSECURE` | `true` |
+| `PERMIFY_INSECURE` | `true`           |
 
 ## Minimal Example
 
 Here's the smallest possible setup to check permissions:
 
 ```typescript
-import {
-  createPermifyClient,
-  checkPermission
-} from "@permify-toolkit/core";
+import { createPermifyClient, checkPermission } from "@permify-toolkit/core";
 
 const client = createPermifyClient({
   endpoint: "localhost:3478",
@@ -108,7 +105,13 @@ A complete NestJS app with authorization:
 
 ```typescript
 // permify.config.ts
-import { defineConfig, schema, entity, relation, permission } from "@permify-toolkit/core";
+import {
+  defineConfig,
+  schema,
+  entity,
+  relation,
+  permission
+} from "@permify-toolkit/core";
 
 export default defineConfig({
   tenant: "t1",

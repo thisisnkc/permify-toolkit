@@ -98,10 +98,10 @@ permify-toolkit schema push [--tenant <tenant-id>] [flags]
 
 **Flags:**
 
-| Flag | Alias | Description | Default |
-| --- | --- | --- | --- |
-| `--tenant` | | Tenant ID to push to | From config |
-| `--create-tenant` | `-c` | Create tenant if it doesn't exist | `false` |
+| Flag              | Alias | Description                       | Default     |
+| ----------------- | ----- | --------------------------------- | ----------- |
+| `--tenant`        |       | Tenant ID to push to              | From config |
+| `--create-tenant` | `-c`  | Create tenant if it doesn't exist | `false`     |
 
 **Examples:**
 
@@ -134,11 +134,11 @@ permify-toolkit relationships seed [--tenant <id>] [--file-path <path>] [flags]
 
 **Flags:**
 
-| Flag | Alias | Description | Default |
-| --- | --- | --- | --- |
-| `--tenant` | | Tenant ID to seed to | From config |
-| `--file-path` | `-f` | Path to JSON file with tuples | From config |
-| `--create-tenant` | `-c` | Create tenant if it doesn't exist | `false` |
+| Flag              | Alias | Description                       | Default     |
+| ----------------- | ----- | --------------------------------- | ----------- |
+| `--tenant`        |       | Tenant ID to seed to              | From config |
+| `--file-path`     | `-f`  | Path to JSON file with tuples     | From config |
+| `--create-tenant` | `-c`  | Create tenant if it doesn't exist | `false`     |
 
 **Example `relationships.json`:**
 

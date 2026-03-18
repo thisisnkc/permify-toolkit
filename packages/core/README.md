@@ -14,7 +14,13 @@ pnpm add @permify-toolkit/core
 ## Quick Example
 
 ```typescript
-import { schema, entity, relation, permission, defineConfig } from "@permify-toolkit/core";
+import {
+  schema,
+  entity,
+  relation,
+  permission,
+  defineConfig
+} from "@permify-toolkit/core";
 
 export default defineConfig({
   tenant: "t1",
@@ -23,7 +29,10 @@ export default defineConfig({
     user: entity({}),
     document: entity({
       relations: { owner: relation("user"), editor: relation("user") },
-      permissions: { edit: permission("owner", "editor"), view: permission("owner", "editor") }
+      permissions: {
+        edit: permission("owner", "editor"),
+        view: permission("owner", "editor")
+      }
     })
   })
 });
@@ -32,7 +41,10 @@ export default defineConfig({
 ```typescript
 import { createPermifyClient, checkPermission } from "@permify-toolkit/core";
 
-const client = createPermifyClient({ endpoint: "localhost:3478", insecure: true });
+const client = createPermifyClient({
+  endpoint: "localhost:3478",
+  insecure: true
+});
 
 const { allowed } = await checkPermission(client, {
   tenantId: "t1",

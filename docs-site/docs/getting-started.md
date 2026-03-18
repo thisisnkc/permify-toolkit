@@ -14,9 +14,11 @@ Get up and running with Permify Toolkit in under 5 minutes.
 
 :::tip Quick Permify Setup
 Run Permify locally with Docker:
+
 ```bash
 docker run -p 3476:3476 -p 3478:3478 ghcr.io/permify/permify serve
 ```
+
 Port `3478` is the gRPC endpoint used by the toolkit.
 :::
 

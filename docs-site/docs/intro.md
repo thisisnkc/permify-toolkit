@@ -21,11 +21,11 @@ Working with Permify's gRPC API directly is verbose. Permify Toolkit wraps it in
 
 This monorepo publishes three focused packages:
 
-| Package | Purpose |
-| --- | --- |
-| [`@permify-toolkit/core`](/docs/packages/core) | Schema DSL, client factory, shared config |
-| [`@permify-toolkit/nestjs`](/docs/packages/nestjs) | NestJS module, guard, decorators |
-| [`@permify-toolkit/cli`](/docs/packages/cli) | Schema push, relationship seeding |
+| Package                                            | Purpose                                   |
+| -------------------------------------------------- | ----------------------------------------- |
+| [`@permify-toolkit/core`](/docs/packages/core)     | Schema DSL, client factory, shared config |
+| [`@permify-toolkit/nestjs`](/docs/packages/nestjs) | NestJS module, guard, decorators          |
+| [`@permify-toolkit/cli`](/docs/packages/cli)       | Schema push, relationship seeding         |
 
 ## When to Use It
 

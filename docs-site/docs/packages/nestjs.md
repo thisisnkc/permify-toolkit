@@ -222,7 +222,11 @@ There is no merging between levels. If you override at a level, you replace the 
 
 ```typescript
 import { Controller, Get, UseGuards } from "@nestjs/common";
-import { PermifyGuard, CheckPermission, PermifyResolvers } from "@permify-toolkit/nestjs";
+import {
+  PermifyGuard,
+  CheckPermission,
+  PermifyResolvers
+} from "@permify-toolkit/nestjs";
 
 @PermifyResolvers({
   subject: (ctx) => ctx.switchToHttp().getRequest().user?.id,
@@ -265,10 +269,10 @@ The `@CheckPermission` decorator supports multiple permissions:
 
 ### Exports
 
-| Export | Description |
-| --- | --- |
-| `PermifyModule` | NestJS dynamic module (`forRoot` / `forRootAsync`) |
-| `PermifyService` | Injectable service for manual permission checks |
-| `PermifyGuard` | Route guard implementing `CanActivate` |
-| `@CheckPermission()` | Decorator to specify required permissions |
+| Export                | Description                                          |
+| --------------------- | ---------------------------------------------------- |
+| `PermifyModule`       | NestJS dynamic module (`forRoot` / `forRootAsync`)   |
+| `PermifyService`      | Injectable service for manual permission checks      |
+| `PermifyGuard`        | Route guard implementing `CanActivate`               |
+| `@CheckPermission()`  | Decorator to specify required permissions            |
 | `@PermifyResolvers()` | Decorator to override resolvers per controller/route |

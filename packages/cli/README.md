@@ -26,9 +26,9 @@ permify-toolkit schema push --tenant new-tenant -c
 
 ## Commands
 
-| Command | Description |
-| --- | --- |
-| `schema push` | Push schema to Permify server |
+| Command              | Description                        |
+| -------------------- | ---------------------------------- |
+| `schema push`        | Push schema to Permify server      |
 | `relationships seed` | Seed relationship tuples from JSON |
 
 ## Features

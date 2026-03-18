@@ -46,7 +46,10 @@ export default defineConfig({
 ### Option 1: Environment Variables (Recommended)
 
 ```typescript
-import { createPermifyClient, clientOptionsFromEnv } from "@permify-toolkit/core";
+import {
+  createPermifyClient,
+  clientOptionsFromEnv
+} from "@permify-toolkit/core";
 
 // Reads from PERMIFY_ENDPOINT, PERMIFY_INSECURE, etc.
 const client = createPermifyClient(clientOptionsFromEnv());
@@ -54,14 +57,14 @@ const client = createPermifyClient(clientOptionsFromEnv());
 
 **Supported environment variables:**
 
-| Variable | Description | Example |
-| --- | --- | --- |
-| `PERMIFY_ENDPOINT` | Permify server endpoint | `localhost:3478` |
-| `PERMIFY_INSECURE` | Use insecure connection | `true` / `false` |
-| `PERMIFY_TLS_CERT` | Path to TLS certificate file | `/path/to/cert.pem` |
-| `PERMIFY_TLS_KEY` | Path to TLS key file | `/path/to/key.pem` |
-| `PERMIFY_TLS_CA` | Path to CA certificate file | `/path/to/ca.pem` |
-| `PERMIFY_AUTH_TOKEN` | Permify access token | `your-token` |
+| Variable             | Description                  | Example             |
+| -------------------- | ---------------------------- | ------------------- |
+| `PERMIFY_ENDPOINT`   | Permify server endpoint      | `localhost:3478`    |
+| `PERMIFY_INSECURE`   | Use insecure connection      | `true` / `false`    |
+| `PERMIFY_TLS_CERT`   | Path to TLS certificate file | `/path/to/cert.pem` |
+| `PERMIFY_TLS_KEY`    | Path to TLS key file         | `/path/to/key.pem`  |
+| `PERMIFY_TLS_CA`     | Path to CA certificate file  | `/path/to/ca.pem`   |
+| `PERMIFY_AUTH_TOKEN` | Permify access token         | `your-token`        |
 
 You can also use a custom prefix:
 
@@ -91,15 +94,15 @@ const client = createPermifyClient({
 
 ### Client Options Reference
 
-| Option | Type | Description | Required | Default |
-| --- | --- | --- | --- | --- |
-| `endpoint` | `string` | Permify server endpoint (host:port) | Yes | - |
-| `insecure` | `boolean` | Use insecure connection (no SSL/TLS) | No | `false` |
-| `tls.cert` | `Buffer` | TLS certificate | No | - |
-| `tls.key` | `Buffer` | TLS private key | No | - |
-| `tls.ca` | `Buffer` | CA certificate | No | - |
-| `interceptor.authToken` | `string` | Auth token for requests | No | - |
-| `timeoutMs` | `number` | Request timeout in milliseconds | No | - |
+| Option                  | Type      | Description                          | Required | Default |
+| ----------------------- | --------- | ------------------------------------ | -------- | ------- |
+| `endpoint`              | `string`  | Permify server endpoint (host:port)  | Yes      | -       |
+| `insecure`              | `boolean` | Use insecure connection (no SSL/TLS) | No       | `false` |
+| `tls.cert`              | `Buffer`  | TLS certificate                      | No       | -       |
+| `tls.key`               | `Buffer`  | TLS private key                      | No       | -       |
+| `tls.ca`                | `Buffer`  | CA certificate                       | No       | -       |
+| `interceptor.authToken` | `string`  | Auth token for requests              | No       | -       |
+| `timeoutMs`             | `number`  | Request timeout in milliseconds      | No       | -       |
 
 ## Schema Definition Options
 
