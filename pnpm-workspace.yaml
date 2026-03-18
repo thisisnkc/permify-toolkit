@@ -2,3 +2,4 @@ packages:
   - "packages/*"
   - "examples/*"
   - "simulator/*"
+  - "docs-site"

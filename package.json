@@ -42,6 +42,9 @@
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm build && changeset publish",
+    "docs:dev": "pnpm --filter docs-site start",
+    "docs:build": "pnpm --filter docs-site build",
+    "docs:serve": "pnpm --filter docs-site serve",
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {
