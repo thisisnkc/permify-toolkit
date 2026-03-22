@@ -46,3 +46,37 @@ export function loadSchemaFromConfig(schema: SchemaHandle | string): string {
 
   throw new Error("Schema must be either a SchemaHandle or a file path string");
 }
+
+/**
+ * Validates schema content without pushing to Permify.
+ *
+ * - SchemaHandle: calls .validate() for semantic checks (entity refs, permissions).
+ *   Note: in real usage the schema() factory already validated at construction time;
+ *   this call is a no-op for correctly built schemas but is the hook for future checks.
+ * - string (compiled .perm content): checks structural basics —
+ *   non-empty (note: loadConfig already catches empty files) and presence of entity blocks.
+ *
+ * @throws {Error} with a descriptive message on the first failure found
+ */
+export function validateSchemaContent(schema: SchemaHandle | string): void {
+  if (typeof schema === "object" && "compile" in schema) {
+    (schema as SchemaHandle).validate();
+    return;
+  }
+
+  if (typeof schema === "string") {
+    const content = schema.trim();
+    if (!content) {
+      throw new Error("Schema file is empty");
+    }
+    if (!/entity\s+\w+\s*\{/.test(content)) {
+      throw new Error(
+        'Schema file contains no entity definitions. Expected at least one "entity NAME { ... }" block.'
+      );
+    }
+    return;
+  }
+
+  // TypeScript exhaustiveness guard — should never be reached
+  throw new Error("Schema must be a SchemaHandle or a compiled DSL string");
+}
