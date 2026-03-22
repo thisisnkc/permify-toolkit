@@ -59,7 +59,7 @@ test.group("Schema Validate Command", () => {
     }
   });
 
-  test("should fail with 'Schema not defined' when config has no schema", async ({
+  test("should fail with 'Schema must be provided' when config has no schema", async ({
     assert,
     fs
   }) => {
