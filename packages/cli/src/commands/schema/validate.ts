@@ -11,25 +11,10 @@ export default class SchemaValidate extends Command {
   static flags = {};
 
   async run() {
-    // 1. Load config (requires permify.config.ts in cwd)
-    let config;
-    try {
-      config = await loadConfig();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("Schema must be provided")) {
-        this.error("Schema not defined in config");
-      }
-      throw err;
-    }
-
-    if (!config.schema) {
-      this.error("Schema not defined in config");
-    }
+    // 1. Load config
+    const config = await loadConfig();
 
     // 2. Resolve schema input
-    //    For SchemaHandle: pass directly to validateSchemaContent for semantic checks.
-    //    For string path: read the .perm file content for structural checks.
     let schemaInput: NonNullable<typeof config.schema>;
     if (typeof config.schema === "string") {
       const fullPath = validateSchemaFile(config.schema);

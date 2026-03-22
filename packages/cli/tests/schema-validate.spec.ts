@@ -76,7 +76,7 @@ test.group("Schema Validate Command", () => {
       assert.fail("Command should have failed");
     } catch (error: unknown) {
       const msg = stripAnsi((error as Error).message);
-      assert.include(msg, "Schema not defined");
+      assert.include(msg, "Schema must be provided");
     }
   });
 
