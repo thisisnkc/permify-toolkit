@@ -65,6 +65,7 @@
     "prettier": "^3.7.4",
     "simple-git-hooks": "^2.13.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "simple-git-hooks": {
