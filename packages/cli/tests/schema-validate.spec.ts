@@ -90,7 +90,8 @@ test.group("Schema Validate Command", () => {
       await runCommand(SchemaValidate as any, [], { cwd });
       assert.fail("Command should have failed");
     } catch (error: unknown) {
-      assert.exists(error);
+      const msg = stripAnsi((error as Error).message);
+      assert.include(msg, "Config file not found");
     }
   });
 
@@ -184,7 +185,8 @@ test.group("Schema Validate Command", () => {
       await runCommand(SchemaValidate as any, [], { cwd });
       assert.fail("Command should have failed");
     } catch (error: unknown) {
-      assert.exists(error);
+      const msg = stripAnsi((error as Error).message);
+      assert.include(msg, ".perm extension");
     }
   });
 });
