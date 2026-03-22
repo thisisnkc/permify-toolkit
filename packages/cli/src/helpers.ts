@@ -59,7 +59,7 @@ export function loadSchemaFromConfig(schema: SchemaHandle | string): string {
  * @throws {Error} with a descriptive message on the first failure found
  */
 export function validateSchemaContent(schema: SchemaHandle | string): void {
-  if (typeof schema === "object" && "compile" in schema) {
+  if (typeof schema === "object" && "compile" in schema && "validate" in schema) {
     (schema as SchemaHandle).validate();
     return;
   }
