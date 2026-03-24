@@ -6,29 +6,24 @@ import { test } from "@japa/runner";
 import { runCommand, stripAnsi } from "./helpers.js";
 import SchemaValidate from "../src/commands/schema/validate.js";
 
-// Inline SchemaHandle mock — Jiti evaluates this at runtime inside the config file
 const validSchemaHandle = `{
   ast: {},
   compile: () => "entity user {}",
   validate: () => {}
 }`;
 
-// The mock's validate() throws to simulate a semantic error
-// (In real usage, schema() throws at construction — this mock is the test-only path)
 const invalidSchemaHandle = `{
   ast: {},
   compile: () => "entity user {}",
   validate: () => { throw new Error('Entity "ghost" does not exist') }
 }`;
 
-// Simulate a cycle error from validate()
 const cyclicSchemaHandle = `{
   ast: {},
   compile: () => "entity user {}",
   validate: () => { throw new Error('Permission cycle detected in entity "document": "view" → "edit"') }
 }`;
 
-// SchemaHandle with a real AST that has an unused relation
 const schemaWithUnusedRelation = `{
   ast: {
     entities: {
@@ -217,8 +212,6 @@ test.group("Schema Validate Command", () => {
     }
   });
 
-  // --- Section E: Cycle detection ---
-
   test("should fail when schema has a permission cycle", async ({
     assert,
     fs
@@ -240,8 +233,6 @@ test.group("Schema Validate Command", () => {
       assert.include(msg, "cycle");
     }
   });
-
-  // --- Section D: Expression sanity for .perm files ---
 
   test("should fail for a .perm file with a dangling operator", async ({
     assert,
@@ -405,8 +396,6 @@ test.group("Schema Validate Command", () => {
       assert.include(msg, "empty");
     }
   });
-
-  // --- Section F: Warnings ---
 
   test("should succeed but print warnings for unused relations", async ({
     assert,
