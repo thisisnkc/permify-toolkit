@@ -142,19 +142,20 @@ export default defineConfig({
 
 ### Exports
 
-| Export                   | Description                             |
-| ------------------------ | --------------------------------------- |
-| `schema()`               | Create a schema definition              |
-| `entity()`               | Define an entity type                   |
-| `relation()`             | Define a relation on an entity          |
-| `attribute()`            | Define an attribute on an entity        |
-| `permission()`           | Define a permission rule                |
-| `defineConfig()`         | Create a typed config object            |
-| `validateConfig()`       | Validate a config object                |
-| `schemaFile()`           | Reference a `.perm` schema file         |
-| `createPermifyClient()`  | Create a gRPC client                    |
-| `clientOptionsFromEnv()` | Read client options from env vars       |
-| `checkPermission()`      | Check a permission                      |
-| `writeRelationships()`   | Write relationship tuples               |
-| `deleteRelationships()`  | Delete relationship tuples              |
-| `relationsOf()`          | Helper to extract relations from schema |
+| Export                   | Description                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `schema()`               | Create a schema definition                                                                              |
+| `entity()`               | Define an entity type                                                                                   |
+| `relation()`             | Define a relation on an entity                                                                          |
+| `attribute()`            | Define an attribute on an entity                                                                        |
+| `permission()`           | Define a permission rule                                                                                |
+| `defineConfig()`         | Create a typed config object                                                                            |
+| `validateConfig()`       | Validate a config object                                                                                |
+| `schemaFile()`           | Reference a `.perm` schema file                                                                         |
+| `createPermifyClient()`  | Create a gRPC client                                                                                    |
+| `clientOptionsFromEnv()` | Read client options from env vars                                                                       |
+| `checkPermission()`      | Check a permission                                                                                      |
+| `writeRelationships()`   | Write relationship tuples                                                                               |
+| `deleteRelationships()`  | Delete relationship tuples                                                                              |
+| `relationsOf()`          | Helper to extract relations from schema                                                                 |
+| `getSchemaWarnings()`    | Collect non-blocking warnings from a schema AST (unused relations, empty entities, missing permissions) |
