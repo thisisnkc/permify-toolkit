@@ -256,7 +256,7 @@ We're actively working on expanding the toolkit. Here's what's coming:
 - [x] Docs
 - [ ] Testing utilities — mock Permify client and test helpers for unit testing authorization logic
 - [ ] Permission result caching — in-memory (and optionally Redis-backed) cache to reduce gRPC round-trips
-- [ ] Schema validation CLI command — lint and validate schema syntax before pushing to Permify
+- [x] Schema validation CLI command — lint and validate schema syntax before pushing to Permify
 - [ ] Relationship query CLI commands — list, inspect, and export existing relationships from a tenant
 - [ ] Express.js / Fastify middleware — permission-check middleware for non-NestJS backends
 - [ ] GraphQL support — `@CheckPermission` directive and guards for NestJS GraphQL resolvers

@@ -43,7 +43,7 @@ configure({
   plugins: [
     assert(),
     expectTypeOf(),
-    fileSystem({ autoClean: true, basePath: "./tests/tmp" })
+    fileSystem({ autoClean: true, basePath: resolve(cwd, "tests/tmp") })
   ]
 });
 

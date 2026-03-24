@@ -52,7 +52,7 @@
   },
   "scripts": {
     "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts' --fix",
-    "test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
+    "test": "NODE_NO_WARNINGS=1 pnpm exec tsx ../../tests/setup.ts",
     "build": "tsc",
     "prepack": "oclif manifest && oclif readme",
     "postpack": "rm -f oclif.manifest.json",

@@ -124,6 +124,66 @@ The Permify server validates your schema on push. If there are errors, you'll se
 Error: Entity "usr" referenced in relation "document.owner" does not exist
 ```
 
+### `schema validate`
+
+Validates your schema locally without connecting to a Permify server. Catches structural errors, broken references, permission cycles, and suspicious patterns before you push.
+
+```bash
+permify-toolkit schema validate
+```
+
+This command takes no flags. It reads schema configuration from `permify.config.ts` in the current directory.
+
+**What it checks:**
+
+| Category              | Examples                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------- |
+| **Input**             | Schema source exists, file readable, `.perm` extension required                                    |
+| **Structure**         | At least one entity defined                                                                        |
+| **References**        | Relation targets exist, permission symbols resolve, traversal targets valid                        |
+| **Expression syntax** | No dangling operators (`owner or`), balanced parentheses, no double-dot traversal (`parent..view`) |
+| **Cycles**            | Direct self-reference (`view = view`), indirect cycles (`view → edit → view`)                      |
+| **Warnings**          | Unused relations, entities with no permissions                                                     |
+
+**Output:**
+
+When the schema is valid:
+
+```
+✔ Schema is valid
+```
+
+When valid but with warnings:
+
+```
+⚠ Schema is valid with warnings
+
+Warnings:
+  1. Entity "document": relation "viewer" is never used in any permission
+  2. Entity "organization": has no permissions defined
+```
+
+When validation fails:
+
+```
+Error: Schema validation failed:
+Permission "document.view" references undefined relation or permission "viewer"
+```
+
+**Examples:**
+
+```bash
+# Validate schema in your current project
+permify-toolkit schema validate
+
+# Validate before pushing in CI
+permify-toolkit schema validate && permify-toolkit schema push
+```
+
+:::tip Use before push
+Run `schema validate` before `schema push` for instant local feedback, no server connection needed.
+:::
+
 ### `relationships seed`
 
 Seeds relationship data from a JSON file.

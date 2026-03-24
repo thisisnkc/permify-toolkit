@@ -50,10 +50,10 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
-    "test:file": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts --files",
-    "test:group": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts --groups",
-    "test:grep": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts --tests",
+    "test": "NODE_NO_WARNINGS=1 pnpm exec tsx ../../tests/setup.ts",
+    "test:file": "NODE_NO_WARNINGS=1 pnpm exec tsx ../../tests/setup.ts --files",
+    "test:group": "NODE_NO_WARNINGS=1 pnpm exec tsx ../../tests/setup.ts --groups",
+    "test:grep": "NODE_NO_WARNINGS=1 pnpm exec tsx ../../tests/setup.ts --tests",
     "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts' --fix",
     "build": "tsc"
   },

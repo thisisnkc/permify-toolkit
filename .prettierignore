@@ -3,3 +3,5 @@ dist
 pnpm-lock.yaml
 **/dist
 **/node_modules
+docs-site/build
+docs-site/.docusaurus
