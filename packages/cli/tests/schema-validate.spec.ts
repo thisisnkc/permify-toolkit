@@ -3,8 +3,8 @@ import "@japa/file-system";
 
 import { test } from "@japa/runner";
 
-import SchemaValidate from "../src/commands/schema/validate.js";
 import { runCommand, stripAnsi } from "./helpers.js";
+import SchemaValidate from "../src/commands/schema/validate.js";
 
 // Inline SchemaHandle mock — Jiti evaluates this at runtime inside the config file
 const validSchemaHandle = `{
@@ -19,6 +19,33 @@ const invalidSchemaHandle = `{
   ast: {},
   compile: () => "entity user {}",
   validate: () => { throw new Error('Entity "ghost" does not exist') }
+}`;
+
+// Simulate a cycle error from validate()
+const cyclicSchemaHandle = `{
+  ast: {},
+  compile: () => "entity user {}",
+  validate: () => { throw new Error('Permission cycle detected in entity "document": "view" → "edit"') }
+}`;
+
+// SchemaHandle with a real AST that has an unused relation
+const schemaWithUnusedRelation = `{
+  ast: {
+    entities: {
+      document: {
+        name: 'document',
+        relations: {
+          owner: { name: 'owner', target: ['user'] },
+          viewer: { name: 'viewer', target: ['user'] }
+        },
+        permissions: { view: { name: 'view', expression: 'owner' } },
+        attributes: {}
+      },
+      user: { name: 'user', relations: {}, permissions: {}, attributes: {} }
+    }
+  },
+  compile: () => 'entity document {}',
+  validate: () => {}
 }`;
 
 test.group("Schema Validate Command", () => {
@@ -188,5 +215,227 @@ test.group("Schema Validate Command", () => {
       const msg = stripAnsi((error as Error).message);
       assert.include(msg, ".perm extension");
     }
+  });
+
+  // --- Section E: Cycle detection ---
+
+  test("should fail when schema has a permission cycle", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "permify.config.ts",
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: ${cyclicSchemaHandle}
+      };`
+    );
+
+    const cwd = fs.basePath;
+    try {
+      await runCommand(SchemaValidate as any, [], { cwd });
+      assert.fail("Command should have failed");
+    } catch (error: unknown) {
+      const msg = stripAnsi((error as Error).message);
+      assert.include(msg, "cycle");
+    }
+  });
+
+  // --- Section D: Expression sanity for .perm files ---
+
+  test("should fail for a .perm file with a dangling operator", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "schema.perm",
+      "entity document {\n  relation owner @user\n  permission view = owner or\n}\nentity user {}"
+    );
+    const permPath = `${fs.basePath}/schema.perm`;
+
+    await fs.create(
+      "permify.config.ts",
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: "${permPath}"
+      };`
+    );
+
+    const cwd = fs.basePath;
+    try {
+      await runCommand(SchemaValidate as any, [], { cwd });
+      assert.fail("Command should have failed");
+    } catch (error: unknown) {
+      const msg = stripAnsi((error as Error).message);
+      assert.include(msg, "dangling");
+    }
+  });
+
+  test("should fail for a .perm file with unbalanced parentheses", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "schema.perm",
+      "entity document {\n  relation owner @user\n  permission view = (owner\n}\nentity user {}"
+    );
+    const permPath = `${fs.basePath}/schema.perm`;
+
+    await fs.create(
+      "permify.config.ts",
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: "${permPath}"
+      };`
+    );
+
+    const cwd = fs.basePath;
+    try {
+      await runCommand(SchemaValidate as any, [], { cwd });
+      assert.fail("Command should have failed");
+    } catch (error: unknown) {
+      const msg = stripAnsi((error as Error).message);
+      assert.include(msg, "parenthes");
+    }
+  });
+
+  test("should fail for a .perm file with double-dot traversal", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "schema.perm",
+      "entity document {\n  relation parent @folder\n  permission view = parent..view\n}\nentity folder {}\nentity user {}"
+    );
+    const permPath = `${fs.basePath}/schema.perm`;
+
+    await fs.create(
+      "permify.config.ts",
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: "${permPath}"
+      };`
+    );
+
+    const cwd = fs.basePath;
+    try {
+      await runCommand(SchemaValidate as any, [], { cwd });
+      assert.fail("Command should have failed");
+    } catch (error: unknown) {
+      const msg = stripAnsi((error as Error).message);
+      assert.include(msg, "dot");
+    }
+  });
+
+  test("should fail for a .perm file with two identifiers and no operator", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "schema.perm",
+      "entity document {\n  relation owner @user\n  relation viewer @user\n  permission view = viewer owner\n}\nentity user {}"
+    );
+    const permPath = `${fs.basePath}/schema.perm`;
+
+    await fs.create(
+      "permify.config.ts",
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: "${permPath}"
+      };`
+    );
+
+    const cwd = fs.basePath;
+    try {
+      await runCommand(SchemaValidate as any, [], { cwd });
+      assert.fail("Command should have failed");
+    } catch (error: unknown) {
+      const msg = stripAnsi((error as Error).message);
+      assert.include(msg, "operator");
+    }
+  });
+
+  test("should succeed for a .perm file that has inline comments", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "schema.perm",
+      "entity document {\n  relation owner @user // the owner\n  permission view = owner // grant view\n}\nentity user {}"
+    );
+    const permPath = `${fs.basePath}/schema.perm`;
+
+    await fs.create(
+      "permify.config.ts",
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: "${permPath}"
+      };`
+    );
+
+    const cwd = fs.basePath;
+    await runCommand(SchemaValidate as any, [], { cwd });
+    assert.isTrue(true);
+  });
+
+  test("should fail for a .perm file with an empty permission expression", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "schema.perm",
+      "entity document {\n  relation owner @user\n  permission view =\n}\nentity user {}"
+    );
+    const permPath = `${fs.basePath}/schema.perm`;
+
+    await fs.create(
+      "permify.config.ts",
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: "${permPath}"
+      };`
+    );
+
+    const cwd = fs.basePath;
+    try {
+      await runCommand(SchemaValidate as any, [], { cwd });
+      assert.fail("Command should have failed");
+    } catch (error: unknown) {
+      const msg = stripAnsi((error as Error).message);
+      assert.include(msg, "empty");
+    }
+  });
+
+  // --- Section F: Warnings ---
+
+  test("should succeed but print warnings for unused relations", async ({
+    assert,
+    fs
+  }) => {
+    await fs.create(
+      "permify.config.ts",
+      `export default {
+        client: { endpoint: "localhost:3478", insecure: true },
+        schema: ${schemaWithUnusedRelation}
+      };`
+    );
+
+    const cwd = fs.basePath;
+    const logs: string[] = [];
+    const origWrite = process.stdout.write.bind(process.stdout);
+    (process.stdout as any).write = (chunk: unknown) => {
+      logs.push(typeof chunk === "string" ? chunk : String(chunk));
+      return true;
+    };
+
+    try {
+      await runCommand(SchemaValidate as any, [], { cwd });
+    } finally {
+      (process.stdout as any).write = origWrite;
+    }
+
+    const output = logs.join("");
+    assert.include(output, "viewer");
+    assert.include(output, "never used");
   });
 });

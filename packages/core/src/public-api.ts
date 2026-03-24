@@ -17,6 +17,8 @@ export { relationsOf } from "./schema/helpers.js";
 
 export { writeSchemaToPermify } from "./schema/write-schema.js";
 
+export { getSchemaWarnings } from "./schema/validate.js";
+
 export {
   defineConfig,
   validateConfig,

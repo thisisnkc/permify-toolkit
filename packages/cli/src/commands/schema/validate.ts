@@ -1,7 +1,11 @@
-import { Command } from "@oclif/core";
 import fs from "node:fs";
+import { Command } from "@oclif/core";
 
-import { loadConfig, validateSchemaContent, validateSchemaFile } from "../../helpers.js";
+import {
+  loadConfig,
+  validateSchemaContent,
+  validateSchemaFile
+} from "../../helpers.js";
 
 export default class SchemaValidate extends Command {
   static description =
@@ -23,14 +27,23 @@ export default class SchemaValidate extends Command {
       schemaInput = config.schema;
     }
 
-    // 3. Validate
+    // 3. Validate — throws on hard errors
+    let warnings: string[] = [];
     try {
-      validateSchemaContent(schemaInput);
+      const result = validateSchemaContent(schemaInput);
+      warnings = result.warnings;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       this.error(`Schema validation failed:\n${message}`);
     }
 
-    this.log("✔ Schema is valid");
+    // 4. Report result
+    if (warnings.length > 0) {
+      this.log("⚠ Schema is valid with warnings\n");
+      this.log("Warnings:");
+      warnings.forEach((w, i) => this.log(`  ${i + 1}. ${w}`));
+    } else {
+      this.log("✔ Schema is valid");
+    }
   }
 }

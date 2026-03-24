@@ -47,7 +47,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "test": "cross-env NODE_NO_WARNINGS=1 npx tsx ../../tests/setup.ts",
+    "test": "NODE_NO_WARNINGS=1 pnpm exec tsx ../../tests/setup.ts",
     "build": "tsc",
     "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts' --fix"
   },
