@@ -249,18 +249,11 @@ pnpm test -- --files client.spec.ts
 
 We're actively working on expanding the toolkit. Here's what's coming:
 
-- [x] Authorization guards for NestJS package
-- [x] Full-stack example app (frontend + NestJS backend)
-- [x] Release v1.0.0 and publish to npm
 - [x] Multi permission checks (AND + OR logic)
 - [x] Docs
-- [ ] Testing utilities — mock Permify client and test helpers for unit testing authorization logic
+- [x] Schema validation CLI command
+- [x] Relationship query CLI commands — list, inspect, and export existing relationships from a tenant
 - [ ] Permission result caching — in-memory (and optionally Redis-backed) cache to reduce gRPC round-trips
-- [x] Schema validation CLI command — lint and validate schema syntax before pushing to Permify
-- [ ] Relationship query CLI commands — list, inspect, and export existing relationships from a tenant
-- [ ] Express.js / Fastify middleware — permission-check middleware for non-NestJS backends
-- [ ] GraphQL support — `@CheckPermission` directive and guards for NestJS GraphQL resolvers
-- [ ] ABAC helpers — high-level utilities for attribute-based access control rules
 - [ ] OpenTelemetry tracing — structured spans and metrics for permission checks and schema operations
 - [ ] Schema diff CLI command — preview what will change before pushing a schema update
 - [ ] Multi-tenant CLI management — create, list, and delete tenants directly from the CLI
