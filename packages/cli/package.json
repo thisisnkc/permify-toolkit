@@ -1,7 +1,7 @@
 {
   "name": "@permify-toolkit/cli",
   "type": "module",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Powerful CLI for Permify: Push schemas, seed relationships, and manage tenants with ease.",
   "author": "Nikhil aka thisisnkc",
   "license": "MIT",
