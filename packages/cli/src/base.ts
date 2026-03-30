@@ -35,6 +35,20 @@ export abstract class BaseCommand extends Command {
     return { client, config };
   }
 
+  protected async clientFromConfigLite(): Promise<{
+    client: any;
+    config: Config;
+  }> {
+    const config = await loadConfig(undefined, { skipSchemaValidation: true });
+
+    if (!config.client?.endpoint) {
+      this.error("Client endpoint not defined in config");
+    }
+
+    const client = createPermifyClient(config.client);
+    return { client, config };
+  }
+
   /**
    * Resolves the tenant ID from CLI flags or config.
    * Priority: CLI flag > config file > error

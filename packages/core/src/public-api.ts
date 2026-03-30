@@ -43,6 +43,11 @@ export {
 } from "./data/write-relationships.js";
 
 export {
+  readRelationships,
+  type ReadRelationshipsParams
+} from "./data/read-relationships.js";
+
+export {
   checkPermission,
   type CheckPermissionParams
 } from "./permission/check-permission.js";

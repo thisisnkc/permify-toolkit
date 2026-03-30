@@ -99,7 +99,10 @@ export function defineConfig(
  * @param config - The configuration to validate.
  * @throws {TypeError | Error} If the configuration is invalid.
  */
-export function validateConfig(config: PermifyConfigOptions): void {
+export function validateConfig(
+  config: PermifyConfigOptions,
+  opts?: { skipSchemaValidation?: boolean }
+): void {
   if (typeof config !== "object" || config === null) {
     throw new TypeError("Configuration must be an object");
   }
@@ -114,11 +117,14 @@ export function validateConfig(config: PermifyConfigOptions): void {
     }
   }
 
-  if (!config.schema) {
-    throw new TypeError("Schema must be provided");
+  if (!opts?.skipSchemaValidation) {
+    if (!config.schema) {
+      throw new TypeError("Schema must be provided");
+    }
+    validateSchema(config.schema);
+  } else if (config.schema) {
+    validateSchema(config.schema);
   }
-
-  validateSchema(config.schema);
 
   if (config.relationships) {
     if (

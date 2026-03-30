@@ -60,8 +60,14 @@ function loadEnvFile(dir: string): void {
  * const configCustom = await loadConfig('./configs/permify.ts');
  * ```
  */
+export interface LoadConfigOptions {
+  /** Skip schema validation — use for commands that don't require a schema (e.g. relationship export/list). */
+  skipSchemaValidation?: boolean;
+}
+
 export async function loadConfig(
-  configFilePath?: string
+  configFilePath?: string,
+  options?: LoadConfigOptions
 ): Promise<PermifyConfigOptions> {
   const cwd = process.cwd();
   const configPath = configFilePath
@@ -87,7 +93,9 @@ export async function loadConfig(
   const config = mod.default || mod;
 
   try {
-    validateConfig(config as PermifyConfigOptions);
+    validateConfig(config as PermifyConfigOptions, {
+      skipSchemaValidation: options?.skipSchemaValidation
+    });
   } catch (err: any) {
     throw new Error(
       `Invalid configuration in ${path.basename(configPath)}: ${err.message}`

@@ -1,9 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import { Flags } from "@oclif/core";
 import {
   loadConfig,
   getSchemaWarnings,
-  type SchemaHandle
+  type SchemaHandle,
+  type Relationship
 } from "@permify-toolkit/core";
 
 export { loadConfig };
@@ -94,6 +96,62 @@ export function validateSchemaContent(
 
   // TypeScript exhaustiveness guard — should never be reached
   throw new Error("Schema must be a SchemaHandle or a compiled DSL string");
+}
+
+/**
+ * Shared filter flags for relationship query commands (list, export).
+ * Spread these into your command's `static flags` alongside BaseCommand.baseFlags.
+ */
+export const relationshipFilterFlags = {
+  "entity-type": Flags.string({
+    char: "e",
+    description: "Entity type to query",
+    required: true as const
+  }),
+  "entity-id": Flags.string({
+    aliases: ["eid"],
+    description: "Filter by entity ID"
+  }),
+  relation: Flags.string({
+    char: "r",
+    description: "Filter by relation name"
+  }),
+  "subject-type": Flags.string({
+    char: "s",
+    description: "Filter by subject type"
+  }),
+  "subject-id": Flags.string({
+    aliases: ["sid"],
+    description: "Filter by subject ID"
+  })
+};
+
+export function buildTupleFilter(flags: {
+  "entity-type": string;
+  "entity-id"?: string;
+  relation?: string;
+  "subject-type"?: string;
+  "subject-id"?: string;
+}) {
+  return {
+    entity: {
+      type: flags["entity-type"],
+      ids: flags["entity-id"] ? [flags["entity-id"]] : []
+    },
+    relation: flags.relation ?? "",
+    subject: flags["subject-type"]
+      ? {
+          type: flags["subject-type"],
+          ids: flags["subject-id"] ? [flags["subject-id"]] : [],
+          relation: ""
+        }
+      : { type: "", ids: [], relation: "" }
+  };
+}
+
+export function formatCompactTuple(r: Relationship): string {
+  const subjectRelation = r.subject.relation ? `#${r.subject.relation}` : "";
+  return `${r.entity.type}:${r.entity.id}#${r.relation}@${r.subject.type}:${r.subject.id}${subjectRelation}`;
 }
 
 /**

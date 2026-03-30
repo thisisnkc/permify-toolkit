@@ -7,7 +7,7 @@ import {
 } from "@permify-toolkit/core";
 
 export default defineConfig({
-  tenant: "t1",
+  tenant: "toolkit-test",
   client: {
     endpoint: "localhost:3478",
     insecure: true
