@@ -105,6 +105,74 @@ await writeRelationships(client, {
 });
 ```
 
+### Reading Relationships
+
+Query existing relationship tuples from a tenant. Handles pagination automatically — all matching tuples are returned in a single array.
+
+```typescript
+import { readRelationships } from "@permify-toolkit/core";
+
+const tuples = await readRelationships({
+  client,
+  tenantId: "my-tenant",
+  filter: {
+    entity: { type: "document" }
+  }
+});
+
+// tuples = [
+//   { entity: { type: "document", id: "doc-1" }, relation: "owner", subject: { type: "user", id: "alice" } },
+//   { entity: { type: "document", id: "doc-1" }, relation: "viewer", subject: { type: "user", id: "bob" } },
+//   ...
+// ]
+```
+
+**Filter options:**
+
+```typescript
+// Filter by entity type only (returns all relationships for that type)
+await readRelationships({
+  client,
+  tenantId: "t1",
+  filter: { entity: { type: "document" } }
+});
+
+// Filter by specific entity
+await readRelationships({
+  client,
+  tenantId: "t1",
+  filter: { entity: { type: "document", ids: ["doc-1"] } }
+});
+
+// Filter by relation
+await readRelationships({
+  client,
+  tenantId: "t1",
+  filter: {
+    entity: { type: "document" },
+    relation: "viewer"
+  }
+});
+
+// Filter by subject
+await readRelationships({
+  client,
+  tenantId: "t1",
+  filter: {
+    entity: { type: "document" },
+    subject: { type: "user", ids: ["alice"] }
+  }
+});
+
+// Control page size for large datasets
+await readRelationships({
+  client,
+  tenantId: "t1",
+  filter: { entity: { type: "document" } },
+  pageSize: 100 // default: 50
+});
+```
+
 ### Deleting Relationships
 
 ```typescript
@@ -156,6 +224,7 @@ export default defineConfig({
 | `clientOptionsFromEnv()` | Read client options from env vars                                                                       |
 | `checkPermission()`      | Check a permission                                                                                      |
 | `writeRelationships()`   | Write relationship tuples                                                                               |
+| `readRelationships()`    | Read relationship tuples with filtering and automatic pagination                                        |
 | `deleteRelationships()`  | Delete relationship tuples                                                                              |
 | `relationsOf()`          | Helper to extract relations from schema                                                                 |
 | `getSchemaWarnings()`    | Collect non-blocking warnings from a schema AST (unused relations, empty entities, missing permissions) |
