@@ -17,6 +17,21 @@ export { relationsOf } from "./schema/helpers.js";
 
 export { writeSchemaToPermify } from "./schema/write-schema.js";
 
+export {
+  readSchemaFromPermify,
+  type ReadSchemaParams,
+  type ReadSchemaResult,
+  type SchemaEntityMap
+} from "./schema/read-schema.js";
+
+export {
+  diffSchema,
+  textDiff,
+  type SchemaDiffResult,
+  type EntityDiff,
+  type ModifiedEntityDiff
+} from "./schema/diff-schema.js";
+
 export { getSchemaWarnings } from "./schema/validate.js";
 
 export {
