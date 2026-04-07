@@ -25,10 +25,12 @@ export default class SchemaDiff extends BaseCommand {
       default: false
     }),
     "exit-code": Flags.boolean({
+      char: "e",
       description: "Exit with code 1 if changes are detected (for CI)",
       default: false
     }),
     source: Flags.string({
+      char: "s",
       description:
         "Path to a .perm file to compare against (local-vs-local mode, skips remote)",
       required: false
