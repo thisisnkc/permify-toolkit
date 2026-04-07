@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+toc_max_heading_level: 4
 ---
 
 # @permify-toolkit/cli
@@ -88,7 +89,9 @@ The `--tenant` flag is **optional** if `tenant` is defined in `permify.config.ts
 
 ## Commands
 
-### `schema push`
+### Schema
+
+#### `schema push`
 
 Pushes the schema defined in your config to the Permify server.
 
@@ -124,7 +127,7 @@ The Permify server validates your schema on push. If there are errors, you'll se
 Error: Entity "usr" referenced in relation "document.owner" does not exist
 ```
 
-### `schema validate`
+#### `schema validate`
 
 Validates your schema locally without connecting to a Permify server. Catches structural errors, broken references, permission cycles, and suspicious patterns before you push.
 
@@ -184,7 +187,105 @@ permify-toolkit schema validate && permify-toolkit schema push
 Run `schema validate` before `schema push` for instant local feedback, no server connection needed.
 :::
 
-### `relationships seed`
+#### `schema diff`
+
+Previews what will change before pushing a schema update. Compares your local schema (from `permify.config.ts`) against the schema currently deployed on the Permify server — or against another local `.perm` file.
+
+```bash
+permify-toolkit schema diff [--tenant <id>] [flags]
+```
+
+**Flags:**
+
+| Flag              | Alias | Description                                                        | Required | Default     |
+| ----------------- | ----- | ------------------------------------------------------------------ | -------- | ----------- |
+| `--tenant`        |       | Tenant ID to diff against                                          | No       | From config |
+| `--create-tenant` | `-c`  | Create tenant if it doesn't exist                                  | No       | `false`     |
+| `--source`        | `-s`  | Path to a `.perm` file to compare against (local-vs-local mode)    | No       |             |
+| `--verbose`       | `-v`  | Show raw unified text diff after the structural summary            | No       | `false`     |
+| `--exit-code`     | `-e`  | Exit with code 1 if changes are detected (useful for CI pipelines) | No       | `false`     |
+
+**Examples:**
+
+```bash
+# Compare local schema against what's deployed on the server
+permify-toolkit schema diff
+
+# Compare against a specific tenant
+permify-toolkit schema diff --tenant staging
+
+# Compare two local schemas (no server connection needed)
+permify-toolkit schema diff --source ./old-schema.perm
+
+# Include a unified text diff for full detail
+permify-toolkit schema diff --verbose
+
+# CI mode — fail the pipeline if schema has drifted
+permify-toolkit schema diff --exit-code
+```
+
+**Output:**
+
+The command shows a structural summary of changes at the entity, relation, and permission level:
+
+![Schema Diff Output](/img/schema-diff-output.png)
+
+- **Green (`+`)** — added entities, relations, or permissions
+- **Red (`-`)** — removed entities, relations, or permissions
+- **Yellow (`~`)** — modified entities (contents changed), or individual relations/permissions whose definition changed
+
+When no changes are detected:
+
+```
+✔ Schema is up to date — no changes detected (tenant: t1)
+```
+
+When no schema exists on the remote server yet (first-time push), everything is shown as additions:
+
+```
+Schema Diff — tenant: t1
+ℹ No schema found on remote — showing full schema as additions
+```
+
+With `--verbose`, a unified text diff is appended below the structural summary:
+
+```diff
+--- remote (tenant: t1)
++++ local (permify.config.ts)
+@@ -1,5 +1,8 @@
+ entity user {}
+ entity document {
+   relation owner @user
++  relation editor @user
+-  permission view = owner
++  permission view = owner or editor
++  permission edit = editor
+ }
+```
+
+**Exit codes:**
+
+| Code | Meaning                                                 |
+| ---- | ------------------------------------------------------- |
+| `0`  | No changes detected, or changes detected (default mode) |
+| `1`  | Changes detected and `--exit-code` flag is set          |
+
+:::tip Use in CI pipelines
+Combine `--exit-code` with your CI to detect schema drift:
+
+```bash
+permify-toolkit schema diff --exit-code || echo "Schema has changed — review before pushing"
+```
+
+:::
+
+:::tip Preview before push
+Run `schema diff` before `schema push` to review exactly what will change on the server. Pair with `--verbose` for a complete picture.
+:::
+
+### Relationships
+
+#### `relationships seed`
 
 Seeds relationship data from a JSON file.
 
@@ -234,7 +335,7 @@ permify-toolkit relationships seed --tenant my-tenant-id --file-path ./data/rela
 permify-toolkit relationships seed --tenant new-tenant-id --file-path ./relationships.json --create-tenant
 ```
 
-### `relationships list`
+#### `relationships list`
 
 Queries and displays relationship tuples from a Permify tenant. Useful for debugging authorization — quickly see what relationships exist for a given entity type.
 
@@ -320,7 +421,7 @@ When no relationships match:
 Use `relationships list` to verify that the tuples you expect actually exist in Permify. If a permission check fails unexpectedly, list the relationships for that entity to see what's stored.
 :::
 
-### `relationships export`
+#### `relationships export`
 
 Exports relationship tuples from a Permify tenant to a JSON file. The output format is identical to the `relationships seed` input format — so you can export from one tenant and seed into another.
 
