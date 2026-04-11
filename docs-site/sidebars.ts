@@ -11,6 +11,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: ["packages/core", "packages/nestjs", "packages/cli"]
     },
+    "roadmap",
     "examples"
   ]
 };

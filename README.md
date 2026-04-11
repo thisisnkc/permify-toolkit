@@ -247,16 +247,7 @@ pnpm test -- --files client.spec.ts
 
 ## Roadmap
 
-We're actively working on expanding the toolkit. Here's what's coming:
-
-- [x] Multi permission checks (AND + OR logic)
-- [x] Docs
-- [x] Schema validation CLI command
-- [x] Relationship query CLI commands — list, inspect, and export existing relationships from a tenant
-- [ ] Permission result caching — in-memory (and optionally Redis-backed) cache to reduce gRPC round-trips
-- [ ] OpenTelemetry tracing — structured spans and metrics for permission checks and schema operations
-- [x] Schema diff CLI command — preview what will change before pushing a schema update
-- [ ] Multi-tenant CLI management — create, list, and delete tenants directly from the CLI
+See the full [Roadmap](https://thisisnkc.github.io/permify-toolkit/docs/roadmap) for planned features across all packages.
 
 Have ideas? [Open an issue](https://github.com/thisisnkc/permify-toolkit/issues) or start a [discussion](https://github.com/thisisnkc/permify-toolkit/discussions)!
 
