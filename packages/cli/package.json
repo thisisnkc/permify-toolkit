@@ -26,7 +26,16 @@
     "multi-tenant",
     "typescript"
   ],
-  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "bin": {
     "permify-toolkit": "bin/permify-toolkit"
   },
@@ -53,7 +62,7 @@
   "scripts": {
     "lint": "eslint 'src/**/*.ts' 'tests/**/*.ts' --fix",
     "test": "NODE_NO_WARNINGS=1 pnpm exec tsx ../../tests/setup.ts",
-    "build": "tsc",
+    "build": "tsup",
     "prepack": "oclif manifest && oclif readme",
     "postpack": "rm -f oclif.manifest.json",
     "version": "oclif readme && git add README.md"
@@ -67,6 +76,7 @@
   },
   "devDependencies": {
     "ts-node": "^10.x",
+    "tsup": "^8.5.1",
     "typescript": "^4.x"
   }
 }
