@@ -1,5 +1,11 @@
 # @permify-toolkit/core
 
+## 1.3.1
+
+### Patch Changes
+
+- afd3ca6: Add dual ESM/CJS build output. Packages now ship both `.mjs` (ESM) and `.cjs` (CJS) formats via tsup, enabling `require()` in CommonJS environments like default NestJS projects.
+
 ## 1.3.0
 
 ### Minor Changes

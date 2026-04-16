@@ -1,7 +1,7 @@
 {
   "name": "@permify-toolkit/nestjs",
   "type": "module",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "NestJS integration for Permify: Decorators, guards, and zero-config module setup.",
   "author": "Nikhil aka thisisnkc",
   "license": "MIT",
