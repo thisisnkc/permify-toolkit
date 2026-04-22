@@ -1,0 +1,59 @@
+{
+  "publisher": "permify",
+  "name": "permify-toolkit",
+  "displayName": "Permify Toolkit",
+  "version": "0.1.0",
+  "description": "Perm Authorization Language",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/thisisnkc/permify-toolkit/tree/main/packages/vscode-extension#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thisisnkc/permify-toolkit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thisisnkc/permify-toolkit/issues"
+  },
+  "keywords": [
+    "Permify",
+    "Perm",
+    "Authorization",
+    "vscode",
+    "extension",
+    "Permify Toolkit"
+  ],
+  "categories": [
+    "Linters"
+  ],
+  "icon": "assets/icon.jpg",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "perm",
+        "aliases": [
+          "Perm Authorization Language",
+          "perm"
+        ],
+        "extensions": [
+          ".perm"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "perm",
+        "scopeName": "source.perm",
+        "path": "./syntaxes/perm.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "perm",
+        "path": "./snippets/perm.json"
+      }
+    ]
+  }
+}

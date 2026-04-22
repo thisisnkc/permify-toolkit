@@ -1,0 +1,21 @@
+
+entity user {}
+
+entity organization {
+	relation admin @user
+	relation member @user
+
+	permission create_repository = (admin or member)
+	permission delete = admin
+}
+
+// comment
+entity repository {
+    relation owner    @user @organization#member
+    relation parent   @organization
+
+	// comment
+    permission push   = owner 
+    permission read   = owner and (parent.admin and not parent.member) 
+    permission delete = parent.member and (parent.admin or owner)
+}
