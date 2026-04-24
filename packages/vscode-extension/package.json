@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "description": "Perm Authorization Language",
   "license": "Apache-2.0",
+  "main": "./src/extension.js",
   "homepage": "https://github.com/thisisnkc/permify-toolkit/tree/main/packages/vscode-extension#readme",
   "repository": {
     "type": "git",
@@ -27,6 +28,12 @@
   "icon": "assets/icon.jpg",
   "engines": {
     "vscode": "^1.60.0"
+  },
+  "activationEvents": [
+    "onLanguage:perm"
+  ],
+  "dependencies": {
+    "@permify-toolkit/core": "^1.3.1"
   },
   "contributes": {
     "languages": [

@@ -15,6 +15,16 @@ export {
 
 export { relationsOf } from "./schema/helpers.js";
 
+export {
+  parseSchema,
+  parseSchemaWithDiagnostics,
+  isValidIdentifier,
+  type ParseSchemaResult,
+  type SchemaDiagnostic
+} from "./schema/parse-schema.js";
+
+export { getSchemaDiagnostics, getDiagnostics } from "./schema/diagnostics.js";
+
 export { writeSchemaToPermify } from "./schema/write-schema.js";
 
 export {
@@ -32,7 +42,11 @@ export {
   type ModifiedEntityDiff
 } from "./schema/diff-schema.js";
 
-export { getSchemaWarnings } from "./schema/validate.js";
+export {
+  validateSchema,
+  getSchemaWarnings,
+  collectSchemaValidationDiagnostics
+} from "./schema/validate.js";
 
 export {
   defineConfig,
