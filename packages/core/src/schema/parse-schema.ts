@@ -20,8 +20,8 @@ export interface ParseSchemaResult {
   diagnostics: SchemaDiagnostic[];
 }
 
-const IDENTIFIER_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
-const TARGET_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*(?:#[A-Za-z_][A-Za-z0-9_]*)?$/;
+const IDENTIFIER_PATTERN = /^[A-Z_a-z]\w*$/;
+const TARGET_PATTERN = /^[A-Z_a-z]\w*(?:#[A-Z_a-z]\w*)?$/;
 
 export function parseSchema(text: string): SchemaAST {
   const result = parseSchemaWithDiagnostics(text);
@@ -45,9 +45,8 @@ export function parseSchemaWithDiagnostics(text: string): ParseSchemaResult {
   let offset = 0;
   let currentEntity: EntityNode | null = null;
 
-  for (let index = 0; index < lines.length; index++) {
+  for (const [index, originalLine] of lines.entries()) {
     const lineNumber = index + 1;
-    const originalLine = lines[index];
     const commentIndex = originalLine.indexOf("//");
     const line =
       commentIndex >= 0 ? originalLine.slice(0, commentIndex) : originalLine;
@@ -130,10 +129,8 @@ function parseEntityLine(
   ast: SchemaAST,
   diagnostics: SchemaDiagnostic[]
 ): EntityNode | null {
-  const inlineMatch = /^entity\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{\s*\}$/.exec(
-    trimmed
-  );
-  const openMatch = /^entity\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{$/.exec(trimmed);
+  const inlineMatch = /^entity\s+([A-Z_a-z]\w*)\s*{\s*}$/.exec(trimmed);
+  const openMatch = /^entity\s+([A-Z_a-z]\w*)\s*{$/.exec(trimmed);
 
   if (!inlineMatch && !openMatch && /^entity\s+/.test(trimmed)) {
     diagnostics.push(
@@ -269,7 +266,7 @@ function parseRelationLine(
   entity: EntityNode,
   diagnostics: SchemaDiagnostic[]
 ): void {
-  const match = /^relation\s+([A-Za-z_][A-Za-z0-9_]*)\s+(.+)$/.exec(trimmed);
+  const match = /^relation\s+([A-Z_a-z]\w*)\s+(.+)$/.exec(trimmed);
   if (!match) {
     diagnostics.push(
       createDiagnostic(
@@ -383,9 +380,7 @@ function parsePermissionLine(
   entity: EntityNode,
   diagnostics: SchemaDiagnostic[]
 ): void {
-  const match = /^permission\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/.exec(
-    trimmed
-  );
+  const match = /^permission\s+([A-Z_a-z]\w*)\s*=\s*(.*)$/.exec(trimmed);
   if (!match) {
     diagnostics.push(
       createDiagnostic(
@@ -488,10 +483,7 @@ function parseAttributeLine(
   entity: EntityNode,
   diagnostics: SchemaDiagnostic[]
 ): void {
-  const match =
-    /^attribute\s+([A-Za-z_][A-Za-z0-9_]*)\s+([A-Za-z_][A-Za-z0-9_]*)$/.exec(
-      trimmed
-    );
+  const match = /^attribute\s+([A-Z_a-z]\w*)\s+([A-Z_a-z]\w*)$/.exec(trimmed);
   if (!match) {
     diagnostics.push(
       createDiagnostic(

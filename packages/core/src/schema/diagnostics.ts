@@ -5,7 +5,7 @@ import {
 } from "./parse-schema.js";
 import {
   collectSchemaValidationDiagnostics,
-  getSchemaWarnings
+  collectSchemaWarningDiagnostics
 } from "./validate.js";
 
 export type { SchemaDiagnostic, ParseSchemaResult } from "./parse-schema.js";
@@ -15,32 +15,17 @@ export function getSchemaDiagnostics(
 ): SchemaDiagnostic[] {
   if (typeof input === "string") {
     const parsed = parseSchemaWithDiagnostics(input);
-    const hasParseErrors = parsed.diagnostics.some(
-      (diagnostic) => diagnostic.severity === "error"
-    );
-
-    if (hasParseErrors) {
-      return parsed.diagnostics;
-    }
 
     return [
       ...parsed.diagnostics,
       ...collectSchemaValidationDiagnostics(parsed.ast),
-      ...getSchemaWarnings(parsed.ast).map((message) => ({
-        code: "schema-warning",
-        message,
-        severity: "warning" as const
-      }))
+      ...collectSchemaWarningDiagnostics(parsed.ast)
     ];
   }
 
   return [
     ...collectSchemaValidationDiagnostics(input),
-    ...getSchemaWarnings(input).map((message) => ({
-      code: "schema-warning",
-      message,
-      severity: "warning" as const
-    }))
+    ...collectSchemaWarningDiagnostics(input)
   ];
 }
 

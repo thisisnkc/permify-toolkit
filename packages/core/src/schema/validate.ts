@@ -48,9 +48,17 @@ export function collectSchemaValidationDiagnostics(
  * Does not throw — callers should surface these to the user.
  */
 export function getSchemaWarnings(ast: SchemaAST): string[] {
+  return collectSchemaWarningDiagnostics(ast).map(
+    (diagnostic) => diagnostic.message
+  );
+}
+
+export function collectSchemaWarningDiagnostics(
+  ast: SchemaAST
+): SchemaDiagnostic[] {
   if (!ast?.entities) return [];
 
-  const warnings: string[] = [];
+  const warnings: SchemaDiagnostic[] = [];
   const usedRelations = new Set<string>(); // "entityName.relationName"
 
   for (const entity of Object.values(ast.entities)) {
@@ -83,18 +91,29 @@ export function getSchemaWarnings(ast: SchemaAST): string[] {
       !hasPermissions &&
       !referencedAsTarget.has(entity.name)
     ) {
-      warnings.push(
-        `Entity "${entity.name}": is empty and not referenced by any other entity`
-      );
+      warnings.push({
+        code: "empty-unreferenced-entity",
+        message: `Entity "${entity.name}": is empty and not referenced by any other entity`,
+        severity: "warning",
+        location: entity.nameLocation ?? entity.location
+      });
     } else if (hasRelations && !hasPermissions) {
-      warnings.push(`Entity "${entity.name}": has no permissions defined`);
+      warnings.push({
+        code: "entity-without-permissions",
+        message: `Entity "${entity.name}": has no permissions defined`,
+        severity: "warning",
+        location: entity.nameLocation ?? entity.location
+      });
     }
 
     for (const relation of Object.values(entity.relations)) {
       if (!usedRelations.has(`${entity.name}.${relation.name}`)) {
-        warnings.push(
-          `Entity "${entity.name}": relation "${relation.name}" is never used in any permission`
-        );
+        warnings.push({
+          code: "unused-relation",
+          message: `Entity "${entity.name}": relation "${relation.name}" is never used in any permission`,
+          severity: "warning",
+          location: relation.nameLocation ?? relation.location
+        });
       }
     }
   }
@@ -228,7 +247,7 @@ function extractIdentifierTokens(permission: PermissionNode): Array<{
   location?: SourceRange;
 }> {
   const tokens: Array<{ value: string; location?: SourceRange }> = [];
-  const pattern = /[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)?/g;
+  const pattern = /[A-Z_a-z]\w*(?:\.[A-Z_a-z]\w*)?/g;
 
   for (const match of permission.expression.matchAll(pattern)) {
     const value = match[0];

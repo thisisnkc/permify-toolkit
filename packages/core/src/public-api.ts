@@ -45,6 +45,7 @@ export {
 export {
   validateSchema,
   getSchemaWarnings,
+  collectSchemaWarningDiagnostics,
   collectSchemaValidationDiagnostics
 } from "./schema/validate.js";
 

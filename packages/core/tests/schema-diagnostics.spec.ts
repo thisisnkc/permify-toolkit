@@ -105,6 +105,64 @@ entity document {
     assert.equal(diagnostic?.location?.start.line, 10);
     assert.include(diagnostic?.message ?? "", '"edit"');
   });
+
+  test("keeps warnings visible even when parse errors exist", ({ assert }) => {
+    const diagnostics = getSchemaDiagnostics(`
+permission stray = owner
+
+entity user {}
+
+entity document {
+  relation owner @user
+  relation viewer @user
+  permission view = owner
+}
+`);
+
+    assert.isTrue(
+      diagnostics.some(
+        (diagnostic) =>
+          diagnostic.code === "unexpected-top-level-token" &&
+          diagnostic.severity === "error"
+      )
+    );
+    assert.isTrue(
+      diagnostics.some(
+        (diagnostic) =>
+          diagnostic.code === "unused-relation" &&
+          diagnostic.message.includes('relation "viewer" is never used')
+      )
+    );
+  });
+
+  test("emits warning locations for entity and relation warnings", ({
+    assert
+  }) => {
+    const diagnostics = getSchemaDiagnostics(`
+entity orphan {}
+
+entity user {}
+
+entity document {
+  relation owner @user
+  relation viewer @user
+  permission view = owner
+}
+`);
+
+    const orphanWarning = diagnostics.find(
+      (diagnostic) => diagnostic.code === "empty-unreferenced-entity"
+    );
+    const viewerWarning = diagnostics.find(
+      (diagnostic) => diagnostic.code === "unused-relation"
+    );
+
+    assert.exists(orphanWarning);
+    assert.equal(orphanWarning?.location?.start.line, 2);
+    assert.exists(viewerWarning);
+    assert.equal(viewerWarning?.location?.start.line, 8);
+    assert.equal(viewerWarning?.location?.start.column, 12);
+  });
 });
 
 test.group("Validation compatibility", () => {

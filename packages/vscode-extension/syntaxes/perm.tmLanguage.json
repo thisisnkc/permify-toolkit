@@ -1,10 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "Perm Authorization Language",
-  "fileTypes": [
-    "perm",
-    "permify"
-  ],
+  "fileTypes": ["perm", "permify"],
   "patterns": [
     {
       "include": "#keywords"
@@ -208,10 +205,12 @@
               "name": "punctuation.definition.string.end.perm"
             }
           },
-          "patterns": [{
-            "name": "constant.character.escape.perm",
-            "match": "\\\\."
-          }]
+          "patterns": [
+            {
+              "name": "constant.character.escape.perm",
+              "match": "\\\\."
+            }
+          ]
         },
         {
           "name": "string.quoted.double.perm",
@@ -227,10 +226,12 @@
               "name": "punctuation.definition.string.end.perm"
             }
           },
-          "patterns": [{
-            "name": "constant.character.escape.perm",
-            "match": "\\\\."
-          }]
+          "patterns": [
+            {
+              "name": "constant.character.escape.perm",
+              "match": "\\\\."
+            }
+          ]
         }
       ]
     },

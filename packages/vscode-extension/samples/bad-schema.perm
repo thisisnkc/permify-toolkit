@@ -1,0 +1,69 @@
+// Intentionally invalid schema for exercising extension diagnostics.
+
+permission stray = owner
+}
+
+entity broken_entity
+
+entity duplicate_entity {}
+entity duplicate_entity {}
+
+entity target_errors {
+  relation missing_target
+  relation invalid_target @123user
+  relation owner @account
+}
+
+entity duplicate_members {
+  relation owner @user
+  relation owner @user
+
+  permission view = owner
+  permission view = owner
+
+  attribute status string
+  attribute status boolean
+}
+
+entity permission_errors {
+  relation owner @user
+  relation viewer @user
+
+  permission empty =
+  permission bad_parens = (owner or
+  permission missing_operator = owner viewer
+  permission undefined_local = editor
+  permission undefined_relation = parent.read
+}
+
+entity folder {
+  relation member @user
+}
+
+entity document {
+  relation parent @folder
+  relation owner @user
+  relation viewer @user
+
+  permission broken_nested = parent.edit
+  permission cycle_a = cycle_b
+  permission cycle_b = cycle_a
+  permission valid = owner
+}
+
+entity orphan {}
+
+entity no_permissions {
+  relation owner @user
+}
+
+entity invalid_attribute {
+  attribute
+}
+
+entity user {
+  permission
+}
+
+entity unclosed {
+  relation owner @user
