@@ -46,7 +46,11 @@
         "extensions": [
           ".perm"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/perm-file.svg",
+          "dark": "./icons/perm-file.svg"
+        }
       }
     ],
     "grammars": [
@@ -60,6 +64,13 @@
       {
         "language": "perm",
         "path": "./snippets/perm.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "permify",
+        "label": "Permify File Icons",
+        "path": "./permify-icon-theme.json"
       }
     ]
   }

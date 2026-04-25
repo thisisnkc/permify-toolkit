@@ -1,0 +1,13 @@
+{
+  "iconDefinitions": {
+    "_perm_file": {
+      "iconPath": "./icons/perm-file.svg"
+    }
+  },
+  "fileExtensions": {
+    "perm": "_perm_file"
+  },
+  "languageIds": {
+    "perm": "_perm_file"
+  }
+}
