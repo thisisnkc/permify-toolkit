@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import Link from '@docusaurus/Link';
-import styles from '../../css/landing.module.css';
+import { useState } from "react";
+import Link from "@docusaurus/Link";
+import styles from "../../css/landing.module.css";
 
-const INSTALL_CMD = 'pnpm add @permify-toolkit/core @permify-toolkit/nestjs';
+const INSTALL_CMD = "pnpm add @permify-toolkit/core @permify-toolkit/nestjs";
 
 export default function Hero() {
   const [copied, setCopied] = useState(false);
@@ -15,25 +15,33 @@ export default function Hero() {
 
   return (
     <section className={styles.hero}>
-      <div className={styles.container} style={{ position: 'relative' }}>
+      <div className={styles.container} style={{ position: "relative" }}>
         <div className={styles.heroTextCol}>
-          <div className={styles.heroEyebrow}>A typed front-end for Permify</div>
+          <div className={styles.heroEyebrow}>
+            A typed front-end for Permify
+          </div>
 
           <h1>
             Authorization, written like the <em>rest of your code.</em>
           </h1>
 
           <p className={styles.heroLede}>
-            Define your schema in TypeScript, push it from the CLI, and protect routes with a single
-            decorator. One config file feeds your app, your scripts, and your CI — with no{' '}
-            <code>.perm</code> drift to maintain.
+            Define your schema in TypeScript, push it from the CLI, and protect
+            routes with a single decorator. One config file feeds your app, your
+            scripts, and your CI — with no <code>.perm</code> drift to maintain.
           </p>
 
           <div className={styles.heroActions}>
-            <Link to="/docs/getting-started" className={`${styles.btn} ${styles.btnPrimary}`}>
+            <Link
+              to="/docs/getting-started"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+            >
               Read the five-minute tour <span className={styles.arrow}>→</span>
             </Link>
-            <Link to="/docs/packages/core" className={`${styles.btn} ${styles.btnGhost}`}>
+            <Link
+              to="/docs/packages/core"
+              className={`${styles.btn} ${styles.btnGhost}`}
+            >
               API Reference
             </Link>
           </div>
@@ -41,8 +49,13 @@ export default function Hero() {
           <div className={styles.installLine}>
             <span className={styles.dollar}>$</span>
             <span>{INSTALL_CMD}</span>
-            <span className={styles.copy} onClick={handleCopy} role="button" tabIndex={0}>
-              {copied ? 'copied!' : 'copy'}
+            <span
+              className={styles.copy}
+              onClick={handleCopy}
+              role="button"
+              tabIndex={0}
+            >
+              {copied ? "copied!" : "copy"}
             </span>
           </div>
         </div>
@@ -58,53 +71,54 @@ export default function Hero() {
             permify.config.ts
           </div>
           <div className={styles.heroFigureBody}>
-            <span className={styles.k}>import</span>{' {'} defineConfig, schema, entity,{'\n'}
-            {'  '}relation, permission {'}'} <span className={styles.k}>from</span>{' '}
-            <span className={styles.s}>"@permify-toolkit/core"</span>;{'\n'}
-            {'\n'}
-            <span className={styles.k}>export default</span>{' '}
-            <span className={styles.f}>defineConfig</span>({'{'}
-            {'\n'}
-            {'  '}
-            <span className={styles.p}>tenant</span>:{' '}
-            <span className={styles.s}>"t1"</span>,{'\n'}
-            {'  '}
-            <span className={styles.p}>client</span>: {'{'}{' '}
-            <span className={styles.p}>endpoint</span>:{' '}
-            <span className={styles.s}>"localhost:3478"</span> {'}'},{'\n'}
-            {'  '}
-            <span className={styles.p}>schema</span>:{' '}
-            <span className={styles.f}>schema</span>({'{'}
-            {'\n'}
-            {'    '}
-            <span className={styles.p}>user</span>:{' '}
-            <span className={styles.f}>entity</span>({'{}'}),{'\n'}
-            {'    '}
-            <span className={styles.p}>document</span>:{' '}
-            <span className={styles.f}>entity</span>({'{'}
-            {'\n'}
-            {'      '}
-            <span className={styles.p}>relations</span>: {'{'}{' '}
-            <span className={styles.p}>owner</span>:{' '}
+            <span className={styles.k}>import</span>
+            {" {"} defineConfig, schema, entity,{"\n"}
+            {"  "}relation, permission {"}"}{" "}
+            <span className={styles.k}>from</span>{" "}
+            <span className={styles.s}>"@permify-toolkit/core"</span>;{"\n"}
+            {"\n"}
+            <span className={styles.k}>export default</span>{" "}
+            <span className={styles.f}>defineConfig</span>({"{"}
+            {"\n"}
+            {"  "}
+            <span className={styles.p}>tenant</span>:{" "}
+            <span className={styles.s}>"t1"</span>,{"\n"}
+            {"  "}
+            <span className={styles.p}>client</span>: {"{"}{" "}
+            <span className={styles.p}>endpoint</span>:{" "}
+            <span className={styles.s}>"localhost:3478"</span> {"}"},{"\n"}
+            {"  "}
+            <span className={styles.p}>schema</span>:{" "}
+            <span className={styles.f}>schema</span>({"{"}
+            {"\n"}
+            {"    "}
+            <span className={styles.p}>user</span>:{" "}
+            <span className={styles.f}>entity</span>({"{}"}),{"\n"}
+            {"    "}
+            <span className={styles.p}>document</span>:{" "}
+            <span className={styles.f}>entity</span>({"{"}
+            {"\n"}
+            {"      "}
+            <span className={styles.p}>relations</span>: {"{"}{" "}
+            <span className={styles.p}>owner</span>:{" "}
             <span className={styles.f}>relation</span>(
-            <span className={styles.s}>"user"</span>) {'}'},{'\n'}
-            {'      '}
-            <span className={styles.p}>permissions</span>: {'{'}
-            {'\n'}
-            {'        '}
-            <span className={styles.p}>view</span>:{' '}
+            <span className={styles.s}>"user"</span>) {"}"},{"\n"}
+            {"      "}
+            <span className={styles.p}>permissions</span>: {"{"}
+            {"\n"}
+            {"        "}
+            <span className={styles.p}>view</span>:{" "}
             <span className={styles.f}>permission</span>(
-            <span className={styles.s}>"owner"</span>),{'\n'}
-            {'      '}
-            {'}'},
-            {'\n'}
-            {'    '}
-            {'}'}),
-            {'\n'}
-            {'  '}
-            {'}'}),
-            {'\n'}
-            {'}'});
+            <span className={styles.s}>"owner"</span>),{"\n"}
+            {"      "}
+            {"}"},{"\n"}
+            {"    "}
+            {"}"}),
+            {"\n"}
+            {"  "}
+            {"}"}),
+            {"\n"}
+            {"}"});
           </div>
         </div>
 

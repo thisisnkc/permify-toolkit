@@ -1,72 +1,75 @@
-import styles from '../../css/landing.module.css';
+import styles from "../../css/landing.module.css";
 
 const features = [
   {
-    num: '/01',
-    title: 'Schema, in TypeScript',
+    num: "/01",
+    title: "Schema, in TypeScript",
     desc: (
       <>
-        Entities, relations, and permissions defined with a tiny DSL. IDE autocomplete, compile-time
-        checks, and no <code>.perm</code> file to keep in sync.
+        Entities, relations, and permissions defined with a tiny DSL. IDE
+        autocomplete, compile-time checks, and no <code>.perm</code> file to
+        keep in sync.
       </>
     ),
-    tag: 'core',
+    tag: "core"
   },
   {
-    num: '/02',
-    title: 'NestJS, in one decorator',
+    num: "/02",
+    title: "NestJS, in one decorator",
     desc: (
       <>
-        Drop in <code>PermifyModule</code>, mark a controller with{' '}
-        <code>@CheckPermission()</code>, and the guard handles AND / OR evaluation for you.
+        Drop in <code>PermifyModule</code>, mark a controller with{" "}
+        <code>@CheckPermission()</code>, and the guard handles AND / OR
+        evaluation for you.
       </>
     ),
-    tag: 'nestjs',
+    tag: "nestjs"
   },
   {
-    num: '/03',
-    title: 'CLI for the boring parts',
+    num: "/03",
+    title: "CLI for the boring parts",
     desc: (
       <>
-        Push schemas, seed relationships, diff against the live tenant. The CLI reads your config —
-        no flags, no extra scripts, no drift.
+        Push schemas, seed relationships, diff against the live tenant. The CLI
+        reads your config — no flags, no extra scripts, no drift.
       </>
     ),
-    tag: 'cli',
+    tag: "cli"
   },
   {
-    num: '/04',
-    title: 'One config, three consumers',
+    num: "/04",
+    title: "One config, three consumers",
     desc: (
       <>
-        <code>permify.config.ts</code> is the single source of truth. Your runtime, the CLI, and
-        your tests all read the same file.
+        <code>permify.config.ts</code> is the single source of truth. Your
+        runtime, the CLI, and your tests all read the same file.
       </>
     ),
-    tag: 'core',
+    tag: "core"
   },
   {
-    num: '/05',
-    title: 'No gRPC paperwork',
+    num: "/05",
+    title: "No gRPC paperwork",
     desc: (
       <>
-        <code>createPermifyClient()</code> wires connectivity.{' '}
-        <code>checkPermission()</code> and <code>writeRelationships()</code> hide the stubs.
+        <code>createPermifyClient()</code> wires connectivity.{" "}
+        <code>checkPermission()</code> and <code>writeRelationships()</code>{" "}
+        hide the stubs.
       </>
     ),
-    tag: 'core',
+    tag: "core"
   },
   {
-    num: '/06',
-    title: 'Production-ready defaults',
+    num: "/06",
+    title: "Production-ready defaults",
     desc: (
       <>
-        TLS, auth tokens, custom timeouts, env-driven config, and async NestJS module init — without
-        re-reading the gRPC docs.
+        TLS, auth tokens, custom timeouts, env-driven config, and async NestJS
+        module init — without re-reading the gRPC docs.
       </>
     ),
-    tag: 'prod',
-  },
+    tag: "prod"
+  }
 ];
 
 export default function FeatureTable() {
@@ -78,7 +81,8 @@ export default function FeatureTable() {
             <strong>01</strong> &nbsp;Why this exists
           </div>
           <h2 className={styles.sectionTitle}>
-            A friendlier wrapper for the parts of Permify you'd <em>rather not</em> write twice.
+            A friendlier wrapper for the parts of Permify you'd{" "}
+            <em>rather not</em> write twice.
           </h2>
         </div>
 

@@ -1,5 +1,5 @@
-import Link from '@docusaurus/Link';
-import styles from '../../css/landing.module.css';
+import Link from "@docusaurus/Link";
+import styles from "../../css/landing.module.css";
 
 export default function Closing() {
   return (
@@ -10,8 +10,9 @@ export default function Closing() {
             If it saves you an <em>afternoon,</em> that's the whole point.
           </h2>
           <p>
-            Originally built to stop re-writing the same Permify wiring across NestJS projects.
-            Open source, MIT, and shaped by issues from people using it.
+            Originally built to stop re-writing the same Permify wiring across
+            NestJS projects. Open source, MIT, and shaped by issues from people
+            using it.
           </p>
           <div className={styles.closingActions}>
             <Link
@@ -30,8 +31,9 @@ export default function Closing() {
         </div>
         <div>
           <blockquote className={styles.closingQuote}>
-            "Permify is great, but using it from a Node app often ends up being more work than it
-            should be. permify-toolkit is what I wish I had from the start."
+            "Permify is great, but using it from a Node app often ends up being
+            more work than it should be. permify-toolkit is what I wish I had
+            from the start."
             <div className={styles.closingQuoteAttr}>— Nikhil · author</div>
           </blockquote>
         </div>

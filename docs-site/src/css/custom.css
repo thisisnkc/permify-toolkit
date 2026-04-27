@@ -69,10 +69,10 @@
   --ifm-background-surface-color: #1f1c16;
   --ifm-navbar-background-color: rgba(22, 20, 15, 0.85);
   --ifm-color-emphasis-200: rgba(255, 255, 255, 0.06);
-  --ifm-color-emphasis-300: rgba(255, 255, 255, 0.10);
+  --ifm-color-emphasis-300: rgba(255, 255, 255, 0.1);
   --ifm-color-content: #efe9d8;
   --ifm-color-content-secondary: #d8d1bd;
-  --docusaurus-highlighted-code-line-bg: rgba(154, 166, 255, 0.10);
+  --docusaurus-highlighted-code-line-bg: rgba(154, 166, 255, 0.1);
 }
 
 /* =============================================
@@ -138,7 +138,7 @@
 
 /* Version pill */
 .navbar-ver-pill {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 11px;
   color: var(--muted);
   border: 1px solid var(--rule);
@@ -148,7 +148,7 @@
 
 /* GitHub pill */
 .navbar-github-pill {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 13px;
   font-weight: 500;
   border: 1px solid var(--rule-strong);
