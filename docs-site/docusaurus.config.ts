@@ -67,6 +67,16 @@ const config: Config = {
     locales: ["en"]
   },
 
+  stylesheets: [
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossorigin: "anonymous"
+    },
+    "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap"
+  ],
+
   presets: [
     [
       "classic",
@@ -93,8 +103,7 @@ const config: Config = {
       title: "Permify Toolkit",
       logo: {
         alt: "Permify Toolkit Logo",
-        src: "img/logo.png",
-        style: { borderRadius: "50%" }
+        src: "img/eagle_logo.png"
       },
       items: [
         {

@@ -12,7 +12,7 @@ CLI for managing schemas, seeding relationships, and querying relationship data 
 ## Installation
 
 ```bash
-pnpm add -D @permify-toolkit/cli
+pnpm add @permify-toolkit/cli
 ```
 
 ## Configuration
