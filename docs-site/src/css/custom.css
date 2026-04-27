@@ -2,26 +2,41 @@
  * Permify Toolkit — Docusaurus theme overrides
  */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
-
 /* =============================================
    Light mode tokens
    ============================================= */
 :root {
-  --ifm-color-primary: #6d28d9;
-  --ifm-color-primary-dark: #5b21b6;
-  --ifm-color-primary-darker: #4c1d95;
-  --ifm-color-primary-darkest: #3b0f75;
-  --ifm-color-primary-light: #7c3aed;
-  --ifm-color-primary-lighter: #8b5cf6;
-  --ifm-color-primary-lightest: #a78bfa;
+  /* Design tokens */
+  --paper: #f4f1ea;
+  --paper-2: #ece8df;
+  --ink: #161513;
+  --ink-2: #2b2823;
+  --muted: #6b6760;
+  --rule: #d6d0c2;
+  --rule-strong: #b8b0a0;
+  --accent: #2a3aa6;
+  --accent-soft: #e3e2f1;
+  --highlight: #ffe78a;
+  --code-bg: #1a1814;
+  --code-fg: #e8e2d3;
+
+  /* IFM overrides */
+  --ifm-color-primary: #2a3aa6;
+  --ifm-color-primary-dark: #2534a0;
+  --ifm-color-primary-darker: #1e2b90;
+  --ifm-color-primary-darkest: #172275;
+  --ifm-color-primary-light: #3444bb;
+  --ifm-color-primary-lighter: #3d4ec6;
+  --ifm-color-primary-lightest: #5a69d4;
+  --ifm-background-color: #f4f1ea;
+  --ifm-navbar-background-color: rgba(244, 241, 234, 0.92);
 
   --ifm-code-font-size: 90%;
   --ifm-font-family-base:
     "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --ifm-heading-font-weight: 700;
   --ifm-navbar-shadow: none;
-  --docusaurus-highlighted-code-line-bg: rgba(109, 40, 217, 0.08);
+  --docusaurus-highlighted-code-line-bg: rgba(42, 58, 166, 0.08);
 }
 
 /* =============================================
@@ -47,13 +62,16 @@
    Navbar
    ============================================= */
 .navbar {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.92);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(244, 241, 234, 0.92) !important;
+  border-bottom: 1px solid var(--rule);
   box-shadow: none;
-  height: 90px;
-  padding: 0 1.5rem;
+  height: 60px;
+  padding: 0 36px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .navbar__inner {
@@ -62,7 +80,7 @@
 }
 
 [data-theme="dark"] .navbar {
-  background: rgba(12, 12, 24, 0.88);
+  background: rgba(12, 12, 24, 0.88) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -72,30 +90,61 @@
 }
 
 .navbar__logo img {
-  height: 70px;
-  width: 70px;
+  height: 40px;
+  width: 40px;
   object-fit: contain;
-  border-radius: 50%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-  border: 2px solid rgba(109, 40, 217, 0.15);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-
-.navbar__logo img:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 16px rgba(109, 40, 217, 0.2);
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
 }
 
 .navbar__brand {
   align-items: center;
-  gap: 0.75rem;
+  gap: 10px;
 }
 
 .navbar__title {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.navbar__link {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.navbar__link:hover {
+  color: var(--ink);
+}
+
+/* Version pill */
+.navbar-ver-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* GitHub pill */
+.navbar-github-pill {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--rule-strong);
+  padding: 5px 12px;
+  border-radius: 6px;
+  color: var(--ink) !important;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.navbar-github-pill:hover {
+  border-color: var(--ink);
+  text-decoration: none;
 }
 
 /* =============================================
