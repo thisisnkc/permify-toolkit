@@ -49,7 +49,7 @@ You can pick and choose. The CLI and NestJS module both read the same `permify.c
 ```bash
 pnpm add @permify-toolkit/core
 pnpm add @permify-toolkit/nestjs
-pnpm add -D @permify-toolkit/cli
+pnpm add @permify-toolkit/cli
 ```
 
 `npm` and `yarn` are also supported.

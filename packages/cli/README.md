@@ -8,7 +8,7 @@ CLI for pushing schemas and seeding relationships to [Permify](https://github.co
 ## Installation
 
 ```bash
-pnpm add -D @permify-toolkit/cli
+pnpm add @permify-toolkit/cli
 ```
 
 ## Quick Example

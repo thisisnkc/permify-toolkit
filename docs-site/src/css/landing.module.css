@@ -501,6 +501,9 @@
   flex: 1;
 }
 .pkgInstall {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   color: var(--ink);
@@ -511,6 +514,20 @@
 }
 .pkgInstall .dl {
   color: var(--accent);
+}
+.pkgCopy {
+  margin-left: auto;
+  padding-left: 10px;
+  border-left: 1px solid var(--rule);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  user-select: none;
+}
+.pkgCopy:hover {
+  color: var(--ink);
 }
 
 /* Closing */
@@ -578,6 +595,57 @@
   letter-spacing: 0.1em;
   color: rgba(244,241,234,0.5);
   font-style: normal;
+}
+
+/* =============================================
+   Dark mode overrides
+   The landing page forces light mode, but these
+   ensure components look right if dark mode
+   ever reaches them (e.g. during SSR/hydration).
+   ============================================= */
+:global([data-theme="dark"]) .closing {
+  background: var(--paper-2);
+  color: var(--ink);
+  border-top: 1px solid var(--rule-strong);
+}
+:global([data-theme="dark"]) .closing h2 em {
+  color: var(--highlight);
+}
+:global([data-theme="dark"]) .closing p {
+  color: rgba(239, 233, 216, 0.65);
+}
+:global([data-theme="dark"]) .btnPrimary:hover {
+  background: #fff;
+}
+:global([data-theme="dark"]) .closing .btnPrimary {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+:global([data-theme="dark"]) .closing .btnGhost {
+  border-color: var(--rule-strong);
+  color: var(--ink);
+}
+:global([data-theme="dark"]) .closingQuote {
+  color: rgba(239, 233, 216, 0.92);
+  border-left-color: var(--highlight);
+}
+:global([data-theme="dark"]) .closingQuoteAttr {
+  color: rgba(239, 233, 216, 0.45);
+}
+:global([data-theme="dark"]) .codewin {
+  border: 1px solid var(--rule-strong);
+  box-shadow: 0 24px 50px -22px rgba(0, 0, 0, 0.6);
+}
+:global([data-theme="dark"]) .heroFigure {
+  border: 1px solid var(--rule-strong);
+  box-shadow: -8px 12px 0 rgba(0,0,0,0.4), 0 30px 60px -20px rgba(0,0,0,0.6);
+}
+:global([data-theme="dark"]) .featureRow:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+:global([data-theme="dark"]) .hero h1 em::after {
+  opacity: 0.35;
 }
 
 /* Responsive */
