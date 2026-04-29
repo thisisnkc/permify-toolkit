@@ -59,7 +59,8 @@ function PkgCard({ pkg }: { pkg: (typeof packages)[number] }) {
       </div>
       <p className={styles.pkgDesc}>{pkg.desc}</p>
       <div className={styles.pkgInstall}>
-        <span className={styles.dl}>$</span> pnpm add {pkg.install}
+        <span className={styles.dl}>$</span>
+        <span className={styles.pkgCmd}>pnpm add {pkg.install}</span>
         <span className={styles.pkgCopy} onClick={handleCopy}>
           {copied ? "copied!" : "copy"}
         </span>

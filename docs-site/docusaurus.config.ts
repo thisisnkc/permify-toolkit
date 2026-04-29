@@ -6,7 +6,7 @@ const config: Config = {
   title: "Permify Toolkit",
   tagline:
     "Type-safe TypeScript toolkit for fine-grained authorization with Permify",
-  favicon: "favicon-pt/favicon.ico",
+  favicon: "favicons/favicon.ico",
 
   headTags: [
     {
@@ -15,7 +15,7 @@ const config: Config = {
         rel: "icon",
         type: "image/png",
         sizes: "16x16",
-        href: "/permify-toolkit/favicon-pt/favicon-16x16.png"
+        href: "favicons/favicon-16x16.png"
       }
     },
     {
@@ -24,14 +24,7 @@ const config: Config = {
         rel: "icon",
         type: "image/png",
         sizes: "32x32",
-        href: "/permify-toolkit/favicon-pt/favicon-32x32.png"
-      }
-    },
-    {
-      tagName: "link",
-      attributes: {
-        rel: "icon",
-        href: "/permify-toolkit/favicon-pt/favicon.ico"
+        href: "favicons/favicon-32x32.png"
       }
     },
     {
@@ -39,7 +32,7 @@ const config: Config = {
       attributes: {
         rel: "apple-touch-icon",
         sizes: "180x180",
-        href: "/permify-toolkit/favicon-pt/apple-touch-icon.png"
+        href: "favicons/apple-touch-icon.png"
       }
     }
   ],

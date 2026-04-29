@@ -6,6 +6,7 @@
     "node": ">=20.0"
   },
   "scripts": {
+    "dev": "docusaurus dev",
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
     "build": "docusaurus build",
