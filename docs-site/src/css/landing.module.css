@@ -484,7 +484,7 @@
 /* Packages */
 .packages {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
   border: 1px solid var(--rule-strong);
   border-radius: 14px;
@@ -544,13 +544,26 @@
   border: 1px solid var(--rule);
   padding: 8px 12px;
   border-radius: 6px;
+  overflow: hidden;
+  min-width: 0;
 }
 .pkgInstall .dl {
   color: var(--accent);
+  flex-shrink: 0;
+}
+.pkgCmd {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 .pkgCopy {
   margin-left: auto;
   padding-left: 10px;
+  flex-shrink: 0;
+  min-width: 44px;
+  text-align: right;
   border-left: 1px solid var(--rule);
   color: var(--muted);
   cursor: pointer;
@@ -637,9 +650,10 @@
    ever reaches them (e.g. during SSR/hydration).
    ============================================= */
 :global([data-theme="dark"]) .closing {
-  background: var(--paper-2);
+  background: #252018;
   color: var(--ink);
-  border-top: 1px solid var(--rule-strong);
+  border-top: 2px solid var(--rule-strong);
+  border-bottom: 2px solid var(--rule-strong);
 }
 :global([data-theme="dark"]) .closing h2 em {
   color: var(--highlight);

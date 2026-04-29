@@ -189,13 +189,13 @@
    Footer
    ============================================= */
 .footer--dark {
-  background: #111009;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: #060504;
+  border-top: 1px solid #2e2820;
 }
 
 [data-theme="dark"] .footer--dark {
-  background: var(--paper);
-  border-top: 1px solid var(--rule);
+  background: #0d0b08;
+  border-top: 1px solid var(--rule-strong);
 }
 
 .footer .footer__links {
