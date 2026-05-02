@@ -1,0 +1,55 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "timezone": "Asia/Kolkata",
+  "schedule": ["before 9am on monday"],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
+  "dependencyDashboard": true,
+  "separateMajorMinor": true,
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 9am on monday"]
+  },
+  "major": {
+    "addLabels": ["major"]
+  },
+  "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "devDependencies (non-major)",
+      "addLabels": ["dev"]
+    },
+    {
+      "matchPackageNames": ["/^@types\\//"],
+      "groupName": "type definitions",
+      "addLabels": ["types"]
+    },
+    {
+      "matchFileNames": ["packages/*/package.json"],
+      "matchDepTypes": ["dependencies"],
+      "groupName": null,
+      "addLabels": ["prod"]
+    },
+    {
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "replace",
+      "addLabels": ["peer"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "pinDigests": true,
+      "groupName": "github-actions",
+      "addLabels": ["ci"]
+    }
+  ]
+}
