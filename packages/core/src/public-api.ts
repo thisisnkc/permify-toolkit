@@ -57,6 +57,8 @@ export {
   type DeleteRelationshipsParams
 } from "./data/write-relationships.js";
 
+export { tupleFilter, type TupleFilterInput } from "./data/tuple-filter.js";
+
 export {
   readRelationships,
   type ReadRelationshipsParams

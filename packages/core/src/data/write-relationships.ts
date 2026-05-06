@@ -1,3 +1,4 @@
+import { tupleFilter } from "./tuple-filter.js";
 import {
   BasePermifyWriter,
   type BaseWriteParams,
@@ -39,11 +40,20 @@ export interface Relationship {
   };
 }
 
-interface WriteRelationshipsParams extends BaseWriteParams {
+interface WriteRelationshipsParamsFlat extends BaseWriteParams {
+  tuples: Relationship[];
+}
+
+interface WriteRelationshipsParamsNested extends BaseWriteParams {
+  /** @deprecated Pass `tuples` directly at the top level. */
   relationships: {
     tuples: Relationship[];
   };
 }
+
+type WriteRelationshipsParams =
+  | WriteRelationshipsParamsFlat
+  | WriteRelationshipsParamsNested;
 
 interface WriteRelationshipsResult extends BaseWriterResult {
   success: boolean;
@@ -92,7 +102,8 @@ class RelationshipWriter extends BasePermifyWriter<
     client: any,
     params: WriteRelationshipsParams
   ): Promise<{ success: boolean; count: number }> {
-    const tuples = params.relationships.tuples;
+    const tuples =
+      "tuples" in params ? params.tuples : params.relationships.tuples;
 
     await client.data.write({
       tenantId: params.tenantId,
@@ -116,13 +127,12 @@ class RelationshipWriter extends BasePermifyWriter<
  * ```typescript
  * const res = await writeRelationships({
  *   tenantId: 'my-tenant',
- *   relationships: {
- *     tuples: [{
- *       entity: { type: 'document', id: '1' },
- *       relation: 'owner',
- *       subject: { type: 'user', id: 'user-1' },
- *     }]
- *   }
+ *   client,
+ *   tuples: [{
+ *     entity: { type: 'document', id: '1' },
+ *     relation: 'owner',
+ *     subject: { type: 'user', id: 'user-1' },
+ *   }]
  * });
  * ```
  */
@@ -143,7 +153,7 @@ class RelationshipDeleter extends BasePermifyWriter<
   ): Promise<{ success: boolean }> {
     await client.data.delete({
       tenantId: params.tenantId,
-      filter: params.filter
+      filter: tupleFilter(params.filter)
     });
 
     return { success: true };

@@ -1,13 +1,10 @@
 import type { Relationship } from "./write-relationships.js";
+import { tupleFilter, type TupleFilterInput } from "./tuple-filter.js";
 
 export interface ReadRelationshipsParams {
   client: any;
   tenantId: string;
-  filter: {
-    entity: { type: string; ids?: string[] };
-    relation?: string;
-    subject?: { type: string; ids?: string[]; relation?: string };
-  };
+  filter: TupleFilterInput & { entity: { type: string; ids?: string[] } };
   pageSize?: number;
 }
 
@@ -16,20 +13,7 @@ export async function readRelationships(
 ): Promise<Relationship[]> {
   const { client, tenantId, filter, pageSize = 50 } = params;
 
-  const tupleFilter = {
-    entity: {
-      type: filter.entity.type,
-      ids: filter.entity.ids ?? []
-    },
-    relation: filter.relation ?? "",
-    subject: filter.subject
-      ? {
-          type: filter.subject.type,
-          ids: filter.subject.ids ?? [],
-          relation: filter.subject.relation ?? ""
-        }
-      : { type: "", ids: [], relation: "" }
-  };
+  const normalizedFilter = tupleFilter(filter);
 
   const allTuples: Relationship[] = [];
   let continuousToken = "";
@@ -38,7 +22,7 @@ export async function readRelationships(
     const response = await client.data.readRelationships({
       tenantId,
       metadata: { snapToken: "" },
-      filter: tupleFilter,
+      filter: normalizedFilter,
       pageSize,
       continuousToken
     });
