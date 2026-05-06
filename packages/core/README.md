@@ -46,7 +46,7 @@ const client = createPermifyClient({
   insecure: true
 });
 
-const { allowed } = await checkPermission(client, {
+const allowed = await checkPermission(client, {
   tenantId: "t1",
   entity: { type: "document", id: "doc-1" },
   permission: "view",
