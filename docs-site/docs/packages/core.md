@@ -80,7 +80,7 @@ See [Configuration](/docs/configuration) for all client options.
 ```typescript
 import { checkPermission } from "@permify-toolkit/core";
 
-const { allowed } = await checkPermission(client, {
+const allowed = await checkPermission(client, {
   tenantId: "my-tenant",
   entity: { type: "document", id: "doc-1" },
   permission: "view",
@@ -93,7 +93,8 @@ const { allowed } = await checkPermission(client, {
 ```typescript
 import { writeRelationships } from "@permify-toolkit/core";
 
-await writeRelationships(client, {
+await writeRelationships({
+  client,
   tenantId: "my-tenant",
   tuples: [
     {
@@ -104,6 +105,8 @@ await writeRelationships(client, {
   ]
 });
 ```
+
+You can pass `client` (recommended) or just an `endpoint` string — the helper will create a client for you. Either is sufficient; you don't need both.
 
 ### Reading Relationships
 
@@ -175,19 +178,46 @@ await readRelationships({
 
 ### Deleting Relationships
 
+Deletes happen by filter, not by tuple. Provide any combination of `entity`, `relation`, and `subject` — anything you omit is treated as "match anything".
+
 ```typescript
 import { deleteRelationships } from "@permify-toolkit/core";
 
-await deleteRelationships(client, {
+// Remove every relationship on a specific document
+await deleteRelationships({
+  client,
   tenantId: "my-tenant",
-  tuples: [
-    {
-      entity: { type: "document", id: "doc-1" },
-      relation: "owner",
-      subject: { type: "user", id: "user-123" }
-    }
-  ]
+  filter: { entity: { type: "document", ids: ["doc-1"] } }
 });
+
+// Remove just the owner edge between alice and doc-1
+await deleteRelationships({
+  client,
+  tenantId: "my-tenant",
+  filter: {
+    entity: { type: "document", ids: ["doc-1"] },
+    relation: "owner",
+    subject: { type: "user", ids: ["alice"] }
+  }
+});
+```
+
+### Building Filters with `tupleFilter`
+
+Both `readRelationships` and `deleteRelationships` accept a partial filter and fill in defaults internally. If you need the fully-normalized gRPC shape (e.g. you're calling `client.data.*` directly, building filters in a helper, or asserting in tests), use `tupleFilter`:
+
+```typescript
+import { tupleFilter } from "@permify-toolkit/core";
+
+const filter = tupleFilter({
+  entity: { type: "document" },
+  relation: "viewer"
+});
+// {
+//   entity: { type: "document", ids: [] },
+//   relation: "viewer",
+//   subject: { type: "", ids: [], relation: "" }
+// }
 ```
 
 ## Reading Schemas
@@ -319,6 +349,20 @@ export default defineConfig({
 });
 ```
 
+### Loading a Config File
+
+`loadConfig` resolves and validates a `permify.config.ts`. By default it looks in `process.cwd()`; pass `cwd` to resolve from another directory, or pass an explicit path as the first argument.
+
+```typescript
+import { loadConfig } from "@permify-toolkit/core";
+
+const config = await loadConfig(); // ./permify.config.ts
+const fromMonorepoRoot = await loadConfig(undefined, { cwd: "/repo/root" });
+const customPath = await loadConfig("./configs/permify.ts");
+```
+
+If you already have an in-memory config object (e.g. from a test fixture), skip `loadConfig` entirely and use `defineConfig` + `validateConfig` directly — no filesystem access required.
+
 ## API Reference
 
 ### Exports
@@ -333,12 +377,15 @@ export default defineConfig({
 | `defineConfig()`          | Create a typed config object                                                                            |
 | `validateConfig()`        | Validate a config object                                                                                |
 | `schemaFile()`            | Reference a `.perm` schema file                                                                         |
+| `loadConfig()`            | Load and validate a `permify.config.ts` from disk                                                       |
+| `SeedingMode`             | Enum of seeding strategies (`APPEND`, `REPLACE`) used by config and CLI                                 |
 | `createPermifyClient()`   | Create a gRPC client                                                                                    |
 | `clientOptionsFromEnv()`  | Read client options from env vars                                                                       |
 | `checkPermission()`       | Check a permission                                                                                      |
 | `writeRelationships()`    | Write relationship tuples                                                                               |
 | `readRelationships()`     | Read relationship tuples with filtering and automatic pagination                                        |
-| `deleteRelationships()`   | Delete relationship tuples                                                                              |
+| `deleteRelationships()`   | Delete relationship tuples by filter                                                                    |
+| `tupleFilter()`           | Build a normalized relationship filter (fills gRPC defaults for omitted fields)                         |
 | `relationsOf()`           | Helper to extract relations from schema                                                                 |
 | `getSchemaWarnings()`     | Collect non-blocking warnings from a schema AST (unused relations, empty entities, missing permissions) |
 | `readSchemaFromPermify()` | Read the current schema from a Permify server for a given tenant                                        |

@@ -63,15 +63,21 @@ function loadEnvFile(dir: string): void {
 export interface LoadConfigOptions {
   /** Skip schema validation — use for commands that don't require a schema (e.g. relationship export/list). */
   skipSchemaValidation?: boolean;
+  /** Directory to resolve the default config file from. Defaults to `process.cwd()`. */
+  cwd?: string;
 }
 
+/**
+ * @see {@link defineConfig} and {@link validateConfig} for an in-memory config
+ * path that does not touch the filesystem.
+ */
 export async function loadConfig(
   configFilePath?: string,
   options?: LoadConfigOptions
 ): Promise<PermifyConfigOptions> {
-  const cwd = process.cwd();
+  const cwd = options?.cwd ? path.resolve(options.cwd) : process.cwd();
   const configPath = configFilePath
-    ? path.resolve(configFilePath)
+    ? path.resolve(cwd, configFilePath)
     : path.join(cwd, DEFAULT_CONFIG_FILE);
 
   if (!fs.existsSync(configPath)) {

@@ -2,7 +2,8 @@ import { ensureTenant } from "../helpers.js";
 import { createPermifyClient } from "../client/index.js";
 
 export interface BaseWriteParams {
-  endpoint: string;
+  /** Permify endpoint. Optional when `client` is provided. */
+  endpoint?: string;
   tenantId: string;
   createTenantIfNotExists?: boolean;
   client?: any;
@@ -23,7 +24,8 @@ export abstract class BasePermifyWriter<
     this.validate(params);
 
     const client =
-      params.client || createPermifyClient({ endpoint: params.endpoint });
+      params.client ||
+      createPermifyClient({ endpoint: params.endpoint as string });
 
     const { created, alreadyExisted } = await ensureTenant(
       client,
