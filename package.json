@@ -54,7 +54,7 @@
     "@japa/assert": "^4.2.0",
     "@japa/expect-type": "^2.0.4",
     "@japa/file-system": "^3.0.0",
-    "@japa/runner": "^4.4.0",
+    "@japa/runner": "^5.0.0",
     "@julr/tooling-configs": "^5.0.0",
     "@types/node": "^25.0.3",
     "@typescript-eslint/eslint-plugin": "^8.51.0",
