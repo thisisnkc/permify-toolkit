@@ -61,7 +61,7 @@
     "@typescript-eslint/parser": "^8.51.0",
     "c8": "^11.0.0",
     "cross-env": "^10.1.0",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "prettier": "^3.7.4",
     "simple-git-hooks": "^2.13.1",
     "ts-node": "^10.9.2",
