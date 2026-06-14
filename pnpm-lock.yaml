@@ -119,7 +119,7 @@ importers:
         version: 2.7.0
       oclif:
         specifier: ^4.22.63
-        version: 4.23.15(@types/node@25.9.3)
+        version: 4.23.16(@types/node@25.9.3)
     devDependencies:
       ts-node:
         specifier: ^10.x
@@ -7129,8 +7129,8 @@ packages:
   obuf@1.1.2:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
 
-  oclif@4.23.15:
-    resolution: {integrity: sha512-15zspqUe2yltVPjLgivP5YI7N5IUhgltsXJdACCKK0i52lrj4ypnWWeCcB4ctzmdQz15KIuJdTVuKRFUXEDcgw==}
+  oclif@4.23.16:
+    resolution: {integrity: sha512-K38o9NukvGUBj5QJYF2M7h2KzkabY+O/XLcqE5HWQ+aVcHsDMCdG5BIs+B2qH7j25DUZx7WtAgs1UTHYXI/tOQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -18505,7 +18505,7 @@ snapshots:
 
   obuf@1.1.2: {}
 
-  oclif@4.23.15(@types/node@25.9.3):
+  oclif@4.23.16(@types/node@25.9.3):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.1068.0
       '@aws-sdk/client-s3': 3.1068.0
