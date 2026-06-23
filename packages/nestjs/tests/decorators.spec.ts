@@ -1,9 +1,11 @@
 import "reflect-metadata";
 
 import { test } from "@japa/runner";
+import type { ExecutionContext } from "@nestjs/common";
 
-import { CheckPermission } from "../src/decorators.js";
-import { PERMIFY_PERMISSION_KEY } from "../src/constant.js";
+import type { PermissionCheckResult } from "../src/interfaces.js";
+import { CheckPermission, PermissionResult } from "../src/decorators.js";
+import { PERMIFY_PERMISSION_KEY, PERMIFY_RESULT_KEY } from "../src/constant.js";
 
 test.group("CheckPermission decorator", () => {
   const getMetadata = (target: any) =>
@@ -61,5 +63,63 @@ test.group("CheckPermission decorator", () => {
         method() {}
       }
     }, "Invalid permission mode 'INVALID'. Expected 'AND' or 'OR'.");
+  });
+});
+
+test.group("PermissionResult decorator", () => {
+  function makeCtx(request: Record<string, unknown>): ExecutionContext {
+    return {
+      switchToHttp: () => ({ getRequest: () => request })
+    } as unknown as ExecutionContext;
+  }
+
+  test("returns results stored on request", ({ assert }) => {
+    const stored: PermissionCheckResult[] = [
+      { permission: "view", allowed: true },
+      { permission: "edit", allowed: false }
+    ];
+    const mockRequest: Record<string, unknown> = {
+      [PERMIFY_RESULT_KEY]: stored
+    };
+    const ctx = makeCtx(mockRequest);
+
+    class C {
+      handler(@PermissionResult() _r: PermissionCheckResult[]) {}
+    }
+    const argsMetadata =
+      (Reflect.getMetadata("__routeArguments__", C, "handler") as Record<
+        string,
+        any
+      >) ?? {};
+    const factory = Object.values(argsMetadata)[0]?.factory;
+    assert.isFunction(
+      factory,
+      "Expected NestJS to register param decorator factory"
+    );
+
+    const result = factory(undefined, ctx) as PermissionCheckResult[];
+    assert.deepEqual(result, stored);
+  });
+
+  test("returns empty array when no guard ran", ({ assert }) => {
+    const mockRequest: Record<string, unknown> = {};
+    const ctx = makeCtx(mockRequest);
+
+    class C {
+      handler(@PermissionResult() _r: PermissionCheckResult[]) {}
+    }
+    const argsMetadata =
+      (Reflect.getMetadata("__routeArguments__", C, "handler") as Record<
+        string,
+        any
+      >) ?? {};
+    const factory = Object.values(argsMetadata)[0]?.factory;
+    assert.isFunction(
+      factory,
+      "Expected NestJS to register param decorator factory"
+    );
+
+    const result = factory(undefined, ctx) as PermissionCheckResult[];
+    assert.deepEqual(result, []);
   });
 });

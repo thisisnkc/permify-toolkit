@@ -1,6 +1,11 @@
-import { SetMetadata } from "@nestjs/common";
+import {
+  SetMetadata,
+  createParamDecorator,
+  type ExecutionContext
+} from "@nestjs/common";
 
-import { PERMIFY_PERMISSION_KEY } from "./constant.js";
+import type { PermissionCheckResult } from "./interfaces.js";
+import { PERMIFY_PERMISSION_KEY, PERMIFY_RESULT_KEY } from "./constant.js";
 
 /**
  * Defines the logical mode applied when multiple permissions are provided.
@@ -74,3 +79,27 @@ export const CheckPermission = (
     mode
   });
 };
+
+/**
+ * Parameter decorator that injects the permission check results computed by
+ * {@link PermifyGuard} into the handler method.
+ *
+ * Requires the guard to have already run for this route. Returns an empty
+ * array when no guard ran (public routes).
+ *
+ * @example
+ * ```typescript
+ * @UseGuards(PermifyGuard)
+ * @CheckPermission(['document.view', 'document.edit'], { mode: 'OR' })
+ * @Get(':id')
+ * async get(@PermissionResult() results: PermissionCheckResult[]) {
+ *   const canEdit = results.find(r => r.permission === 'edit')?.allowed;
+ * }
+ * ```
+ */
+export const PermissionResult = createParamDecorator(
+  (_data: unknown, ctx: ExecutionContext): PermissionCheckResult[] =>
+    (ctx.switchToHttp().getRequest<Record<string, unknown>>()[
+      PERMIFY_RESULT_KEY
+    ] as PermissionCheckResult[] | undefined) ?? []
+);

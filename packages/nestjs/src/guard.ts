@@ -10,8 +10,8 @@ import {
 
 import { PermifyService } from "./service.js";
 import { PermissionModes } from "./decorators.js";
-import { PERMIFY_PERMISSION_KEY } from "./constant.js";
 import type { CheckPermissionMetadata } from "./interfaces.js";
+import { PERMIFY_PERMISSION_KEY, PERMIFY_RESULT_KEY } from "./constant.js";
 
 /**
  * Guard that enforces Permify permission checks.
@@ -130,6 +130,10 @@ export class PermifyGuard implements CanActivate {
         },
         checks
       });
+
+      context.switchToHttp().getRequest<Record<string, unknown>>()[
+        PERMIFY_RESULT_KEY
+      ] = results;
 
       if (permissionMeta.mode === PermissionModes.AND) {
         const failedCheck = results.find((r) => !r.allowed);

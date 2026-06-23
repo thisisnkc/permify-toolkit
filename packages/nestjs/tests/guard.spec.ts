@@ -11,14 +11,17 @@ import {
 import { PermifyGuard } from "../src/guard.js";
 import { PermifyService } from "../src/service.js";
 import { CheckPermission } from "../src/decorators.js";
+import { PERMIFY_RESULT_KEY } from "../src/constant.js";
 
 function createMockContext(
   handler: ((...args: any[]) => any) | undefined,
-  cls: any
+  cls: any,
+  request: Record<string, unknown> = {}
 ): ExecutionContext {
   return {
     getHandler: () => handler,
-    getClass: () => cls
+    getClass: () => cls,
+    switchToHttp: () => ({ getRequest: () => request })
   } as unknown as ExecutionContext;
 }
 
@@ -646,5 +649,42 @@ test.group("PermifyGuard", (group) => {
       () => guard.canActivate(context),
       "Permission check execution failed"
     );
+  });
+
+  test("stores permission results on request after successful check", async ({
+    assert
+  }) => {
+    const mockRequest: Record<string, unknown> = {};
+
+    @Controller()
+    class TestController {
+      @CheckPermission("document.view")
+      @UseGuards(PermifyGuard)
+      @Get()
+      test() {}
+    }
+
+    const moduleRef = await Test.createTestingModule({
+      controllers: [TestController],
+      providers: [
+        PermifyGuard,
+        Reflector,
+        { provide: PermifyService, useValue: mockPermifyService }
+      ]
+    }).compile();
+
+    const guard = moduleRef.get(PermifyGuard);
+    const context = createMockContext(
+      TestController.prototype.test,
+      TestController,
+      mockRequest
+    );
+
+    await guard.canActivate(context);
+
+    assert.isArray(mockRequest[PERMIFY_RESULT_KEY]);
+    assert.deepEqual(mockRequest[PERMIFY_RESULT_KEY], [
+      { permission: "view", allowed: true }
+    ]);
   });
 });

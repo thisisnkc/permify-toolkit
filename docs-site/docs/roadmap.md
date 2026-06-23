@@ -16,7 +16,7 @@ What we've shipped and what's next.
 ## `@permify-toolkit/nestjs`
 
 - [x] Multi permission checks (AND + OR logic)
-- [ ] `@PermissionResult()` decorator to access check results inside handlers without re-checking
+- [x] `@PermissionResult()` decorator to access check results inside handlers without re-checking
 - [ ] Permission caching via NestJS `CacheModule`
 - [ ] Audit logging interceptor for permission check decisions
 - [ ] Typed entity and permission names from the schema DSL
