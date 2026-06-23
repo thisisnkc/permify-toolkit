@@ -20,6 +20,16 @@ export interface CheckPermissionMetadata {
 }
 
 /**
+ * Represents the outcome of a single permission check performed by the guard.
+ */
+export interface PermissionCheckResult {
+  /** The permission string that was evaluated (e.g. `"view"`, `"edit"`). */
+  permission: string;
+  /** Whether the subject was granted this permission. */
+  allowed: boolean;
+}
+
+/**
  * Represents a subject in the NestJS context (e.g. `user:1`).
  */
 export interface PermifySubject {
