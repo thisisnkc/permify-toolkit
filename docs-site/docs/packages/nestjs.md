@@ -265,14 +265,67 @@ The `@CheckPermission` decorator supports multiple permissions:
 3. Passes `{ depth: 20 }` as default metadata if none is configured
 4. Throws `ForbiddenException` with a descriptive message on failure
 
+## Accessing Permission Results
+
+When a route has multiple permissions checked with OR mode, you often need to know _which_ ones passed, to conditionally include data, set flags, or write audit logs. `@PermissionResult()` injects the guard's results directly into the handler, with no second round-trip to Permify.
+
+```typescript
+import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import {
+  CheckPermission,
+  PermifyGuard,
+  PermissionResult,
+  type PermissionCheckResult
+} from "@permify-toolkit/nestjs";
+
+@Controller("documents")
+@UseGuards(PermifyGuard)
+export class DocumentsController {
+  @Get(":id")
+  @CheckPermission(["document.view", "document.edit"], { mode: "OR" })
+  async getDocument(
+    @Param("id") id: string,
+    @PermissionResult() permissions: PermissionCheckResult[]
+  ) {
+    const canEdit = permissions.find((p) => p.permission === "edit")?.allowed;
+
+    return {
+      document: await this.documentService.findOne(id),
+      editable: canEdit ?? false // surface to frontend — no second gRPC call
+    };
+  }
+}
+```
+
+`PermissionCheckResult` is:
+
+```typescript
+interface PermissionCheckResult {
+  permission: string; // e.g. "view", "edit"
+  allowed: boolean;
+}
+```
+
+:::info
+`@PermissionResult()` requires `PermifyGuard` to have already run on the route. It returns `[]` on public routes where no guard ran.
+:::
+
+**Common uses:**
+
+- OR-mode checks where you need to know which permission was granted (e.g. `admin` vs `editor` to shape the response)
+- Returning permission flags alongside resource data so the frontend doesn't need a separate permissions call
+- Audit logging which permissions were checked and what the outcome was
+
 ## API Reference
 
 ### Exports
 
-| Export                | Description                                          |
-| --------------------- | ---------------------------------------------------- |
-| `PermifyModule`       | NestJS dynamic module (`forRoot` / `forRootAsync`)   |
-| `PermifyService`      | Injectable service for manual permission checks      |
-| `PermifyGuard`        | Route guard implementing `CanActivate`               |
-| `@CheckPermission()`  | Decorator to specify required permissions            |
-| `@PermifyResolvers()` | Decorator to override resolvers per controller/route |
+| Export                  | Description                                          |
+| ----------------------- | ---------------------------------------------------- |
+| `PermifyModule`         | NestJS dynamic module (`forRoot` / `forRootAsync`)   |
+| `PermifyService`        | Injectable service for manual permission checks      |
+| `PermifyGuard`          | Route guard implementing `CanActivate`               |
+| `@CheckPermission()`    | Decorator to specify required permissions            |
+| `@PermifyResolvers()`   | Decorator to override resolvers per controller/route |
+| `@PermissionResult()`   | Param decorator to inject guard's check results      |
+| `PermissionCheckResult` | Type for each entry in the results array             |
