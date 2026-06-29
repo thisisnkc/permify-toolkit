@@ -187,6 +187,39 @@ permify-toolkit schema validate && permify-toolkit schema push
 Run `schema validate` before `schema push` for instant local feedback, no server connection needed.
 :::
 
+#### `schema pull`
+
+Fetches the schema currently deployed on the Permify server and writes it to a local `.perm` file. The inverse of `schema push` — useful for snapshotting a live tenant or bootstrapping a local schema from a running server.
+
+```bash
+permify-toolkit schema pull [--tenant <id>] [flags]
+```
+
+**Flags:**
+
+| Flag       | Alias | Description                            | Required | Default         |
+| ---------- | ----- | -------------------------------------- | -------- | --------------- |
+| `--tenant` |       | Tenant ID to pull from                 | No       | From config     |
+| `--output` | `-o`  | Path to write the pulled schema        | No       | `./schema.perm` |
+| `--force`  | `-f`  | Overwrite the output file if it exists | No       | `false`         |
+
+**Examples:**
+
+```bash
+# Pull the deployed schema into ./schema.perm
+permify-toolkit schema pull
+
+# Pull a specific tenant into a custom path
+permify-toolkit schema pull --tenant staging --output ./staging.perm
+
+# Overwrite an existing file
+permify-toolkit schema pull --force
+```
+
+If the output file already exists, the command refuses to overwrite it and exits with an error. Pass `--force` to replace the existing file — useful when re-pulling a tenant into the same path.
+
+Pull from two environments and run `schema diff --source` between the files to compare them.
+
 #### `schema diff`
 
 Previews what will change before pushing a schema update. Compares your local schema (from `permify.config.ts`) against the schema currently deployed on the Permify server — or against another local `.perm` file.
