@@ -27,7 +27,7 @@ What we've shipped and what's next.
 - [x] Schema validation
 - [x] Relationship queries (list, inspect, export)
 - [x] Schema diff
-- [ ] Schema pull
+- [x] Schema pull
 - [ ] Permission check from the terminal
 - [ ] Relationship deletion (individual + bulk clear)
 - [ ] Init command to scaffold `permify.config.ts`
