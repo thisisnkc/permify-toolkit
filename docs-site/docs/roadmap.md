@@ -30,7 +30,7 @@ What we've shipped and what's next.
 - [x] Schema pull
 - [ ] Permission check from the terminal
 - [ ] Relationship deletion (individual + bulk clear)
-- [ ] Init command to scaffold `permify.config.ts`
+- [x] Init command to scaffold `permify.config.ts`
 - [ ] Schema version history
 - [ ] Config validation (connection + schema syntax)
 - [ ] Multi-tenant management (create, list, delete tenants)
