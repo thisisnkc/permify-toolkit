@@ -89,6 +89,29 @@ The `--tenant` flag is **optional** if `tenant` is defined in `permify.config.ts
 
 ## Commands
 
+### `init`
+
+Scaffolds a starter `permify.config.ts` in the current directory — the first command to run in a new project. The generated config includes a minimal, valid example schema, so you can immediately run `schema validate` and `schema push`.
+
+```bash
+permify-toolkit init [flags]
+```
+
+**Flags:**
+
+| Flag         | Alias | Description                          | Required | Default          |
+| ------------ | ----- | ------------------------------------ | -------- | ---------------- |
+| `--tenant`   | `-t`  | Tenant ID to prefill into the config | No       | `t1`             |
+| `--endpoint` | `-e`  | Permify server endpoint to prefill   | No       | `localhost:3478` |
+
+**Example:**
+
+```bash
+permify-toolkit init --tenant my-app --endpoint localhost:3478
+```
+
+If `permify.config.ts` already exists, `init` refuses to overwrite it, delete the file first if you want to re-scaffold. After running it, edit the schema to fit your domain and run `permify-toolkit schema push` to deploy.
+
 ### Schema
 
 #### `schema push`
