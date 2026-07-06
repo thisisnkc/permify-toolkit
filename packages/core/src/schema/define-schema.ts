@@ -63,7 +63,7 @@ export interface EntityDef {
  * })
  * ```
  */
-export function entity(def: EntityDef): EntityDef {
+export function entity<T extends EntityDef>(def: T): T {
   return def;
 }
 
@@ -176,6 +176,48 @@ export type PermissionProxy<TInput extends SchemaInput> = {
     ? { [Permission in keyof P & string]: `${Entity & string}:${Permission}` }
     : Record<string, never>;
 };
+
+/**
+ * Every checkable identifier for one entity: the names of its permissions
+ * and its relations. The guard treats both as checkable.
+ */
+type CheckableKeys<E> =
+  | (E extends { permissions: infer P } ? keyof P & string : never)
+  | (E extends { relations: infer R } ? keyof R & string : never);
+
+/** Qualified `"entity.name"` form, e.g. `"document.view"`. */
+type QualifiedName<T extends SchemaInput> = {
+  [Entity in keyof T & string]: `${Entity}.${CheckableKeys<T[Entity]>}`;
+}[keyof T & string];
+
+/** Bare `"name"` form (union across all entities), e.g. `"view"`. */
+type BareName<T extends SchemaInput> = {
+  [Entity in keyof T & string]: CheckableKeys<T[Entity]>;
+}[keyof T & string];
+
+/**
+ * Union of every identifier a schema exposes to a permission check, in both
+ * qualified (`"document.view"`) and bare (`"view"`) form, covering permissions
+ * and relations alike.
+ *
+ * This mirrors exactly what {@link https://permify.co Permify} guards accept at
+ * runtime, so it can constrain a typed `@CheckPermission()` decorator.
+ *
+ * @example
+ * ```ts
+ * const appSchema = schema({
+ *   document: entity({
+ *     relations: { owner: relation('user') },
+ *     permissions: { view: permission('owner') }
+ *   })
+ * })
+ *
+ * type Names = PermissionName<typeof appSchema>
+ * // "document.view" | "document.owner" | "view" | "owner"
+ * ```
+ */
+export type PermissionName<H extends SchemaHandle> =
+  H extends SchemaHandle<infer T> ? QualifiedName<T> | BareName<T> : never;
 
 /**
  * Defines a Permify authorization schema.

@@ -10,7 +10,8 @@ export {
   type EntityDef,
   type RelationDef,
   type AttributeDef,
-  type PermissionDef
+  type PermissionDef,
+  type PermissionName
 } from "./schema/define-schema.js";
 
 export { relationsOf } from "./schema/helpers.js";
