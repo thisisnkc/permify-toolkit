@@ -22,6 +22,7 @@ pnpm add @permify-toolkit/nestjs @permify-toolkit/core
 - **Optional Tenant Resolver** — set a static tenant in config, no resolver needed
 - **Authorization Guard** — `PermifyGuard` enforces permissions on routes
 - **Multi-Permission Checks** — AND/OR logic for complex authorization
+- **Typed Permission Names** — bind `@CheckPermission` to your schema DSL so invalid names fail at compile time
 
 ## Module Setup
 
@@ -258,6 +259,33 @@ The `@CheckPermission` decorator supports multiple permissions:
 @CheckPermission(["document.view", "document.edit"], { mode: "OR" })
 ```
 
+### Typed Permission Names
+
+`@CheckPermission` accepts any string. If your schema is defined with the core DSL (see [`schema()`](./core.md#type-safe-schema-dsl)), you can bind the decorator to it with `createPermifyDecorators` — then only names that exist in the schema compile, and your editor autocompletes them.
+
+```typescript
+// auth.ts — bind once, re-export
+import { createPermifyDecorators } from "@permify-toolkit/nestjs";
+import { appSchema } from "./permify.config";
+
+export const { CheckPermission } = createPermifyDecorators<typeof appSchema>();
+```
+
+```typescript
+// documents.controller.ts
+import { CheckPermission } from "./auth";
+
+@CheckPermission("document.edit")               // ✅ compiles
+@CheckPermission(["document.view", "edit"])     // ✅ qualified and bare forms both work
+@CheckPermission("document.rename")             // ❌ compile error — not in the schema
+```
+
+Both permissions and relations are accepted, in qualified (`"document.edit"`) and bare (`"edit"`) form the same set the guard resolves at runtime. Options like `{ mode: "OR" }` work identically to the untyped decorator.
+
+:::info
+Typed names require a DSL-defined schema. If you use `schemaFile()` with a `.perm` file, keep using the untyped `@CheckPermission` or mirror the schema in the DSL to get typing (see the [simulator](https://github.com/thisisnkc/permify-toolkit/blob/main/simulator/backend/src/auth.ts) for an example).
+:::
+
 ### How the Guard Works
 
 1. Resolves **Tenant**, **Subject**, and **Resource** from configured resolvers
@@ -320,12 +348,13 @@ interface PermissionCheckResult {
 
 ### Exports
 
-| Export                  | Description                                          |
-| ----------------------- | ---------------------------------------------------- |
-| `PermifyModule`         | NestJS dynamic module (`forRoot` / `forRootAsync`)   |
-| `PermifyService`        | Injectable service for manual permission checks      |
-| `PermifyGuard`          | Route guard implementing `CanActivate`               |
-| `@CheckPermission()`    | Decorator to specify required permissions            |
-| `@PermifyResolvers()`   | Decorator to override resolvers per controller/route |
-| `@PermissionResult()`   | Param decorator to inject guard's check results      |
-| `PermissionCheckResult` | Type for each entry in the results array             |
+| Export                      | Description                                                       |
+| --------------------------- | ----------------------------------------------------------------- |
+| `PermifyModule`             | NestJS dynamic module (`forRoot` / `forRootAsync`)                |
+| `PermifyService`            | Injectable service for manual permission checks                   |
+| `PermifyGuard`              | Route guard implementing `CanActivate`                            |
+| `@CheckPermission()`        | Decorator to specify required permissions                         |
+| `@PermifyResolvers()`       | Decorator to override resolvers per controller/route              |
+| `@PermissionResult()`       | Param decorator to inject guard's check results                   |
+| `PermissionCheckResult`     | Type for each entry in the results array                          |
+| `createPermifyDecorators()` | Create a `@CheckPermission` typed against a schema DSL definition |

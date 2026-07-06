@@ -19,7 +19,7 @@ What we've shipped and what's next.
 - [x] `@PermissionResult()` decorator to access check results inside handlers without re-checking
 - [ ] Permission caching via NestJS `CacheModule`
 - [ ] Audit logging interceptor for permission check decisions
-- [ ] Typed entity and permission names from the schema DSL
+- [x] Typed entity and permission names from the schema DSL
 - [ ] WebSocket gateway support
 
 ## `@permify-toolkit/cli`
