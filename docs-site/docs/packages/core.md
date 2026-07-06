@@ -49,6 +49,18 @@ const mySchema = schema({
 
 This gives you compile-time safety — referencing a non-existent entity or relation is a type error.
 
+The `PermissionName` type extracts every checkable identifier from a schema, i.e., permissions and relations, in qualified and bare form:
+
+```typescript
+import type { PermissionName } from "@permify-toolkit/core";
+
+type Names = PermissionName<typeof mySchema>;
+// "document.edit" | "document.view" | "document.owner" | "document.editor"
+// | "edit" | "view" | "owner" | "editor"
+```
+
+This powers typed decorators in `@permify-toolkit/nestjs` (see [Typed Permission Names](./nestjs.md#typed-permission-names)) and can constrain your own helpers.
+
 ## Client Utilities
 
 ### Creating a Client
@@ -387,6 +399,7 @@ If you already have an in-memory config object (e.g. from a test fixture), skip 
 | `deleteRelationships()`   | Delete relationship tuples by filter                                                                    |
 | `tupleFilter()`           | Build a normalized relationship filter (fills gRPC defaults for omitted fields)                         |
 | `relationsOf()`           | Helper to extract relations from schema                                                                 |
+| `PermissionName`          | Type union of all permission/relation names in a schema (qualified and bare)                            |
 | `getSchemaWarnings()`     | Collect non-blocking warnings from a schema AST (unused relations, empty entities, missing permissions) |
 | `readSchemaFromPermify()` | Read the current schema from a Permify server for a given tenant                                        |
 | `diffSchema()`            | Compute a structural diff between two schema entity maps                                                |

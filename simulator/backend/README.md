@@ -7,6 +7,8 @@ This is a sample NestJS application used to demonstrate and test the integration
 - Integrates `@permify-toolkit/nestjs` for authorization.
 - Uses `@permify-toolkit/cli` for schema management.
 - Local development setup for Permify.
+- Typed `@CheckPermission` bound to the schema DSL — see `src/auth.ts`.
+- `@PermissionResult()` to read guard check results inside a handler — see `src/documents.controller.ts`.
 
 ## Getting Started
 
