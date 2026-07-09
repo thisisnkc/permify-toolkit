@@ -52,8 +52,7 @@ interface WriteRelationshipsParamsNested extends BaseWriteParams {
 }
 
 type WriteRelationshipsParams =
-  | WriteRelationshipsParamsFlat
-  | WriteRelationshipsParamsNested;
+  WriteRelationshipsParamsFlat | WriteRelationshipsParamsNested;
 
 interface WriteRelationshipsResult extends BaseWriterResult {
   success: boolean;
