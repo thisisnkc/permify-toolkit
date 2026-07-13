@@ -17,6 +17,7 @@ What we've shipped and what's next.
 
 - [x] Multi permission checks (AND + OR logic)
 - [x] `@PermissionResult()` decorator to access check results inside handlers without re-checking
+- [x] `@PermissionResult('document.edit')` boolean form to inject a single permission outcome by name
 - [ ] Permission caching via NestJS `CacheModule`
 - [ ] Audit logging interceptor for permission check decisions
 - [x] Typed entity and permission names from the schema DSL

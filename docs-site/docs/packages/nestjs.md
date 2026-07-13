@@ -280,7 +280,7 @@ import { CheckPermission } from "./auth";
 @CheckPermission("document.rename")             // ❌ compile error — not in the schema
 ```
 
-Both permissions and relations are accepted, in qualified (`"document.edit"`) and bare (`"edit"`) form the same set the guard resolves at runtime. Options like `{ mode: "OR" }` work identically to the untyped decorator.
+Both permissions and relations are accepted, in qualified (`"document.edit"`) and bare (`"edit"`) form the same set the guard resolves at runtime. Options like `{ mode: "OR" }` work identically to the untyped decorator. The factory also returns a typed `PermissionResult`, so `@PermissionResult("document.edit")` gets the same compile-time name checking.
 
 :::info
 Typed names require a DSL-defined schema. If you use `schemaFile()` with a `.perm` file, keep using the untyped `@CheckPermission` or mirror the schema in the DSL to get typing (see the [simulator](https://github.com/thisisnkc/permify-toolkit/blob/main/simulator/backend/src/auth.ts) for an example).
@@ -297,13 +297,14 @@ Typed names require a DSL-defined schema. If you use `schemaFile()` with a `.per
 
 When a route has multiple permissions checked with OR mode, you often need to know _which_ ones passed, to conditionally include data, set flags, or write audit logs. `@PermissionResult()` injects the guard's results directly into the handler, with no second round-trip to Permify.
 
+Pass a permission name to inject a single boolean — the common case:
+
 ```typescript
 import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import {
   CheckPermission,
   PermifyGuard,
-  PermissionResult,
-  type PermissionCheckResult
+  PermissionResult
 } from "@permify-toolkit/nestjs";
 
 @Controller("documents")
@@ -313,15 +314,27 @@ export class DocumentsController {
   @CheckPermission(["document.view", "document.edit"], { mode: "OR" })
   async getDocument(
     @Param("id") id: string,
-    @PermissionResult() permissions: PermissionCheckResult[]
+    @PermissionResult("document.edit") canEdit: boolean
   ) {
-    const canEdit = permissions.find((p) => p.permission === "edit")?.allowed;
-
     return {
       document: await this.documentService.findOne(id),
-      editable: canEdit ?? false // surface to frontend — no second gRPC call
+      editable: canEdit // surface to frontend — no second gRPC call
     };
   }
+}
+```
+
+Qualified (`"document.edit"`) and bare (`"edit"`) names both match the guard's results. A name that was never checked on the route injects `false` — unknown names fail closed.
+
+Without an argument, `@PermissionResult()` injects the full results array — useful for audit logging or when you need several flags at once:
+
+```typescript
+async getDocument(
+  @Param("id") id: string,
+  @PermissionResult() permissions: PermissionCheckResult[]
+) {
+  const canEdit = permissions.find((p) => p.permission === "edit")?.allowed;
+  // ...
 }
 ```
 
@@ -335,7 +348,7 @@ interface PermissionCheckResult {
 ```
 
 :::info
-`@PermissionResult()` requires `PermifyGuard` to have already run on the route. It returns `[]` on public routes where no guard ran.
+`@PermissionResult()` requires `PermifyGuard` to have already run on the route. On public routes where no guard ran, the array form returns `[]` and the boolean form returns `false`.
 :::
 
 **Common uses:**
