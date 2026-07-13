@@ -14,7 +14,8 @@ const _appSchema = schema({
   })
 });
 
-const { CheckPermission } = createPermifyDecorators<typeof _appSchema>();
+const { CheckPermission, PermissionResult } =
+  createPermifyDecorators<typeof _appSchema>();
 
 const getMetadata = (target: object) =>
   Reflect.getMetadata(PERMIFY_PERMISSION_KEY, target);
@@ -52,6 +53,24 @@ test.group("createPermifyDecorators", () => {
     assert.deepEqual(metadata.permissions, ["view", "owner"]);
   });
 
+  test("typed PermissionResult delegates to base decorator", ({ assert }) => {
+    class TestClass {
+      handler(@PermissionResult("document.edit") _allowed: boolean) {}
+    }
+
+    const argsMetadata =
+      (Reflect.getMetadata(
+        "__routeArguments__",
+        TestClass,
+        "handler"
+      ) as Record<string, any>) ?? {};
+    const factory = Object.values(argsMetadata)[0]?.factory;
+    assert.isFunction(
+      factory,
+      "Expected NestJS to register param decorator factory"
+    );
+  });
+
   /**
    * Compile-time guarantees. These assertions are enforced by `tsc`
    * (`pnpm typecheck`), not at runtime, so the test body is trivial.
@@ -69,6 +88,9 @@ test.group("createPermifyDecorators", () => {
       // @ts-expect-error "delete" is not a name in the schema
       @CheckPermission(["view", "delete"])
       c() {}
+
+      // @ts-expect-error "document.xyz" is not a valid permission
+      d(@PermissionResult("document.xyz") _allowed: boolean) {}
     }
 
     assert.isFunction(TestClass.prototype.a);

@@ -122,4 +122,68 @@ test.group("PermissionResult decorator", () => {
     const result = factory(undefined, ctx) as PermissionCheckResult[];
     assert.deepEqual(result, []);
   });
+
+  function getFactory(assert: any) {
+    class C {
+      handler(@PermissionResult() _allowed: boolean) {}
+    }
+    const argsMetadata =
+      (Reflect.getMetadata("__routeArguments__", C, "handler") as Record<
+        string,
+        any
+      >) ?? {};
+    const factory = Object.values(argsMetadata)[0]?.factory;
+    assert.isFunction(
+      factory,
+      "Expected NestJS to register param decorator factory"
+    );
+    return factory;
+  }
+
+  test("returns true for a granted permission name", ({ assert }) => {
+    const stored: PermissionCheckResult[] = [
+      { permission: "edit", allowed: true }
+    ];
+    const ctx = makeCtx({ [PERMIFY_RESULT_KEY]: stored });
+    const factory = getFactory(assert);
+
+    assert.isTrue(factory("edit", ctx));
+  });
+
+  test("matches qualified name against bare stored result", ({ assert }) => {
+    const stored: PermissionCheckResult[] = [
+      { permission: "edit", allowed: true }
+    ];
+    const ctx = makeCtx({ [PERMIFY_RESULT_KEY]: stored });
+    const factory = getFactory(assert);
+
+    assert.isTrue(factory("document.edit", ctx));
+  });
+
+  test("returns false for a denied permission name", ({ assert }) => {
+    const stored: PermissionCheckResult[] = [
+      { permission: "edit", allowed: false }
+    ];
+    const ctx = makeCtx({ [PERMIFY_RESULT_KEY]: stored });
+    const factory = getFactory(assert);
+
+    assert.isFalse(factory("edit", ctx));
+  });
+
+  test("returns false for a name never checked on the route", ({ assert }) => {
+    const stored: PermissionCheckResult[] = [
+      { permission: "view", allowed: true }
+    ];
+    const ctx = makeCtx({ [PERMIFY_RESULT_KEY]: stored });
+    const factory = getFactory(assert);
+
+    assert.isFalse(factory("edit", ctx));
+  });
+
+  test("returns false with a name when no guard ran", ({ assert }) => {
+    const ctx = makeCtx({});
+    const factory = getFactory(assert);
+
+    assert.isFalse(factory("edit", ctx));
+  });
 });

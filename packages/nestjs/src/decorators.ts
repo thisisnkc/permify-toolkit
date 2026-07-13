@@ -84,22 +84,42 @@ export const CheckPermission = (
  * Parameter decorator that injects the permission check results computed by
  * {@link PermifyGuard} into the handler method.
  *
- * Requires the guard to have already run for this route. Returns an empty
- * array when no guard ran (public routes).
+ * Without an argument it injects the full results array. With a permission
+ * name it injects a single boolean — `true` only when that permission was
+ * checked and granted. Qualified names ("document.edit") match the bare
+ * form stored by the guard ("edit").
+ *
+ * Requires the guard to have already run for this route. When no guard ran
+ * (public routes), the array form returns `[]` and the boolean form
+ * returns `false`.
  *
  * @example
  * ```typescript
  * @UseGuards(PermifyGuard)
  * @CheckPermission(['document.view', 'document.edit'], { mode: 'OR' })
  * @Get(':id')
- * async get(@PermissionResult() results: PermissionCheckResult[]) {
- *   const canEdit = results.find(r => r.permission === 'edit')?.allowed;
- * }
+ * async get(
+ *   @PermissionResult() results: PermissionCheckResult[],
+ *   @PermissionResult('document.edit') canEdit: boolean
+ * ) { ... }
  * ```
  */
 export const PermissionResult = createParamDecorator(
-  (_data: unknown, ctx: ExecutionContext): PermissionCheckResult[] =>
-    (ctx.switchToHttp().getRequest<Record<string, unknown>>()[
-      PERMIFY_RESULT_KEY
-    ] as PermissionCheckResult[] | undefined) ?? []
+  (
+    data: string | undefined,
+    ctx: ExecutionContext
+  ): PermissionCheckResult[] | boolean => {
+    const results =
+      (ctx.switchToHttp().getRequest<Record<string, unknown>>()[
+        PERMIFY_RESULT_KEY
+      ] as PermissionCheckResult[] | undefined) ?? [];
+
+    if (data === undefined) {
+      return results;
+    }
+
+    const parts = data.split(".");
+    const bare = parts.length > 1 ? parts[1] : data;
+    return results.some((r) => r.permission === bare && r.allowed);
+  }
 );

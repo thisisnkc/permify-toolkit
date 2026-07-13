@@ -1,14 +1,18 @@
 import type { SchemaHandle, PermissionName } from "@permify-toolkit/core";
 
-import { CheckPermission, type CheckPermissionOptions } from "./decorators.js";
+import {
+  CheckPermission,
+  PermissionResult,
+  type CheckPermissionOptions
+} from "./decorators.js";
 
 /**
  * Creates decorators typed against a specific schema.
  *
- * The returned `CheckPermission` behaves identically to the base decorator but
- * only accepts identifiers that exist in the given schema — both qualified
- * (`"document.view"`) and bare (`"view"`) forms. Invalid names are a compile
- * error, and editors autocomplete the valid ones.
+ * The returned `CheckPermission` and `PermissionResult` behave identically
+ * to the base decorators but only accept identifiers that exist in the given
+ * schema — both qualified (`"document.view"`) and bare (`"view"`) forms.
+ * Invalid names are a compile error, and editors autocomplete the valid ones.
  *
  * Bind it once to your schema and re-export it from your auth module.
  *
@@ -18,7 +22,7 @@ import { CheckPermission, type CheckPermissionOptions } from "./decorators.js";
  * import { createPermifyDecorators } from '@permify-toolkit/nestjs';
  * import { appSchema } from './permify.config';
  *
- * export const { CheckPermission } =
+ * export const { CheckPermission, PermissionResult } =
  *   createPermifyDecorators<typeof appSchema>();
  *
  * // controller.ts
@@ -33,6 +37,7 @@ export function createPermifyDecorators<H extends SchemaHandle>() {
     CheckPermission: (
       permissions: Name | Name[],
       options?: CheckPermissionOptions
-    ) => CheckPermission(permissions, options)
+    ) => CheckPermission(permissions, options),
+    PermissionResult: (permission?: Name) => PermissionResult(permission)
   };
 }

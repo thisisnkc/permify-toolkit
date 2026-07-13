@@ -29,7 +29,8 @@ export const appSchema = schema({
 });
 
 /**
- * Schema-typed CheckPermission. Accepts 'document.view', 'view', etc. —
- * anything outside the schema fails to compile.
+ * Schema-typed CheckPermission and PermissionResult. Accept 'document.view',
+ * 'view', etc. — anything outside the schema fails to compile.
  */
-export const { CheckPermission } = createPermifyDecorators<typeof appSchema>();
+export const { CheckPermission, PermissionResult } =
+  createPermifyDecorators<typeof appSchema>();
