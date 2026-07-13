@@ -1,5 +1,21 @@
 # @permify-toolkit/nestjs
 
+## 1.2.0
+
+### Minor Changes
+
+- f144023: Add `@PermissionResult()` param decorator — injects guard-computed permission check results into handler parameters without a second gRPC round-trip.
+- 4deb4c8: `@PermissionResult()` accepts an optional permission name and injects a boolean; qualified names (`document.edit`) are normalized to match guard results.
+- 4e39cd0: Add typed entity and permission names from the schema DSL.
+
+  - `core`: `entity()` now preserves the literal relation and permission keys of its definition, and a new `PermissionName<H>` type derives the union of a schema's checkable identifiers (qualified `"document.view"` and bare `"view"`, covering permissions and relations).
+  - `nestjs`: new `createPermifyDecorators<typeof schema>()` returns a `CheckPermission` decorator constrained to that schema's names — invalid names are a compile error with editor autocomplete. The untyped `CheckPermission` is unchanged for `.perm`-file users.
+
+### Patch Changes
+
+- Updated dependencies [4e39cd0]
+  - @permify-toolkit/core@1.5.0
+
 ## 1.1.1
 
 ### Patch Changes

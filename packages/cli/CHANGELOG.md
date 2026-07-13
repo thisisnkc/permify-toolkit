@@ -1,5 +1,17 @@
 # @permify-toolkit/cli
 
+## 1.4.0
+
+### Minor Changes
+
+- cd0601b: Add `init` command — scaffolds a starter `permify.config.ts` with a minimal valid example schema. Supports `--tenant` and `--endpoint`; refuses to overwrite an existing config.
+- d9dbaa6: Add `schema pull` command — fetches the deployed schema from the Permify server and writes it to a local `.perm` file. Supports `--tenant`, `--output`, and `--force` (overwrite guard).
+
+### Patch Changes
+
+- Updated dependencies [4e39cd0]
+  - @permify-toolkit/core@1.5.0
+
 ## 1.3.1
 
 ### Patch Changes
