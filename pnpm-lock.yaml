@@ -110,7 +110,7 @@ importers:
         version: 4.13.2
       '@oclif/plugin-help':
         specifier: ^6.2.26
-        version: 6.2.55
+        version: 6.2.56
       '@permify-toolkit/core':
         specifier: workspace:^
         version: link:../core
@@ -2889,8 +2889,8 @@ packages:
     resolution: {integrity: sha512-YWQs0JvESCliWopKtCZqPLgEB1e3oqR+KYecMReseYWbo7E73Rz2tFwQDFQtAp48VLMiAsiTPKKQaZAo+ghzLw==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-help@6.2.55':
-    resolution: {integrity: sha512-IamFqLPoD8KTZbGSAu24EFe2kNibMrL/WA8+4EvnbdkYqZGUcizVqeXUIxzns3SES99wgqOtsK3DtLB3V3kIJQ==}
+  '@oclif/plugin-help@6.2.56':
+    resolution: {integrity: sha512-0LkCjFGRGY7AaZb5p8gDcSPNkFrn+vNLKvGe1f7j/Z6U9Uy1cV6R2eWVsjuZTGQ3RvBvjquFPwLy1jTgR5l87w==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-not-found@3.2.89':
@@ -13275,7 +13275,7 @@ snapshots:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  '@oclif/plugin-help@6.2.55':
+  '@oclif/plugin-help@6.2.56':
     dependencies:
       '@oclif/core': 4.13.2
 
@@ -18347,7 +18347,7 @@ snapshots:
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0
       '@oclif/core': 4.13.2
-      '@oclif/plugin-help': 6.2.55
+      '@oclif/plugin-help': 6.2.56
       '@oclif/plugin-not-found': 3.2.89(@types/node@26.1.1)
       '@oclif/plugin-warn-if-update-available': 3.1.68
       ansis: 3.17.0
