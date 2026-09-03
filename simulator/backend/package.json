@@ -17,9 +17,9 @@
     "schema:push": "permify-toolkit schema push"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.12",
-    "@nestjs/core": "^11.1.12",
-    "@nestjs/platform-express": "^11.1.12",
+    "@nestjs/common": "^12.0.0",
+    "@nestjs/core": "^12.0.0",
+    "@nestjs/platform-express": "^12.0.0",
     "@nestjs/serve-static": "^5.0.4",
     "@permify-toolkit/core": "workspace:^",
     "@permify-toolkit/nestjs": "workspace:^",
@@ -29,9 +29,9 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^10.0.0",
-    "@nestjs/cli": "^11.0.0",
-    "@nestjs/schematics": "^11.0.0",
-    "@nestjs/testing": "^11.0.1",
+    "@nestjs/cli": "^12.0.0",
+    "@nestjs/schematics": "^12.0.0",
+    "@nestjs/testing": "^12.0.0",
     "@permify-toolkit/cli": "workspace:^",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
